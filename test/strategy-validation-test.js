@@ -5,6 +5,50 @@ var Strategy = require('../lib/strategy')
 
 describe('Strategy', function() {
 
+    describe('calling JWT validation function', function() {
+        var strategy; 
+
+        before(function(done) {
+            verifyStub = sinon.stub();
+            verifyStub.callsArgWith(1, null, {}, {});
+            options = {};
+            options.issuer = "TestIssuer";
+            options.audience = "TestAudience";
+            strategy = new Strategy('secret', options, verifyStub);
+
+            Strategy.JwtVerifier = sinon.stub();
+            Strategy.JwtVerifier.callsArgWith(3, null, test_data.valid_jwt.payload);
+
+            chai.passport.use(strategy)
+                .success(function(u, i) {
+                    done();
+                })
+                .req(function(req) {
+                    req.headers['x-auth_token'] = test_data.valid_jwt.token;
+                })
+                .authenticate();
+        });
+
+
+        it('should call with the right secret as an argument', function() {
+            expect(Strategy.JwtVerifier.args[0][1]).to.equal('secret');
+        });
+
+
+        it('should call with the right issuer option', function() {
+            expect(Strategy.JwtVerifier.args[0][2]).to.be.an.object;
+            expect(Strategy.JwtVerifier.args[0][2].issuer).to.equal('TestIssuer');
+        });
+
+
+        it('should call with the right audience option', function() {
+            expect(Strategy.JwtVerifier.args[0][2]).to.be.an.object;
+            expect(Strategy.JwtVerifier.args[0][2].audience).to.equal('TestAudience');
+        });
+
+
+    });
+
 
     describe('handling valid jwt', function() {
         var strategy, payload;
