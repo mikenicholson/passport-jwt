@@ -29,7 +29,7 @@ for verifying the token's signature.
 * `tokenBodyField`: Field in a request body to search for the jwt.  Default is auth_token.
 * `tokenHeader`: HTTP header to search for the jwt. Default is x-auth_token.
 
-`verify` is a function with args verify(jwt_payload, done)
+`verify` is a function with args `verify(jwt_payload, done)`
 * `jwt_payload` is an object literal containing the decoded JWT payload.
 * `done` is a passport error first callback accepting arguments done(error, user, info)
 
@@ -56,7 +56,7 @@ An example configuration:
 
 Use `passport.authenticate()` specifying `'jwt'` as the strategy.
 
-The request's headers will first be searched for the id_token, then the request body if it exits. Since
+The request's headers will first be searched for the id_token, then the request body if it is present. Since
 token-based authentication is designed to replace cookie-based sessions you may want to dsable sessions when 
 authenticating an endpoint with this strategy.
 
