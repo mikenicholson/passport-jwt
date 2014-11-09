@@ -1,0 +1,37 @@
+{
+  "name": "passport-jwt",
+  "version": "0.0.1",
+  "description": "Passport authentication strategy using JSON Web Tokens",
+  "main": "./lib",
+  "scripts": {
+    "test": "./node_modules/.bin/mocha --reporter spec --require test/bootstrap test/*test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/themikenicholson/passport-jwt.git"
+  },
+  "keywords": [
+    "Passport",
+    "Strategy",
+    "JSON",
+    "Web",
+    "Token",
+    "JWT"
+  ],
+  "author": "Mike Nicholson",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/themikenicholson/passport-jwt/issues"
+  },
+  "homepage": "https://github.com/themikenicholson/passport-jwt",
+  "devDependencies": {
+    "chai": "^1.9.2",
+    "chai-passport-strategy": "^0.2.0",
+    "mocha": "^2.0.1",
+    "sinon": "^1.11.1"
+  },
+  "dependencies": {
+    "jsonwebtoken": "^1.1.2",
+    "passport-strategy": "^1.0.0"
+  }
+}
