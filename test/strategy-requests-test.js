@@ -32,7 +32,7 @@ describe('Strategy', function() {
                     done();
                 })
                 .req(function(req) {
-                    req.headers['x-auth_token'] = test_data.valid_jwt.token;
+                    req.headers['authorization'] = "JWT " + test_data.valid_jwt.token;
                 })
                 .authenticate();
         });
