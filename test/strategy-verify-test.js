@@ -135,4 +135,35 @@ describe('Strategy', function() {
 
     });
 
+
+
+    describe('handing a request with a valid jwt and option passReqToCallback is true', function() {
+
+        var strategy, expected_request, request_arg;
+
+        before(function(done) {
+            opts = { passReqToCallback: true };
+            strategy = new Strategy('secret', opts, function(request, jwt_payload, next) {
+                // Capture the value passed in as the request argument
+                request_arg = request;
+                return next(null, {user_id: 1234567890}, {foo:'bar'});
+            });
+
+            chai.passport.use(strategy)
+                .success(function(u, i) {
+                    done();
+                })
+                .req(function(req) {
+                    req.headers['authorization'] = "JWT " + test_data.valid_jwt.token;
+                    expected_request = req;
+                })
+                .authenticate();
+        });
+
+        it('will call verify with request as the first argument', function() {
+            expect(expected_request).to.equal(request_arg);
+        });
+
+    });
+
 });
