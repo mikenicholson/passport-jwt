@@ -7,10 +7,7 @@ endpoints without sessions.
 
 ## Install
 
-This module has not yet been published to the public NPM repository.  Until it is you can install it 
-with the command 
-
-    $ npm install git+https://github.com/themikenicholson/passport-jwt.git 
+    $ npm install passport-jwt
 
 ## Usage
 
