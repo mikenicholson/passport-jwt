@@ -16,7 +16,7 @@ describe('Strategy', function() {
         var strategy, user, info; 
 
         before(function(done) {
-            strategy = new Strategy('secret', function(jwt_paylod, next) {
+            strategy = new Strategy({secretOrKey: 'secret'}, function(jwt_paylod, next) {
                 return next(null, {user_id: 1234567890}, {foo:'bar'});
             });
 
@@ -53,7 +53,7 @@ describe('Strategy', function() {
         var strategy, info;
 
         before(function(done) {
-            strategy = new Strategy('secret', function(jwt_payload, next) {
+            strategy = new Strategy({secretOrKey: 'secret'}, function(jwt_payload, next) {
                 return next(null, false, {message: 'invalid user'});
             });
 
@@ -83,7 +83,7 @@ describe('Strategy', function() {
         var strategy, err;
 
         before(function(done) {
-            strategy = new Strategy('secrety', function(jwt_payload, next) {
+            strategy = new Strategy({secretOrKey: 'secrety'}, function(jwt_payload, next) {
                 return next(new Error("ERROR"), false, {message: 'invalid user'});
             });
 
@@ -112,7 +112,7 @@ describe('Strategy', function() {
         var strategy, err;
 
         before(function(done) {
-            strategy = new Strategy('secret', function(jwt_payload, next) {
+            strategy = new Strategy({secretOrKey: 'secret'}, function(jwt_payload, next) {
                 throw new Error("EXCEPTION");
             });
 
@@ -143,7 +143,8 @@ describe('Strategy', function() {
 
         before(function(done) {
             opts = { passReqToCallback: true };
-            strategy = new Strategy('secret', opts, function(request, jwt_payload, next) {
+            opts.secretOrKey = 'secret';
+            strategy = new Strategy(opts, function(request, jwt_payload, next) {
                 // Capture the value passed in as the request argument
                 request_arg = request;
                 return next(null, {user_id: 1234567890}, {foo:'bar'});

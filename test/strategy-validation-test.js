@@ -14,7 +14,8 @@ describe('Strategy', function() {
             options = {};
             options.issuer = "TestIssuer";
             options.audience = "TestAudience";
-            strategy = new Strategy('secret', options, verifyStub);
+            options.secretOrKey = 'secret';
+            strategy = new Strategy(options, verifyStub);
 
             Strategy.JwtVerifier = sinon.stub();
             Strategy.JwtVerifier.callsArgWith(3, null, test_data.valid_jwt.payload);
@@ -54,7 +55,7 @@ describe('Strategy', function() {
         var strategy, payload;
 
         before(function(done) {
-            strategy = new Strategy('secret', function(jwt_payload, next) { 
+            strategy = new Strategy({secretOrKey: 'secret'}, function(jwt_payload, next) {
                 payload = jwt_payload;
                 next(null, {}, {});
             });
@@ -88,7 +89,7 @@ describe('Strategy', function() {
 
         before(function(done) {
 
-            strategy = new Strategy('secret', verify_spy);
+            strategy = new Strategy({secretOrKey: 'secret'}, verify_spy);
 
             // Mock errored verification
             Strategy.JwtVerifier = sinon.stub();

@@ -20,7 +20,7 @@ describe('Strategy', function() {
         var strategy;
 
         before(function(done) {
-            strategy = new Strategy('secret', function(jwt_payload, next) {
+            strategy = new Strategy({secretOrKey: 'secret'}, function(jwt_payload, next) {
                 // Return values aren't important in this case
                 return next(null, {}, {});
             });
@@ -49,7 +49,7 @@ describe('Strategy', function() {
          var strategy;
 
         before(function(done) {
-            strategy = new Strategy('secret', function(jwt_payload, next) {
+            strategy = new Strategy({secretOrKey: 'secret'}, function(jwt_payload, next) {
                 // Return values aren't important in this case
                 return next(null, {}, {});
             });
@@ -82,7 +82,7 @@ describe('Strategy', function() {
         var info;
 
         before(function(done) {
-            strategy = new Strategy('secret', function(jwt_payload, next) {
+            strategy = new Strategy({secretOrKey: 'secret'}, function(jwt_payload, next) {
                 // Return values aren't important in this case
                 return next(null, {}, {});
             });

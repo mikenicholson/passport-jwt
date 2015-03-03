@@ -15,12 +15,10 @@ endpoints without sessions.
 
 The jwt authentication strategy is constructed as follows: 
     
-    new JwtStrategy(secretOrKey, options, verify)
-
-`secretOrKey` is a string or buffer containing the secret (symmetric) or PEM-encoded public key (asymmetric)
-for verifying the token's signature.
+    new JwtStrategy(options, verify)
 
 `options` is an object literal containing options to control how the token is extracted from the request or verified.
+* `secretOrKey` is a REQUIRED string or buffer containing the secret (symmetric) or PEM-encoded public key (asymmetric) for verifying the token's signature.
 * `issuer`: If defined the token issuer (iss) will be verified against this value.
 * `audience`: If defined the toekn audience (aud) will be verified against this value.
 * `tokenBodyField`: Field in a request body to search for the jwt.  Default is auth_token.
@@ -34,8 +32,11 @@ for verifying the token's signature.
 An example configuration: 
 
     var JwtStrategy = require('passport-jwt').Strategy;
-    var opts = {issuer: "accounts.examplesoft.com", audience: "yoursite.net"};  
-    passport.use(new JwtStrategy('secret', opts, function(jwt_paylaod, done) {
+    var opts = {}
+    opts.secretOrKey = 'secret';
+    opts.issuer = "accounts.examplesoft.com";
+    opts.audience: "yoursite.net"};
+    passport.use(new JwtStrategy(opts, function(jwt_paylaod, done) {
         User.findOne({id: jwt_paylaod.sub}, function(err, user) {
             if (err) {
                 return done(err, false);
