@@ -35,7 +35,7 @@ for verifying the token's signature.
 
 An example configuration: 
 
-    var JwtStrategy = require('passport-jwt');
+    var JwtStrategy = require('passport-jwt').Strategy;
     var opts = {issuer: "accounts.examplesoft.com", audience: "yoursite.net"};  
     passport.use(new JwtStrategy('secret', opts, function(jwt_paylaod, done) {
         User.findOne({id: jwt_paylaod.sub}, function(err, user) {
