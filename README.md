@@ -70,7 +70,7 @@ auth scheme was specified then the token will be retrieved from it. e.g.
 
     Authorization: JWT JSON_WEB_TOKEN_STRING.....
 
-If the authorization header with the expected schema is not found, the request body will be
+If the authorization header with the expected scheme is not found, the request body will be
 checked for a field matching either `options.tokenBodyField` or `auth_token` if the option was not specified.
 
 
