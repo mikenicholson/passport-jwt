@@ -70,8 +70,8 @@ auth scheme was specified then the token will be retrieved from it. e.g.
 
     Authorization: JWT JSON_WEB_TOKEN_STRING.....
 
-If the an authorization header with the expected scheme is not found the request body will be
-checked for a field matching `options.tokenBodyField` or 'auth_token' if the option was not specified.
+If the authorization header with the expected scheme is not found, the request body will be
+checked for a field matching either `options.tokenBodyField` or `auth_token` if the option was not specified.
 
 
 ## Tests
@@ -83,4 +83,4 @@ checked for a field matching `options.tokenBodyField` or 'auth_token' if the opt
 
 The [MIT License](http://opensource.org/licenses/MIT)
 
-Copyright (c) 2014 Mike Nicholson
+Copyright (c) 2015 Mike Nicholson
