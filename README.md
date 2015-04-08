@@ -20,7 +20,7 @@ The jwt authentication strategy is constructed as follows:
 `options` is an object literal containing options to control how the token is extracted from the request or verified.
 * `secretOrKey` is a REQUIRED string or buffer containing the secret (symmetric) or PEM-encoded public key (asymmetric) for verifying the token's signature.
 * `issuer`: If defined the token issuer (iss) will be verified against this value.
-* `audience`: If defined the toekn audience (aud) will be verified against this value.
+* `audience`: If defined, the token audience (aud) will be verified against this value.
 * `tokenBodyField`: Field in a request body to search for the jwt.  Default is auth_token.
 * `authScheme`: Expected authorization scheme if token is submitted through the HTTP Authorization header. Defaults to JWT
 * `passReqToCallback`: If true the request will be passed to the verify callback. i.e. verify(request, jwt_payload, done_callback).
