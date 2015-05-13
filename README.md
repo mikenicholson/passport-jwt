@@ -28,6 +28,8 @@ extracted from the request or verified.
   value.
 * `audience`: If defined, the token audience (aud) will be verified against
   this value.
+* `tokenHeaderField`: Header in request containing the jwt.
+  Default is to use JWT Authorization header.
 * `tokenBodyField`: Field in a request body to search for the jwt.
   Default is auth_token.
 * `tokenQueryParameterName`: Query parameter name containing the token.
@@ -90,6 +92,8 @@ body will be checked for a field matching either `options.tokenBodyField` or
 Finally, the URL query parameters will be checked for a field matching either
 `options.tokenQueryParameterName` or `auth_token` if the option was not
 sepcified.
+
+If you are using a custom header, you can specify it with `tokenHeaderField`.
 
 ## Tests
 
