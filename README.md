@@ -49,7 +49,7 @@ An example configuration:
     var opts = {}
     opts.secretOrKey = 'secret';
     opts.issuer = "accounts.examplesoft.com";
-    opts.audience: "yoursite.net";
+    opts.audience = "yoursite.net";
     passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
         User.findOne({id: jwt_payload.sub}, function(err, user) {
             if (err) {
