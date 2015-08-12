@@ -15,9 +15,10 @@ describe('Parsing Auth Header field-value', function() {
     });
 
 
-    it('Should handle malformed authentication headers with no scheme', function() {
-        var res = auth_hdr.parse("malformed");
-        expect(res).to.not.be.ok;
+    it('Should presume that the scheme is JWT', function() {
+        var res = auth_hdr.parse("VALUE");
+        expect(res).to.deep.equal({scheme: "JWT", value: "VALUE"});
+
     });
 
 

@@ -6,7 +6,7 @@ var Strategy = require('../lib/strategy')
 describe('Strategy', function() {
 
     describe('calling JWT validation function', function() {
-        var strategy; 
+        var strategy;
 
         before(function(done) {
             verifyStub = sinon.stub();
@@ -84,7 +84,7 @@ describe('Strategy', function() {
 
 
     describe('handling failing jwt', function() {
-        var strategy, info; 
+        var strategy, info;
         var verify_spy = sinon.spy();
 
         before(function(done) {
@@ -115,39 +115,6 @@ describe('Strategy', function() {
         it('should fail with error message.', function() {
             expect(info).to.be.an.object;
             expect(info.message).to.equal('jwt expired');
-        });
-
-    });
-
-
-    describe('handling an invalid authentication header', function() {
-        var strategy, info; 
-        var verify_spy = sinon.spy();
-
-        before(function(done) {
-
-            strategy = new Strategy({secretOrKey: 'secret'}, verify_spy);
-
-            chai.passport.use(strategy)
-                .fail(function(i) {
-                    info = i;
-                    done();
-                })
-                .req(function(req) {
-                    req.headers['authorization'] = "malformed";
-                })
-                .authenticate();
-        });
-
-
-        it('should not call verify', function() {
-            sinon.assert.notCalled(verify_spy);
-        });
-
-
-        it('should fail with error message.', function() {
-            expect(info).to.be.an.object;
-            expect(info.message).to.equal('Invalid authorization header');
         });
 
     });
