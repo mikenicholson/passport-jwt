@@ -45,34 +45,38 @@ extracted from the request or verified.
 
 An example configuration:
 
-    var JwtStrategy = require('passport-jwt').Strategy;
-    var opts = {}
-    opts.secretOrKey = 'secret';
-    opts.issuer = "accounts.examplesoft.com";
-    opts.audience = "yoursite.net";
-    passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
-        User.findOne({id: jwt_payload.sub}, function(err, user) {
-            if (err) {
-                return done(err, false);
-            }
-            if (user) {
-                done(null, user);
-            } else {
-                done(null, false);
-                // or you could create a new account
-            }
-        });
-    }));
+```js
+var JwtStrategy = require('passport-jwt').Strategy;
+var opts = {}
+opts.secretOrKey = 'secret';
+opts.issuer = "accounts.examplesoft.com";
+opts.audience = "yoursite.net";
+passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
+    User.findOne({id: jwt_payload.sub}, function(err, user) {
+        if (err) {
+            return done(err, false);
+        }
+        if (user) {
+            done(null, user);
+        } else {
+            done(null, false);
+            // or you could create a new account
+        }
+    });
+}));
+```
 
 ### Authenticate requests
 
 Use `passport.authenticate()` specifying `'jwt'` as the strategy.
 
-    app.post('/profile', passport.authenticate('jwt', { session: false}),
-        function(req, res) {
-            res.send(req.user.profile);
-        }
-    );
+```js
+app.post('/profile', passport.authenticate('jwt', { session: false}),
+    function(req, res) {
+        res.send(req.user.profile);
+    }
+);
+```
 
 ### Include the JWT in requests
 
