@@ -6,7 +6,7 @@ var Strategy = require('../lib/strategy')
 describe('Strategy', function() {
 
     describe('calling JWT validation function', function() {
-        var strategy; 
+        var strategy;
 
         before(function(done) {
             verifyStub = sinon.stub();
@@ -15,6 +15,7 @@ describe('Strategy', function() {
             options.issuer = "TestIssuer";
             options.audience = "TestAudience";
             options.secretOrKey = 'secret';
+            options.algorithms = ["HS256", "HS384"];
             strategy = new Strategy(options, verifyStub);
 
             Strategy.JwtVerifier = sinon.stub();
@@ -45,6 +46,11 @@ describe('Strategy', function() {
         it('should call with the right audience option', function() {
             expect(Strategy.JwtVerifier.args[0][2]).to.be.an.object;
             expect(Strategy.JwtVerifier.args[0][2].audience).to.equal('TestAudience');
+        });
+
+        it('should call with the right algorithms option', function() {
+            expect(Strategy.JwtVerifier.args[0][2]).to.be.an.object;
+            expect(Strategy.JwtVerifier.args[0][2].algorithms).to.eql(["HS256", "HS384"]);
         });
 
 
@@ -84,7 +90,7 @@ describe('Strategy', function() {
 
 
     describe('handling failing jwt', function() {
-        var strategy, info; 
+        var strategy, info;
         var verify_spy = sinon.spy();
 
         before(function(done) {
@@ -121,7 +127,7 @@ describe('Strategy', function() {
 
 
     describe('handling an invalid authentication header', function() {
-        var strategy, info; 
+        var strategy, info;
         var verify_spy = sinon.spy();
 
         before(function(done) {

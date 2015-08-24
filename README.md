@@ -28,6 +28,7 @@ extracted from the request or verified.
   value.
 * `audience`: If defined, the token audience (aud) will be verified against
   this value.
+* `algorithms`: List of strings with the names of the allowed algorithms. For instance, ["HS256", "HS384"]
 * `tokenBodyField`: Field in a request body to search for the jwt.
   Default is auth_token.
 * `tokenQueryParameterName`: Query parameter name containing the token.
