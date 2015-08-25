@@ -16,6 +16,7 @@ describe('Strategy', function() {
             options.audience = "TestAudience";
             options.secretOrKey = 'secret';
             options.algorithms = ["HS256", "HS384"];
+            options.ignoreExpiration = false;
             strategy = new Strategy(options, verifyStub);
 
             Strategy.JwtVerifier = sinon.stub();
@@ -53,6 +54,10 @@ describe('Strategy', function() {
             expect(Strategy.JwtVerifier.args[0][2].algorithms).to.eql(["HS256", "HS384"]);
         });
 
+        it('should call with the right ignoreExpiration option', function() {
+            expect(Strategy.JwtVerifier.args[0][2]).to.be.an.object;
+            expect(Strategy.JwtVerifier.args[0][2].ignoreExpiration).to.be.false;
+        });
 
     });
 
