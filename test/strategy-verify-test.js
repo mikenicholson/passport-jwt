@@ -108,7 +108,7 @@ describe('Strategy', function() {
 
 
 
-    describe('hanlding a request with a valid jwt and an exception during verification', function() {
+    describe('handling a request with a valid jwt and an exception during verification', function() {
         var strategy, err;
 
         before(function(done) {
@@ -137,7 +137,7 @@ describe('Strategy', function() {
 
 
 
-    describe('handing a request with a valid jwt and option passReqToCallback is true', function() {
+    describe('handling a request with a valid jwt and option passReqToCallback is true', function() {
 
         var strategy, expected_request, request_arg;
 
