@@ -167,4 +167,66 @@ describe('Strategy', function() {
 
     });
 
+    describe('handling a request with a valid jwt and option passTokenToCallback is true', function() {
+
+        var strategy, expected_token, token_arg;
+
+        before(function(done) {
+            opts = { passTokenToCallback: true };
+            opts.secretOrKey = 'secret';
+            strategy = new Strategy(opts, function(token, jwt_payload, next) {
+                // Capture the value passed in as the token argument
+                token_arg = token;
+                return next(null, {user_id: 1234567890}, {foo:'bar'});
+            });
+
+            chai.passport.use(strategy)
+                .success(function(u, i) {
+                    done();
+                })
+                .req(function(req) {
+                    req.headers['authorization'] = "JWT " + test_data.valid_jwt.token;
+                    expected_token = test_data.valid_jwt.token;
+                })
+                .authenticate();
+        });
+
+        it('will call verify with token as the first argument', function() {
+            expect(expected_token).to.equal(token_arg);
+        });
+
+    });
+
+    describe('handling a request with a valid jwt and options passReqToCallback and passTokenToCallback both true', function() {
+
+        var strategy, expected_request, request_arg, expected_token, token_arg;
+
+        before(function(done) {
+            opts = { passReqToCallback: true, passTokenToCallback: true };
+            opts.secretOrKey = 'secret';
+            strategy = new Strategy(opts, function(request, token, jwt_payload, next) {
+                // Capture the value passed in as the token argument
+                request_arg = request;
+                token_arg = token;
+                return next(null, {user_id: 1234567890}, {foo:'bar'});
+            });
+
+            chai.passport.use(strategy)
+                .success(function(u, i) {
+                    done();
+                })
+                .req(function(req) {
+                    req.headers['authorization'] = "JWT " + test_data.valid_jwt.token;
+                    expected_token = test_data.valid_jwt.token;
+                    expected_request = req;
+                })
+                .authenticate();
+        });
+
+        it('will call verify with request as the first argument and token as the second argument', function() {
+            expect(expected_request).to.equal(request_arg);
+            expect(expected_token).to.equal(token_arg);
+        });
+
+    });
 });

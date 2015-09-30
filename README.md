@@ -39,6 +39,10 @@ extracted from the request or verified.
   the HTTP Authorization header. Defaults to JWT
 * `passReqToCallback`: If true the request will be passed to the verify
   callback. i.e. verify(request, jwt_payload, done_callback).
+* `passTokenToCallback`: If true the token will be passed to the verify
+  callback. i.e. verify(token, jwt_payload, done_callback). If both this and the
+  previous option are set, callback will be called with both the request and the
+  token. i.e. verify(request, token, jwt_payload, done_callback).
 
 `verify` is a function with args `verify(jwt_payload, done)`
 
