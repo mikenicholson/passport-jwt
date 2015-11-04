@@ -2,7 +2,8 @@ var Strategy = require('../lib/strategy')
     , chai = require('chai')
     , sinon = require('sinon')
     , test_data= require('./testdata')
-    , url = require('url');
+    , url = require('url')
+    , extract_jwt = require('../lib/extract_jwt')
 
 
 describe('Strategy', function() {
@@ -21,7 +22,7 @@ describe('Strategy', function() {
         var strategy;
 
         before(function(done) {
-            strategy = new Strategy({secretOrKey: 'secret'}, function(jwt_payload, next) {
+            strategy = new Strategy({jwtFromRequest: extract_jwt.fromAuthHeader(), secretOrKey: 'secret'}, function(jwt_payload, next) {
                 // Return values aren't important in this case
                 return next(null, {}, {});
             });
@@ -50,7 +51,7 @@ describe('Strategy', function() {
          var strategy;
 
         before(function(done) {
-            strategy = new Strategy({secretOrKey: 'secret'}, function(jwt_payload, next) {
+            strategy = new Strategy({jwtFromRequest: extract_jwt.fromBodyField('auth_token'), secretOrKey: 'secret'}, function(jwt_payload, next) {
                 // Return values aren't important in this case
                 return next(null, {}, {});
             });
@@ -79,7 +80,7 @@ describe('Strategy', function() {
          var strategy;
 
         before(function(done) {
-            strategy = new Strategy({secretOrKey: 'secret', tokenBodyField: 'jwtToken'}, function(jwt_payload, next) {
+            strategy = new Strategy({jwtFromRequest: extract_jwt.fromBodyField('jwtToken'), secretOrKey: 'secret'}, function(jwt_payload, next) {
                 // Return values aren't important in this case
                 return next(null, {}, {});
             });
@@ -110,7 +111,7 @@ describe('Strategy', function() {
         var strategy;
 
         before(function(done) {
-            strategy = new Strategy({secretOrKey: 'secret'}, function(jwt_payload, next) {
+            strategy = new Strategy({jwtFromRequest: extract_jwt.fromUrlQueryParameter('auth_token'), secretOrKey: 'secret'}, function(jwt_payload, next) {
                 // Return values aren't important in this case
                 return next(null, {}, {});
             });
@@ -136,7 +137,7 @@ describe('Strategy', function() {
         var strategy;
 
         before(function(done) {
-            strategy = new Strategy({secretOrKey: 'secret', tokenQueryParameterName: 'jwt_token'}, function(jwt_payload, next) {
+            strategy = new Strategy({jwtFromRequest: extract_jwt.fromUrlQueryParameter('jwt_token'), secretOrKey: 'secret', tokenQueryParameterName: 'jwt_token'}, function(jwt_payload, next) {
                 // Return values aren't important in this case
                 return next(null, {}, {});
             });
@@ -163,7 +164,7 @@ describe('Strategy', function() {
         var info;
 
         before(function(done) {
-            strategy = new Strategy({secretOrKey: 'secret'}, function(jwt_payload, next) {
+            strategy = new Strategy({jwtFromRequest: function(r) {}, secretOrKey: 'secret'}, function(jwt_payload, next) {
                 // Return values aren't important in this case
                 return next(null, {}, {});
             });
@@ -199,7 +200,7 @@ describe('Strategy', function() {
         var info;
 
         before(function(done) {
-            strategy = new Strategy({secretOrKey: 'secret'}, function(jwt_payload, next) {
+            strategy = new Strategy({jwtFromRequest: function(r) {}, secretOrKey: 'secret'}, function(jwt_payload, next) {
                 // Return values aren't important in this case
                 return next(null, {}, {});
             });
