@@ -21,9 +21,9 @@ The jwt authentication strategy is constructed as follows:
 `options` is an object literal containing options to control how the token is
 extracted from the request or verified.
 
-* `secretOrKey` is a REQUIRED string or buffer containing the secret
+* `secretOrKey` is a REQUIRED string or buffer containing the secret, or function that calls back with a string or buffer
   (symmetric) or PEM-encoded public key (asymmetric) for verifying the token's
-  signature.
+  signature. In situations where the `secretOrKey` is dependent on the `issuer` (in the case of multi-tenanted applications, you may provide a function take takes the `token` and a callback. The callback's only param will be the secret, or null / undefied if a secret could not be determined.)
 * `issuer`: If defined the token issuer (iss) will be verified against this
   value.
 * `audience`: If defined, the token audience (aud) will be verified against
