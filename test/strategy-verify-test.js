@@ -171,7 +171,7 @@ describe('Strategy', function() {
         describe('secretOrKey function returns a secret', function() {
             var strategy, user, info; 
             var secretFunction = function(token, done) {
-                done('secret');
+                done(null, 'secret');
             };
 
             before(function(done) {
@@ -207,7 +207,7 @@ describe('Strategy', function() {
         describe('secretOrKey function doesn\'t return a secret', function() {
             var strategy, err; 
             var secretFunction = function(token, done) {
-                done();
+                done(new Error('oops'), null);
             };
 
             before(function(done) {
