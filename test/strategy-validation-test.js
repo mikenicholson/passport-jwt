@@ -160,7 +160,7 @@ describe('Strategy', function() {
 
         it('should fail with error message.', function() {
             expect(info).to.be.an.object;
-            expect(info.message).to.equal('Invalid authorization header');
+            expect(info).to.be.an.instanceof(Error);
         });
 
     });
