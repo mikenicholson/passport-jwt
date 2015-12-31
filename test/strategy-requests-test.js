@@ -18,43 +18,21 @@ describe('Strategy', function() {
         Strategy.JwtVerifier = mockVerifier;
     });
     
-    describe('handling request with JWT in header', function() {
+
+
+    describe('handling request JWT present in request', function() {
         var strategy;
 
         before(function(done) {
-            strategy = new Strategy({jwtFromRequest: extract_jwt.fromAuthHeader(), secretOrKey: 'secret'}, function(jwt_payload, next) {
-                // Return values aren't important in this case
-                return next(null, {}, {});
-            });
-            
-            mockVerifier.reset();           
-
-            chai.passport.use(strategy)
-                .success(function(u, i) {
-                    done();
-                })
-                .req(function(req) {
-                    req.headers['authorization'] = "JWT " + test_data.valid_jwt.token;
-                })
-                .authenticate();
-        });
-
-        it("verifies the right jwt", function() {
-            sinon.assert.calledOnce(mockVerifier);
-            expect(mockVerifier.args[0][0]).to.equal(test_data.valid_jwt.token);
-        });
-
-    });
-
-
-    describe('handling request with JWT in default body field', function() {
-         var strategy;
-
-        before(function(done) {
-            strategy = new Strategy({jwtFromRequest: extract_jwt.fromBodyField('auth_token'), secretOrKey: 'secret'}, function(jwt_payload, next) {
-                // Return values aren't important in this case
-                return next(null, {}, {});
-            });
+            strategy = new Strategy({
+                    jwtFromRequest: function (r) { return test_data.valid_jwt.token; },
+                    secretOrKey: 'secret'
+                },
+                function(jwt_payload, next) {
+                    // Return values aren't important in this case
+                    return next(null, {}, {});
+                }
+            );
             
             mockVerifier.reset();
            
@@ -62,10 +40,6 @@ describe('Strategy', function() {
                 .success(function(u, i) {
                     done();
                 })
-                .req(function(req) {
-                    req.body = {}
-                    req.body.auth_token = test_data.valid_jwt.token;
-                })
                 .authenticate();
         });
 
@@ -76,88 +50,7 @@ describe('Strategy', function() {
         });
     });
 
-    describe('handling request with JWT in custom body field', function() {
-         var strategy;
 
-        before(function(done) {
-            strategy = new Strategy({jwtFromRequest: extract_jwt.fromBodyField('jwtToken'), secretOrKey: 'secret'}, function(jwt_payload, next) {
-                // Return values aren't important in this case
-                return next(null, {}, {});
-            });
-            
-            mockVerifier.reset();
-           
-            chai.passport.use(strategy)
-                .success(function(u, i) {
-                    done();
-                })
-                .req(function(req) {
-                    req.body = {}
-                    req.body.jwtToken = test_data.valid_jwt.token;
-                })
-                .authenticate();
-        });
-
-
-        it("verifies the right jwt", function() {
-            sinon.assert.calledOnce(mockVerifier);
-            expect(mockVerifier.args[0][0]).to.equal(test_data.valid_jwt.token);
-        });
-
-
-    });
-
-    describe('handling request with JWT in default query parameter', function() {
-        var strategy;
-
-        before(function(done) {
-            strategy = new Strategy({jwtFromRequest: extract_jwt.fromUrlQueryParameter('auth_token'), secretOrKey: 'secret'}, function(jwt_payload, next) {
-                // Return values aren't important in this case
-                return next(null, {}, {});
-            });
-            mockVerifier.reset();
-            chai.passport.use(strategy)
-                .success(function(u, i) {
-                    done();
-                })
-                .req(function(req) {
-                    req.url += '?auth_token=' + test_data.valid_jwt.token;
-                })
-                .authenticate();
-        });
-
-
-        it("verifies the right jwt", function() {
-            sinon.assert.calledOnce(mockVerifier);
-            expect(mockVerifier.args[0][0]).to.equal(test_data.valid_jwt.token);
-        });
-    });
-
-    describe('handling request with JWT in custom query parameter', function() {
-        var strategy;
-
-        before(function(done) {
-            strategy = new Strategy({jwtFromRequest: extract_jwt.fromUrlQueryParameter('jwt_token'), secretOrKey: 'secret', tokenQueryParameterName: 'jwt_token'}, function(jwt_payload, next) {
-                // Return values aren't important in this case
-                return next(null, {}, {});
-            });
-            mockVerifier.reset();
-            chai.passport.use(strategy)
-                .success(function(u, i) {
-                    done();
-                })
-                .req(function(req) {
-                    req.url += '?jwt_token=' + test_data.valid_jwt.token;
-                })
-                .authenticate();
-        });
-
-
-        it("verifies the right jwt", function() {
-            sinon.assert.calledOnce(mockVerifier);
-            expect(mockVerifier.args[0][0]).to.equal(test_data.valid_jwt.token);
-        });
-    });
 
     describe('handling request with NO JWT', function() {
 
