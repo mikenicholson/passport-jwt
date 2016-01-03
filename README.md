@@ -3,7 +3,7 @@
 A [Passport](http://passportjs.org/) strategy for authenticating with a
 [JSON Web Token](http://jwt.io).
 
-This module lets you authenticate endpoints using a JSON Web token. It is
+This module lets you authenticate endpoints using a JSON web token. It is
 intended to be used to secure RESTful endpoints without sessions.
 
 ## Install
@@ -14,7 +14,7 @@ intended to be used to secure RESTful endpoints without sessions.
 
 ### Configure Strategy
 
-The jwt authentication strategy is constructed as follows:
+The JWT authentication strategy is constructed as follows:
 
     new JwtStrategy(options, verify)
 
@@ -24,33 +24,34 @@ extracted from the request or verified.
 * `secretOrKey` is a REQUIRED string or buffer containing the secret
   (symmetric) or PEM-encoded public key (asymmetric) for verifying the token's
   signature.
+
+* `jwtFromRequest` (REQUIRED) Function that accepts a reqeust as the only
+  parameter and returns the either JWT as a string or null. See 
+  [Extracting the JWT from the request](#extracting-the-jwt-from-the-request) for
+  more details.
 * `issuer`: If defined the token issuer (iss) will be verified against this
-  value.
+  and returns the JWT as a string value.
 * `audience`: If defined, the token audience (aud) will be verified against
   this value.
 * `algorithms`: List of strings with the names of the allowed algorithms. For instance, ["HS256", "HS384"].
 * `ignoreExpiration`: if true do not validate the expiration of the token.
-
-* `tokenBodyField`: Field in a request body to search for the jwt.
-  Default is auth_token.
-* `tokenQueryParameterName`: Query parameter name containing the token.
-  Default is auth_token.
-* `authScheme`: Expected authorization scheme if token is submitted through
-  the HTTP Authorization header. Defaults to JWT
 * `passReqToCallback`: If true the request will be passed to the verify
   callback. i.e. verify(request, jwt_payload, done_callback).
 
-`verify` is a function with args `verify(jwt_payload, done)`
+`verify` is a function with the parameters `verify(jwt_payload, done)`
 
 * `jwt_payload` is an object literal containing the decoded JWT payload.
 * `done` is a passport error first callback accepting arguments
   done(error, user, info)
 
-An example configuration:
+An example configuration which reads the JWT from the http
+Authorization header with the scheme 'JWT':
 
 ```js
-var JwtStrategy = require('passport-jwt').Strategy;
+var JwtStrategy = require('passport-jwt').Strategy,
+    ExtractJwt = require('passport-jwt').ExtractJwt;
 var opts = {}
+opts.jwtFromRequest = ExtractJwt.fromAuthHeader();
 opts.secretOrKey = 'secret';
 opts.issuer = "accounts.examplesoft.com";
 opts.audience = "yoursite.net";
@@ -69,9 +70,49 @@ passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
 }));
 ```
 
+### Extracting the JWT from the request
+
+There are a number of ways the JWT may be included in a request.  In order remain as flexible as
+possible the JWT is parsed from the request by a user-supplied callback passed in as the
+`jwtFromRequest` parameter.  This callback from now on referred to as an extractor,
+accepts a request object as an argument and returns the encoded JWT string or *null*.
+
+#### Included extractors 
+
+A number of extractor factory functions are provided in passport-jwt.ExtractJwt. These factory
+functions return a new extractor configured with the given parameters.
+
+* ```fromHeader(header_name)``` creates a new extractor that looks for the JWT in the given http
+  header
+* ```fromBodyField(field_name)``` creates a new extractor that looks for the JWT in the given body
+  field.  You must have a body parser configured in order to use this method.
+* ```fromQueryParamter(param_name)``` creates a new extractor that looks for the JWT in the given
+  URL query parameter.
+* ```fromAuthHeaderWithScheme(auth_scheme)``` creates a new extractor that looks for teh jwt in the
+  authorization header, expecting the scheme to match auth_scheme.
+* ```fromAuthHeader()``` creates a new extractor that looks for the JWT in the authorization header
+  with the scheme 'JWT'
+
+### Writing a custom extractor function
+
+If the supplied extractors don't meet your needs you can easily provide your own callback. For
+example, if you are using the cookie-parser middleware and want to extract the JWT in a cookie 
+you could use the following function as the argument to the jwtFromRequest option:
+
+```
+var cookieExtractor = function(req) {
+    var token = null;
+    if (req && req.cookies)
+    {
+        token = req.cookies['jwt'];
+    }
+    return token;
+};
+```
+
 ### Authenticate requests
 
-Use `passport.authenticate()` specifying `'jwt'` as the strategy.
+Use `passport.authenticate()` specifying `'JWT'` as the strategy.
 
 ```js
 app.post('/profile', passport.authenticate('jwt', { session: false}),
@@ -96,7 +137,7 @@ body will be checked for a field matching either `options.tokenBodyField` or
 
 Finally, the URL query parameters will be checked for a field matching either
 `options.tokenQueryParameterName` or `auth_token` if the option was not
-sepcified.
+specified.
 
 ## Tests
 
