@@ -144,6 +144,12 @@ specified.
     npm install
     npm test
 
+To generate test-coverage reports:
+
+    npm install -g istanbul
+    npm run-script testcov
+    istanbul report
+
 ## License
 
 The [MIT License](http://opensource.org/licenses/MIT)
