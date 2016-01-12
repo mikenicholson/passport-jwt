@@ -194,6 +194,46 @@ describe('Strategy', function() {
 
     });
 
+    describe('handling request with dynamic options cannot be resolved', function() {
+
+        var info, optionsCallback;
+
+        before(function() {
+            var strategy = new Strategy(function(callback) {
+                optionsCallback = callback;
+            }, function(jwt_payload, next) {
+                // Return values aren't important in this case
+                return next(null, {}, {});
+            });
+
+            mockVerifier.reset();
+
+            chai.passport.use(strategy)
+              .fail(function(i) {
+                  info = i;
+              })
+              .req(function(req) {
+                  req.body = {}
+              })
+              .authenticate();
+        });
+
+
+        it('should fail authentication when resolved as an error', function() {
+            optionsCallback(new Error('expected error message'));
+            expect(info).to.be.an.object;
+            expect(info.message).to.equal('expected error message');
+        });
+
+
+        it('should fail authentication when resolved with undefined options', function() {
+            optionsCallback(null, null);
+            expect(info).to.be.an.object;
+            expect(info.message).to.equal('No jwt options');
+        });
+
+    });
+
     describe('handling request url set to url.Url instead of string', function() {
 
         var info;

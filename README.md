@@ -69,6 +69,26 @@ passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
 }));
 ```
 
+### Make the strategy's options dynamic
+
+The options given to the JwtStrategy constructor can be a function, which will be called each time that Passport will use this strategy to authenticate a request.
+
+This can be useful when your JWT options can change (i.e. read from a file or a database), or in case of multi-tenanted applications.
+
+    function optionsResolver(optionsCallback) {
+      myOptionsProvider(function(options) {
+        if (!options) {
+          optionsCallback(new Error('No options found'));
+        } else {
+          optionsCallback(null, options);
+        }
+      });
+    }
+
+    passport.use(new JwtStrategy(optionsResolver, verify))
+
+`optionsResolver` is a function taking a callback (in the format function(err, options))
+
 ### Authenticate requests
 
 Use `passport.authenticate()` specifying `'jwt'` as the strategy.
