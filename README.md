@@ -6,6 +6,24 @@ A [Passport](http://passportjs.org/) strategy for authenticating with a
 This module lets you authenticate endpoints using a JSON Web token. It is
 intended to be used to secure RESTful endpoints without sessions.
 
+## Why this fork?
+This repo is a fork of a fork of the [original passport-jwt repository](https://github.com/themikenicholson/passport-jwt)
+
+The [original fork by davesag](https://github.com/davesag/passport-jwt/tree/feature/37_support_multi_tenanted_apps) added the ability
+to make the `secretOrKey` option be a function.
+
+My fork extends davesag's by giving the `secretOrKey` function the original request as a parameter.
+
+The `secretOrKey` function you specify should now look like this:
+
+```
+var jwtOptions = {
+	secretOrKey: function (token, req, callback) { ... }
+};
+```
+
+I added this because I have a project where the JWT secret for a particular request is populated in the request itself.
+
 ## Install
 
     npm install passport-jwt
