@@ -8,7 +8,7 @@ describe('Strategy', function() {
 
     before(function() {
         Strategy.JwtVerifier = sinon.stub(); 
-        Strategy.JwtVerifier.callsArgWith(3, null, test_data.valid_jwt.payload);
+        Strategy.JwtVerifier.callsArgWith(4, null, test_data.valid_jwt.payload);
     });
 
     describe('Handling a request with a valid JWT and succesful verification', function() {

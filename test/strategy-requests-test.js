@@ -13,7 +13,7 @@ describe('Strategy', function() {
         // Replace the JWT Verfier with a stub to capture the value
         // extracted from the request
         mockVerifier = sinon.stub();
-        mockVerifier.callsArgWith(3, null, test_data.valid_jwt.payload);
+        mockVerifier.callsArgWith(4, null, test_data.valid_jwt.payload);
         Strategy.JwtVerifier = mockVerifier;
     });
     
