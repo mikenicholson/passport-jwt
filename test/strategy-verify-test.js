@@ -170,7 +170,7 @@ describe('Strategy', function() {
     describe('Handling a request with a valid JWT, secretOrKey is a function, and succesful verification', function() {
         describe('secretOrKey function returns a secret', function() {
             var strategy, user, info; 
-            var secretFunction = function(token, done) {
+            var secretFunction = function(token, req, done) {
                 done(null, 'secret');
             };
 
@@ -206,7 +206,7 @@ describe('Strategy', function() {
 
         describe('secretOrKey function doesn\'t return a secret', function() {
             var strategy, err; 
-            var secretFunction = function(token, done) {
+            var secretFunction = function(token, req, done) {
                 done(new Error('oops'), null);
             };
 
