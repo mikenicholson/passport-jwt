@@ -20,7 +20,7 @@ describe('Strategy', function() {
             strategy = new Strategy(options, verifyStub);
 
             Strategy.JwtVerifier = sinon.stub();
-            Strategy.JwtVerifier.callsArgWith(3, null, test_data.valid_jwt.payload);
+            Strategy.JwtVerifier.callsArgWith(4, null, test_data.valid_jwt.payload);
 
             chai.passport.use(strategy)
                 .success(function(u, i) {
@@ -73,7 +73,7 @@ describe('Strategy', function() {
 
             // Mock successful verification
             Strategy.JwtVerifier = sinon.stub();
-            Strategy.JwtVerifier.callsArgWith(3, null, test_data.valid_jwt.payload);
+            Strategy.JwtVerifier.callsArgWith(4, null, test_data.valid_jwt.payload);
 
             chai.passport.use(strategy)
                 .success(function(u, i) {
@@ -104,7 +104,7 @@ describe('Strategy', function() {
 
             // Mock errored verification
             Strategy.JwtVerifier = sinon.stub();
-            Strategy.JwtVerifier.callsArgWith(3, new Error("jwt expired"), false);
+            Strategy.JwtVerifier.callsArgWith(4, new Error("jwt expired"), false);
 
             chai.passport.use(strategy)
                 .fail(function(i) {
