@@ -31,6 +31,7 @@
     "sinon": "^1.11.1"
   },
   "dependencies": {
+    "cookie": "^0.2.3",
     "jsonwebtoken": "^5.0.0",
     "passport-strategy": "^1.0.0"
   }
