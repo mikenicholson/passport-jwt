@@ -15,9 +15,10 @@ describe('Strategy', function() {
         mockVerifier = sinon.stub();
         mockVerifier.callsArgWith(3, null, test_data.valid_jwt.payload);
         Strategy.JwtVerifier = mockVerifier;
+	console.log('stub initialized');
     });
     
-    describe('handling request with JWT in header', function() {
+    describe('handling request with JWT in Authorization header', function() {
         var strategy;
 
         before(function(done) {
@@ -157,6 +158,65 @@ describe('Strategy', function() {
             expect(mockVerifier.args[0][0]).to.equal(test_data.valid_jwt.token);
         });
     });
+
+    describe('handling request with JWT in default Cookie', function() {
+        var strategy;
+
+        before(function(done) {
+            strategy = new Strategy({secretOrKey: 'secret'}, function(jwt_payload, next) {
+                // Return values aren't important in this case
+                return next(null, {}, {});
+            });
+            
+            mockVerifier.reset();           
+
+            chai.passport.use(strategy)
+                .success(function(u, i) {
+                    done();
+                })
+                .req(function(req) {
+                    req.headers['cookie'] = "JWT=" + test_data.valid_jwt.token;
+                })
+                .authenticate();
+        });
+
+        it("verifies the right jwt", function() {
+            sinon.assert.calledOnce(mockVerifier);
+            expect(mockVerifier.args[0][0]).to.equal(test_data.valid_jwt.token);
+        });
+
+    });
+
+
+    describe('handling request with JWT in custom Cookie', function() {
+        var strategy;
+
+        before(function(done) {
+            strategy = new Strategy({secretOrKey: 'secret', tokenCookieName: 'CustomCookie'}, function(jwt_payload, next) {
+                // Return values aren't important in this case
+                return next(null, {}, {});
+            });
+            
+            mockVerifier.reset();           
+
+            chai.passport.use(strategy)
+                .success(function(u, i) {
+                    done();
+                })
+                .req(function(req) {
+                    req.headers['cookie'] = "CustomCookie=" + test_data.valid_jwt.token;
+                })
+                .authenticate();
+        });
+
+        it("verifies the right jwt", function() {
+            sinon.assert.calledOnce(mockVerifier);
+            expect(mockVerifier.args[0][0]).to.equal(test_data.valid_jwt.token);
+        });
+
+    });
+
+
 
     describe('handling request with NO JWT', function() {
 
