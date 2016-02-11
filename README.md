@@ -25,7 +25,7 @@ extracted from the request or verified.
   (symmetric) or PEM-encoded public key (asymmetric) for verifying the token's
   signature.
 
-* `jwtFromRequest` (REQUIRED) Function that accepts a reqeust as the only
+* `jwtFromRequest` (REQUIRED) Function that accepts a request as the only
   parameter and returns the either JWT as a string or null. See 
   [Extracting the JWT from the request](#extracting-the-jwt-from-the-request) for
   more details.
