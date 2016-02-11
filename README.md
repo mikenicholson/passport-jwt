@@ -30,7 +30,7 @@ extracted from the request or verified.
   [Extracting the JWT from the request](#extracting-the-jwt-from-the-request) for
   more details.
 * `issuer`: If defined the token issuer (iss) will be verified against this
-  and returns the JWT as a string value.
+  value.
 * `audience`: If defined, the token audience (aud) will be verified against
   this value.
 * `algorithms`: List of strings with the names of the allowed algorithms. For instance, ["HS256", "HS384"].
@@ -86,7 +86,7 @@ functions return a new extractor configured with the given parameters.
   header
 * ```fromBodyField(field_name)``` creates a new extractor that looks for the JWT in the given body
   field.  You must have a body parser configured in order to use this method.
-* ```fromQueryParamter(param_name)``` creates a new extractor that looks for the JWT in the given
+* ```fromUrlQueryParamter(param_name)``` creates a new extractor that looks for the JWT in the given
   URL query parameter.
 * ```fromAuthHeaderWithScheme(auth_scheme)``` creates a new extractor that looks for teh jwt in the
   authorization header, expecting the scheme to match auth_scheme.
