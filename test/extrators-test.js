@@ -138,5 +138,87 @@ describe('Token extractor', function() {
 
     });
 
+
+    describe('versionOneCompatibility', function () {
+
+        describe('default behavior', function() {
+
+                var extractor = extract_jwt.versionOneCompatibility({});
+
+                it('should return the token in the default "JWT" auth header', function () {
+                    var req = new Request();
+                    req.headers['authorization'] = "JWT abcd123";
+
+                    var token = extractor(req);
+
+                    expect(token).to.equal('abcd123');
+                });
+
+
+                it('should return the token in the default "auth_token" body field', function () {
+                    var req = new Request();
+                    req.body = {};
+                    req.body['auth_token'] = 'xyzabcd';
+
+                    var token = extractor(req);
+
+                    expect(token).to.equal('xyzabcd');
+                });
+
+
+                it('should return then token in the default "auth_token" query parameter', function () {
+                    var req = new Request();
+                    req.url += '?auth_token=abcd123';
+
+                    var token = extractor(req);
+
+                    expect(token).to.equal('abcd123');
+                });
+        });
+
+
+        describe('user supplied parameters', function() {
+
+            it('should return the token in an auth header with a user specified auth scheme', function() {
+                var opts = { authScheme: 'MY_CUSTOM_AUTH_SCHEME' };
+                var extractor = extract_jwt.versionOneCompatibility(opts);
+                var req = new Request();
+                req.headers['authorization'] = 'MY_CUSTOM_AUTH_SCHEME deadbeef';
+
+                var token = extractor(req);
+
+                expect(token).to.equal('deadbeef');
+            });
+
+
+            it('should return the token in a user supplied body field', function () {
+                var opts = { tokenBodyField: 'CUSTOM_BODY_FIELD' };
+                var extractor = extract_jwt.versionOneCompatibility(opts);
+                var req = new Request();
+                req.body = {};
+                req.body['CUSTOM_BODY_FIELD'] = 'badbeef';
+
+                var token = extractor(req);
+
+                expect(token).to.equal('badbeef');
+            });
+
+
+            it('should return the token in a user specified query parameter', function () {
+                var opts = { tokenQueryParameterName: 'CustomQueryParam' };
+                var extractor = extract_jwt.versionOneCompatibility(opts);
+                var req = new Request();
+                req.url += '?CustomQueryParam=deadbeef';
+
+                var token = extractor(req);
+
+                expect(token).to.equal('deadbeef');
+            });
+
+        });
+
+
+    });
+
 });
 
