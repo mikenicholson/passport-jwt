@@ -1,7 +1,8 @@
 var Strategy = require('../lib/strategy')
     , chai = require('chai')
     , test_data = require('./testdata')
-    , sinon = require('sinon');
+    , sinon = require('sinon')
+    , extract_jwt = require('../lib/extract_jwt');
 
 describe('Strategy', function() {
 
@@ -17,6 +18,7 @@ describe('Strategy', function() {
             options.secretOrKey = 'secret';
             options.algorithms = ["HS256", "HS384"];
             options.ignoreExpiration = false;
+            options.jwtFromRequest = extract_jwt.fromAuthHeader();
             strategy = new Strategy(options, verifyStub);
 
             Strategy.JwtVerifier = sinon.stub();
@@ -66,7 +68,7 @@ describe('Strategy', function() {
         var strategy, payload;
 
         before(function(done) {
-            strategy = new Strategy({secretOrKey: 'secret'}, function(jwt_payload, next) {
+            strategy = new Strategy({jwtFromRequest: extract_jwt.fromAuthHeader(), secretOrKey: 'secret'}, function(jwt_payload, next) {
                 payload = jwt_payload;
                 next(null, {}, {});
             });
@@ -100,7 +102,7 @@ describe('Strategy', function() {
 
         before(function(done) {
 
-            strategy = new Strategy({secretOrKey: 'secret'}, verify_spy);
+            strategy = new Strategy({jwtFromRequest: extract_jwt.fromAuthHeader(), secretOrKey: 'secret'}, verify_spy);
 
             // Mock errored verification
             Strategy.JwtVerifier = sinon.stub();
@@ -137,7 +139,7 @@ describe('Strategy', function() {
 
         before(function(done) {
 
-            strategy = new Strategy({secretOrKey: 'secret'}, verify_spy);
+            strategy = new Strategy({jwtFromRequest: extract_jwt.fromAuthHeader(), secretOrKey: 'secret'}, verify_spy);
 
             chai.passport.use(strategy)
                 .fail(function(i) {
@@ -158,7 +160,7 @@ describe('Strategy', function() {
 
         it('should fail with error message.', function() {
             expect(info).to.be.an.object;
-            expect(info.message).to.equal('Invalid authorization header');
+            expect(info).to.be.an.instanceof(Error);
         });
 
     });
