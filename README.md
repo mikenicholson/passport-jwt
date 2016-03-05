@@ -26,7 +26,7 @@ extracted from the request or verified.
   signature.
 
 * `jwtFromRequest` (REQUIRED) Function that accepts a request as the only
-  parameter and returns the either JWT as a string or *null*. See 
+  parameter and returns either the JWT as a string or *null*. See 
   [Extracting the JWT from the request](#extracting-the-jwt-from-the-request) for
   more details.
 * `issuer`: If defined the token issuer (iss) will be verified against this
