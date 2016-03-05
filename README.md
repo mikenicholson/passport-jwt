@@ -26,7 +26,7 @@ extracted from the request or verified.
   signature.
 
 * `jwtFromRequest` (REQUIRED) Function that accepts a request as the only
-  parameter and returns the either JWT as a string or null. See 
+  parameter and returns the either JWT as a string or *null*. See 
   [Extracting the JWT from the request](#extracting-the-jwt-from-the-request) for
   more details.
 * `issuer`: If defined the token issuer (iss) will be verified against this
@@ -72,9 +72,9 @@ passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
 
 ### Extracting the JWT from the request
 
-There are a number of ways the JWT may be included in a request.  In order remain as flexible as
+There are a number of ways the JWT may be included in a request.  In order to remain as flexible as
 possible the JWT is parsed from the request by a user-supplied callback passed in as the
-`jwtFromRequest` parameter.  This callback from now on referred to as an extractor,
+`jwtFromRequest` parameter.  This callback, from now on referred to as an extractor,
 accepts a request object as an argument and returns the encoded JWT string or *null*.
 
 #### Included extractors 
@@ -88,7 +88,7 @@ functions return a new extractor configured with the given parameters.
   field.  You must have a body parser configured in order to use this method.
 * ```fromUrlQueryParameter(param_name)``` creates a new extractor that looks for the JWT in the given
   URL query parameter.
-* ```fromAuthHeaderWithScheme(auth_scheme)``` creates a new extractor that looks for teh jwt in the
+* ```fromAuthHeaderWithScheme(auth_scheme)``` creates a new extractor that looks for the JWT in the
   authorization header, expecting the scheme to match auth_scheme.
 * ```fromAuthHeader()``` creates a new extractor that looks for the JWT in the authorization header
   with the scheme 'JWT'
