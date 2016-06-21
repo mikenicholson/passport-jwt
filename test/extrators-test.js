@@ -140,6 +140,15 @@ describe('Token extractor', function() {
     
     describe('fromExtractors', function() {
 
+        it('should raise a type error when the extractor is constructed with a non-array argument', function() {
+            this_should_throw = function() {
+                var extractor = extract_jwt.fromExtractors({})
+            }
+
+            expect(this_should_throw).to.throw(TypeError)
+        });
+
+
         var extractor = extract_jwt.fromExtractors([extract_jwt.fromAuthHeader(), extract_jwt.fromHeader('authorization')]);
 
         it('should return null when no extractor extracts token', function() {
