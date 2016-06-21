@@ -137,6 +137,40 @@ describe('Token extractor', function() {
 
 
     });
+    
+    describe('fromExtractors', function() {
+
+        var extractor = extract_jwt.fromExtractors([extract_jwt.fromAuthHeader(), extract_jwt.fromHeader('authorization')]);
+
+        it('should return null when no extractor extracts token', function() {
+            var req = new Request();
+
+            var token = extractor(req);
+
+            expect(token).to.be.null;
+        });
+
+
+        it('should return token found by least extractor', function() {
+            var req = new Request()
+            req.headers['authorization'] = "abcd123";
+
+            var token = extractor(req);
+
+            expect(token).to.equal('abcd123');
+        });
+
+
+        it('should return token found by first extractor', function() {
+            var req = new Request()
+            req.headers['authorization'] = "JWT abcd123";
+
+            var token = extractor(req);
+
+            expect(token).to.equal('abcd123');
+        });
+
+    });
 
 
     describe('versionOneCompatibility', function () {
