@@ -92,6 +92,7 @@ functions return a new extractor configured with the given parameters.
   authorization header, expecting the scheme to match auth_scheme.
 * ```fromAuthHeader()``` creates a new extractor that looks for the JWT in the authorization header
   with the scheme 'JWT'
+* ```fromExtractors([array of extractor functions])``` creates a new extractor using an array of extractors provided
 
 ### Writing a custom extractor function
 
