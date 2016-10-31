@@ -1,4 +1,8 @@
+
+
 # passport-jwt
+
+[![Build Status](https://travis-ci.org/themikenicholson/passport-jwt.svg?branch=master)](https://travis-ci.org/themikenicholson/passport-jwt)
 
 A [Passport](http://passportjs.org/) strategy for authenticating with a
 [JSON Web Token](http://jwt.io).
