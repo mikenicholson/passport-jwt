@@ -57,8 +57,8 @@ var JwtStrategy = require('passport-jwt').Strategy,
 var opts = {}
 opts.jwtFromRequest = ExtractJwt.fromAuthHeader();
 opts.secretOrKey = 'secret';
-opts.issuer = "accounts.examplesoft.com";
-opts.audience = "yoursite.net";
+opts.issuer = 'accounts.examplesoft.com';
+opts.audience = 'yoursite.net';
 passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
     User.findOne({id: jwt_payload.sub}, function(err, user) {
         if (err) {
@@ -121,7 +121,7 @@ var cookieExtractor = function(req) {
 Use `passport.authenticate()` specifying `'JWT'` as the strategy.
 
 ```js
-app.post('/profile', passport.authenticate('jwt', { session: false}),
+app.post('/profile', passport.authenticate('jwt', { session: false }),
     function(req, res) {
         res.send(req.user.profile);
     }
@@ -165,10 +165,10 @@ If in v1 you constructed the strategy like this:
 ```js
 var JwtStrategy = require('passport-jwt').Strategy;
 var opts = {}
-opts.tokenBodyField = "MY_CUSTOM_BODY_FIELD";
+opts.tokenBodyField = 'MY_CUSTOM_BODY_FIELD';
 opts.secretOrKey = 'secret';
-opts.issuer = "accounts.examplesoft.com";
-opts.audience = "yoursite.net";
+opts.issuer = 'accounts.examplesoft.com';
+opts.audience = 'yoursite.net';
 passport.use(new JwtStrategy(opts, verifyFunction));
 ```
 
@@ -178,10 +178,10 @@ Identical behavior can be achieved under v2 with the versionOneCompatibility ext
 var JwtStrategy = require('passport-jwt').Strategy,
     ExtractJwt = require('passport-jwt').ExtractJwt;
 var opts = {}
-opts.jwtFromRequest = ExtractJwt.versionOneCompatibility({ tokenBodyField = "MY_CUSTOM_BODY_FIELD" });
+opts.jwtFromRequest = ExtractJwt.versionOneCompatibility({ tokenBodyField = 'MY_CUSTOM_BODY_FIELD' });
 opts.opts.secretOrKey = 'secret';
-opts.issuer = "accounts.examplesoft.com";
-opts.audience = "yoursite.net";
+opts.issuer = 'accounts.examplesoft.com';
+opts.audience = 'yoursite.net';
 passport.use(new JwtStrategy(opts, verifyFunction));
 ```
 
