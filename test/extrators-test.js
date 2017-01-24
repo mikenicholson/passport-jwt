@@ -59,6 +59,17 @@ describe('Token extractor', function() {
 
             expect(token).to.equal('abcd123');
         });
+
+
+        it('should work properly with querystring', function() {
+            var req = new Request();
+            const querystring = require('querystring');
+            req.body = querystring.parse('test_field=abcd123')
+
+            var token = extractor(req);
+
+            expect(token).to.equal('abcd123')
+        });
     });
 
 

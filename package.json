@@ -1,6 +1,6 @@
 {
   "name": "passport-jwt",
-  "version": "2.1.0",
+  "version": "2.2.1",
   "description": "Passport authentication strategy using JSON Web Tokens",
   "main": "./lib",
   "scripts": {
@@ -26,13 +26,14 @@
   },
   "homepage": "https://github.com/themikenicholson/passport-jwt",
   "devDependencies": {
-    "chai": "^1.9.2",
-    "chai-passport-strategy": "^0.2.0",
-    "mocha": "^2.0.1",
-    "sinon": "^1.11.1"
+    "chai": "^3.0.0",
+    "chai-passport-strategy": "^1.0.0",
+    "istanbul": "^0.4.5",
+    "mocha": "^3.0.0",
+    "sinon": "^1.0.0"
   },
   "dependencies": {
-    "jsonwebtoken": "^5.0.0",
+    "jsonwebtoken": "^7.0.0",
     "passport-strategy": "^1.0.0"
   }
 }
