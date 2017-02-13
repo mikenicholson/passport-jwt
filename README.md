@@ -22,15 +22,15 @@ The JWT authentication strategy is constructed as follows:
 
     new JwtStrategy(options, verify)
 
-`options` is an object literal containing options to control how the token is
-extracted from the request or verified.
+`options` is an object literal (or a function, see the __Dynamic options__ section below)
+containing options to control how the token is extracted from the request or verified.
 
 * `secretOrKey` is a REQUIRED string or buffer containing the secret
   (symmetric) or PEM-encoded public key (asymmetric) for verifying the token's
   signature.
 
 * `jwtFromRequest` (REQUIRED) Function that accepts a request as the only
-  parameter and returns either the JWT as a string or *null*. See 
+  parameter and returns either the JWT as a string or *null*. See
   [Extracting the JWT from the request](#extracting-the-jwt-from-the-request) for
   more details.
 * `issuer`: If defined the token issuer (iss) will be verified against this
@@ -81,7 +81,7 @@ possible the JWT is parsed from the request by a user-supplied callback passed i
 `jwtFromRequest` parameter.  This callback, from now on referred to as an extractor,
 accepts a request object as an argument and returns the encoded JWT string or *null*.
 
-#### Included extractors 
+#### Included extractors
 
 A number of extractor factory functions are provided in passport-jwt.ExtractJwt. These factory
 functions return a new extractor configured with the given parameters.
@@ -102,7 +102,7 @@ functions return a new extractor configured with the given parameters.
 ### Writing a custom extractor function
 
 If the supplied extractors don't meet your needs you can easily provide your own callback. For
-example, if you are using the cookie-parser middleware and want to extract the JWT in a cookie 
+example, if you are using the cookie-parser middleware and want to extract the JWT in a cookie
 you could use the following function as the argument to the jwtFromRequest option:
 
 ```
@@ -144,6 +144,34 @@ body will be checked for a field matching either `options.tokenBodyField` or
 Finally, the URL query parameters will be checked for a field matching either
 `options.tokenQueryParameterName` or `auth_token` if the option was not
 specified.
+
+### Dynamic options
+
+The options given to the `JwtStrategy` constructor can be a function,
+which will be called each time that Passport will use this strategy to
+authenticate a request.
+
+This can be useful when your JWT options can change (i.e. read from a file or
+a database), or in case of multi-tenanted applications.
+
+```js
+function optionsResolver(req, callback) {
+  // do something with the req object
+  myOptionsProvider(function(options) {
+    if (!options) {
+      callback(new Error('No options found'));
+    } else {
+      callback(null, options);
+    }
+  });
+}
+
+...
+
+passport.use(new JwtStrategy(optionsResolver, verify))
+```
+
+
 
 ## Migrating from version 1.x.x to 2.x.x
 
