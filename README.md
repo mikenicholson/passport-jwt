@@ -65,9 +65,9 @@ passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
             return done(err, false);
         }
         if (user) {
-            done(null, user);
+            return done(null, user);
         } else {
-            done(null, false);
+            return done(null, false);
             // or you could create a new account
         }
     });
