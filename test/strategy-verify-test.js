@@ -2,19 +2,20 @@ var chai = require('chai')
     , Strategy = require('../lib/strategy')
     , test_data = require('./testdata')
     , sinon = require('sinon')
+    , verify = require('../lib/verify_jwt')
     , extract_jwt = require('../lib/extract_jwt');
 
 
 describe('Strategy', function() {
 
     before(function() {
-        Strategy.JwtVerifier = sinon.stub(); 
+        Strategy.JwtVerifier = sinon.stub();
         Strategy.JwtVerifier.callsArgWith(3, null, test_data.valid_jwt.payload);
     });
 
     describe('Handling a request with a valid JWT and succesful verification', function() {
 
-        var strategy, user, info; 
+        var strategy, user, info;
 
         before(function(done) {
             strategy = new Strategy({jwtFromRequest:extract_jwt.fromAuthHeader(), secretOrKey: 'secret'}, function(jwt_paylod, next) {
@@ -63,7 +64,7 @@ describe('Strategy', function() {
                     info = i;
                     done();
                 })
-                .req(function(req) { 
+                .req(function(req) {
                     req.headers['authorization'] = "JWT " + test_data.valid_jwt.token;
                 })
                 .authenticate();
@@ -74,7 +75,7 @@ describe('Strategy', function() {
             expect(info).to.be.an.object;
             expect(info.message).to.equal('invalid user');
         });
-        
+
     });
 
 
@@ -93,7 +94,7 @@ describe('Strategy', function() {
                     err = e;
                     done();
                 })
-                .req(function(req) { 
+                .req(function(req) {
                     req.headers['authorization'] = "JWT " + test_data.valid_jwt.token;
                 })
                 .authenticate();
@@ -122,7 +123,7 @@ describe('Strategy', function() {
                     err = e;
                     done();
                 })
-                .req(function(req) { 
+                .req(function(req) {
                     req.headers['authorization'] = "JWT " + test_data.valid_jwt.token;
                 })
                 .authenticate();
@@ -167,6 +168,26 @@ describe('Strategy', function() {
             expect(expected_request).to.equal(request_arg);
         });
 
+    });
+
+    describe('verify function', () => {
+      it('should call the secretOrKeyProvider with the token', () => {
+        var provider = sinon.stub().returns(Promise.resolve('secret'));
+        var verifyStub = sinon.spy();
+        return verify(test_data.valid_jwt.payload, provider, null, null, verifyStub).then(() => {
+          expect(provider.calledWith(test_data.valid_jwt.payload)).to.be.true;
+          expect(verifyStub.calledWith(test_data.valid_jwt.payload, 'secret'));
+        });
+      });
+
+      it('should call the callback with an error if the secretOrKeyProvider fails to return a key', () => {
+        var provider = sinon.stub().returns(Promise.reject(new Error('No key')));
+        var callback = sinon.spy();
+        return verify(test_data.valid_jwt.payload, provider, null, callback).then(() => {
+          expect(callback.calledWith(sinon.match.instanceOf(Error)));
+        });
+
+      });
     });
 
 });

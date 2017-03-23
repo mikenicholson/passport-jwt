@@ -35,8 +35,10 @@ describe('Strategy', function() {
         });
 
 
-        it('should call with the right secret as an argument', function() {
-            expect(Strategy.JwtVerifier.args[0][1]).to.equal('secret');
+        it('should call with the a function that resolves to secret', function() {
+          const secretOrKeyProvider = Strategy.JwtVerifier.args[0][1];
+          expect(secretOrKeyProvider).to.be.a('function');
+          return secretOrKeyProvider().then(secret => expect(secret).to.equal('secret'));
         });
 
 
