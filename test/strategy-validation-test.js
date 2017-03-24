@@ -9,40 +9,52 @@ describe('Strategy', function() {
     describe('calling JWT validation function', function() {
         var strategy;
 
-        before(function(done) {
-            verifyStub = sinon.stub();
+        function createStrategy() {
+            const verifyStub = sinon.stub();
             verifyStub.callsArgWith(1, null, {}, {});
-            options = {};
+            const options = {};
             options.issuer = "TestIssuer";
             options.audience = "TestAudience";
             options.secretOrKey = 'secret';
             options.algorithms = ["HS256", "HS384"];
             options.ignoreExpiration = false;
             options.jwtFromRequest = extract_jwt.fromAuthHeader();
-            strategy = new Strategy(options, verifyStub);
+            const strategy = new Strategy(options, verifyStub);
 
             Strategy.JwtVerifier = sinon.stub();
             Strategy.JwtVerifier.callsArgWith(3, null, test_data.valid_jwt.payload);
+            return strategy;
+        }
 
-            chai.passport.use(strategy)
-                .success(function(u, i) {
-                    done();
-                })
-                .req(function(req) {
-                    req.headers['authorization'] = "JWT " + test_data.valid_jwt.token;
-                })
-                .authenticate();
-        });
+        function testStrategy(strategy, done) {
+          chai.passport.use(strategy)
+              .success(function(u, i) {
+                  done();
+              })
+              .req(function(req) {
+                  req.headers['authorization'] = "JWT " + test_data.valid_jwt.token;
+              })
+              .authenticate();
+        }
 
 
-        it('should call with the a function that resolves to secret', function() {
+        it('should be given a function that calls done with the secretOrKey when passed the token', function(done) {
+          const strategy = createStrategy();
           const secretOrKeyProvider = Strategy.JwtVerifier.args[0][1];
-          expect(secretOrKeyProvider).to.be.a('function');
-          return secretOrKeyProvider().then(secret => expect(secret).to.equal('secret'));
+          const doneSpy = sinon.spy();
+          secretOrKeyProvider(null, doneSpy);
+          expect(doneSpy.calledWith('secret')).to.be.true;
+          testStrategy(done);
         });
 
+        it('should pass secretOrKeyProvider to the verifier if provided', (done) => {
+          const strategy = createStrategy();
+          const secretOrKeyProvider = sinon.spy();
+          testStrategy(done);
+        });
 
         it('should call with the right issuer option', function() {
+            const strategy = createStrategy();
             expect(Strategy.JwtVerifier.args[0][2]).to.be.an.object;
             expect(Strategy.JwtVerifier.args[0][2].issuer).to.equal('TestIssuer');
         });

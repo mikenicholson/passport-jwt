@@ -25,12 +25,15 @@ The JWT authentication strategy is constructed as follows:
 `options` is an object literal containing options to control how the token is
 extracted from the request or verified.
 
-* `secretOrKey` is a REQUIRED string or buffer containing the secret
+* `secretOrKey` is a string or buffer containing the secret
   (symmetric) or PEM-encoded public key (asymmetric) for verifying the token's
-  signature.
-
+  signature. REQUIRED unless `secretOrKeyProvider` is provided.
+* `secretOrKeyProvider` is a callback in the format `function secretOrKeyProvider(req, token, done)`,
+  which should call `done` with a secret or PEM-encoded public key (asymmetric) for the given key and request combination.
+  `done` accepts arguments in the format `function done(err, secret)`.
+  REQUIRED unless `secretOrKey` is provided.
 * `jwtFromRequest` (REQUIRED) Function that accepts a request as the only
-  parameter and returns either the JWT as a string or *null*. See 
+  parameter and returns either the JWT as a string or *null*. See
   [Extracting the JWT from the request](#extracting-the-jwt-from-the-request) for
   more details.
 * `issuer`: If defined the token issuer (iss) will be verified against this
@@ -81,7 +84,7 @@ possible the JWT is parsed from the request by a user-supplied callback passed i
 `jwtFromRequest` parameter.  This callback, from now on referred to as an extractor,
 accepts a request object as an argument and returns the encoded JWT string or *null*.
 
-#### Included extractors 
+#### Included extractors
 
 A number of extractor factory functions are provided in passport-jwt.ExtractJwt. These factory
 functions return a new extractor configured with the given parameters.
@@ -102,7 +105,7 @@ functions return a new extractor configured with the given parameters.
 ### Writing a custom extractor function
 
 If the supplied extractors don't meet your needs you can easily provide your own callback. For
-example, if you are using the cookie-parser middleware and want to extract the JWT in a cookie 
+example, if you are using the cookie-parser middleware and want to extract the JWT in a cookie
 you could use the following function as the argument to the jwtFromRequest option:
 
 ```
