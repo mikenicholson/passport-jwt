@@ -9,52 +9,40 @@ describe('Strategy', function() {
     describe('calling JWT validation function', function() {
         var strategy;
 
-        function createStrategy() {
-            const verifyStub = sinon.stub();
+        before(function(done) {
+            verifyStub = sinon.stub();
             verifyStub.callsArgWith(1, null, {}, {});
-            const options = {};
+            options = {};
             options.issuer = "TestIssuer";
             options.audience = "TestAudience";
             options.secretOrKey = 'secret';
             options.algorithms = ["HS256", "HS384"];
             options.ignoreExpiration = false;
             options.jwtFromRequest = extract_jwt.fromAuthHeader();
-            const strategy = new Strategy(options, verifyStub);
+            strategy = new Strategy(options, verifyStub);
 
             Strategy.JwtVerifier = sinon.stub();
             Strategy.JwtVerifier.callsArgWith(3, null, test_data.valid_jwt.payload);
-            return strategy;
-        }
 
-        function testStrategy(strategy, done) {
-          chai.passport.use(strategy)
-              .success(function(u, i) {
-                  done();
-              })
-              .req(function(req) {
-                  req.headers['authorization'] = "JWT " + test_data.valid_jwt.token;
-              })
-              .authenticate();
-        }
-
-
-        it('should be given a function that calls done with the secretOrKey when passed the token', function(done) {
-          const strategy = createStrategy();
-          const secretOrKeyProvider = Strategy.JwtVerifier.args[0][1];
-          const doneSpy = sinon.spy();
-          secretOrKeyProvider(null, doneSpy);
-          expect(doneSpy.calledWith('secret')).to.be.true;
-          testStrategy(done);
+            chai.passport.use(strategy)
+                .success(function(u, i) {
+                    done();
+                })
+                .req(function(req) {
+                    req.headers['authorization'] = "JWT " + test_data.valid_jwt.token;
+                })
+                .authenticate();
         });
 
-        it('should pass secretOrKeyProvider to the verifier if provided', (done) => {
-          const strategy = createStrategy();
-          const secretOrKeyProvider = sinon.spy();
-          testStrategy(done);
+
+        it('should be given a function that calls done with the secretOrKey when passed the token', function() {
+            const secretOrKeyProvider = Strategy.JwtVerifier.args[0][1];
+            const doneSpy = sinon.spy();
+            secretOrKeyProvider(null, doneSpy);
+            expect(doneSpy.calledWith('secret')).to.be.true;
         });
 
         it('should call with the right issuer option', function() {
-            const strategy = createStrategy();
             expect(Strategy.JwtVerifier.args[0][2]).to.be.an.object;
             expect(Strategy.JwtVerifier.args[0][2].issuer).to.equal('TestIssuer');
         });

@@ -171,21 +171,21 @@ describe('Strategy', function() {
     });
 
     describe('verify function', () => {
-      it('should call the secretOrKeyProvider with the token and pass it to verify', () => {
-        const provider = sinon.spy((token, done) => done(null, 'secret'));
-        const verifyStub = sinon.stub();
-        verify(test_data.valid_jwt.payload, provider, null, null, verifyStub);
-        expect(provider.calledOnce).to.be.true;
-        expect(provider.calledWith(test_data.valid_jwt.payload)).to.be.true;
-        expect(verifyStub.calledWith(test_data.valid_jwt.payload, 'secret')).to.be.true;
-      });
+        it('should call the secretOrKeyProvider with the token and pass it to verify', () => {
+            const provider = sinon.spy((token, done) => done(null, 'secret'));
+            const verifyStub = sinon.stub();
+            verify(test_data.valid_jwt.payload, provider, null, null, verifyStub);
+            expect(provider.calledOnce).to.be.true;
+            expect(provider.calledWith(test_data.valid_jwt.payload)).to.be.true;
+            expect(verifyStub.calledWith(test_data.valid_jwt.payload, 'secret')).to.be.true;
+        });
 
-      it('should call the callback with an error if the secretOrKeyProvider fails to return a key', () => {
-        const providerStub = (token, done) => done(new Error('invalid key'));
-        const callback = sinon.spy();
-        verify(test_data.valid_jwt.payload, providerStub, null, callback);
-        expect(callback.calledWith(sinon.match.instanceOf(Error)));
-      });
+        it('should call the callback with an error if the secretOrKeyProvider fails to return a key', () => {
+            const providerStub = (token, done) => done(new Error('invalid key'));
+            const callback = sinon.spy();
+            verify(test_data.valid_jwt.payload, providerStub, null, callback);
+            expect(callback.calledWith(sinon.match.instanceOf(Error)));
+        });
     });
 
 });

@@ -28,7 +28,7 @@ extracted from the request or verified.
 * `secretOrKey` is a string or buffer containing the secret
   (symmetric) or PEM-encoded public key (asymmetric) for verifying the token's
   signature. REQUIRED unless `secretOrKeyProvider` is provided.
-* `secretOrKeyProvider` is a callback in the format `function secretOrKeyProvider(req, token, done)`,
+* `secretOrKeyProvider` is a callback in the format `function secretOrKeyProvider(token, done)`,
   which should call `done` with a secret or PEM-encoded public key (asymmetric) for the given key and request combination.
   `done` accepts arguments in the format `function done(err, secret)`.
   REQUIRED unless `secretOrKey` is provided.
