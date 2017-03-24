@@ -170,9 +170,11 @@ describe('Strategy', function() {
 
     });
 
-    describe('verify function', () => {
-        it('should call the secretOrKeyProvider with the token and pass it to verify', () => {
-            const provider = sinon.spy((token, done) => done(null, 'secret'));
+    describe('verify function', function() {
+        it('should call the secretOrKeyProvider with the token and pass it to verify', function() {
+            const provider = sinon.spy(function(token, done) {
+              done(null, 'secret');
+            });
             const verifyStub = sinon.stub();
             verify(test_data.valid_jwt.payload, provider, null, null, verifyStub);
             expect(provider.calledOnce).to.be.true;
@@ -180,8 +182,10 @@ describe('Strategy', function() {
             expect(verifyStub.calledWith(test_data.valid_jwt.payload, 'secret')).to.be.true;
         });
 
-        it('should call the callback with an error if the secretOrKeyProvider fails to return a key', () => {
-            const providerStub = (token, done) => done(new Error('invalid key'));
+        it('should call the callback with an error if the secretOrKeyProvider fails to return a key', function() {
+            const providerStub = function(token, done) {
+              done(new Error('invalid key'));
+            };
             const callback = sinon.spy();
             verify(test_data.valid_jwt.payload, providerStub, null, callback);
             expect(callback.calledWith(sinon.match.instanceOf(Error)));
