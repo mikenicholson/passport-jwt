@@ -30,7 +30,8 @@
     "chai-passport-strategy": "^1.0.0",
     "istanbul": "^0.4.5",
     "mocha": "^3.0.0",
-    "sinon": "^1.0.0"
+    "sinon": "^1.0.0",
+    "sinon-chai": "^2.8.0"
   },
   "dependencies": {
     "jsonwebtoken": "^7.0.0",
