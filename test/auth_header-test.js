@@ -21,4 +21,8 @@ describe('Parsing Auth Header field-value', function() {
     });
 
 
+    it('Should return null when the auth header is not a string', function() {
+        var res = auth_hdr.parse({});
+        expect(res).to.be.null;
+    });
 });
