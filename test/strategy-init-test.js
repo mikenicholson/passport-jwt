@@ -27,4 +27,15 @@ describe('Strategy construction', function() {
             var s = new Strategy({secretOrKey: 'secret'}, function() {});
         }).to.throw(TypeError);
     });
+
+
+    it('should throw if constructed with a secretOrKey AND secretOrKeyProvider', function() {
+        expect(function() {
+            var s = new Strategy({
+                jwtFromRequest: function(r) {},
+                secretOrKey: 'secret',
+                secretOrKeyProvider: function () {}
+            });
+        }).to.throw(TypeError);
+    });
 });
