@@ -1,6 +1,6 @@
 var Strategy = require('../lib/strategy');
 
-describe('Strategy', function() {
+describe('Strategy construction', function() {
     var strategy = new Strategy({jwtFromRequest: function(){}, secretOrKey: 'secret'}, function() {});
 
     it('should be named jwt', function() {
@@ -15,7 +15,7 @@ describe('Strategy', function() {
     });
 
 
-    it('should throw if constructed without a secretOrKey arg', function() {
+    it('should throw if constructed without a secretOrKey or secretOrKeyProvider arg', function() {
         expect(function() {
             var s = new Strategy({jwtFromRequest: function(r) {}, secretOrKey: null}, function() {});
         }).to.throw(TypeError, 'JwtStrategy requires a secret or key');
