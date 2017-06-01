@@ -42,6 +42,9 @@ extracted from the request or verified.
 * `ignoreExpiration`: if true do not validate the expiration of the token.
 * `passReqToCallback`: If true the request will be passed to the verify
   callback. i.e. verify(request, jwt_payload, done_callback).
+* `allowEmpty`: If true and no JWT found in the request, will succeed with empty (null) user
+  instead of failing with "No auth token" error. This allows to call subsequent middleware without
+  instant "401 Unauthorized" and handle the empty user later (if needed).
 
 `verify` is a function with the parameters `verify(jwt_payload, done)`
 
