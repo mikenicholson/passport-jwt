@@ -122,7 +122,7 @@ var cookieExtractor = function(req) {
 Use `passport.authenticate()` specifying `'JWT'` as the strategy.
 
 ```js
-app.post('/profile', passport.authenticate('jwt', { session: false }),
+app.post('/profile', passport.authenticate('jwt'),
     function(req, res) {
         res.send(req.user.profile);
     }
