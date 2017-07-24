@@ -130,6 +130,15 @@ describe('Token extractor', function() {
             expect(token).to.equal('abcd123');
         });
 
+
+        it('should perform a case-insensivite string comparison', function () {
+            var req = new Request()
+            req.headers['authorization'] = 'test_scheme abcd123';
+
+            var token = extractor(req);
+
+            expect(token).to.equal('abcd123');
+        });
     });
 
 
