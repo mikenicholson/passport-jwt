@@ -18,6 +18,10 @@ describe('Strategy', function() {
             options.secretOrKey = 'secret';
             options.algorithms = ["HS256", "HS384"];
             options.ignoreExpiration = false;
+            options.jsonWebTokenOptions = {
+              clockTolerance: 10,
+              maxAge: "1h",
+            };
             options.jwtFromRequest = extract_jwt.fromAuthHeader();
             strategy = new Strategy(options, verifyStub);
 
@@ -59,6 +63,16 @@ describe('Strategy', function() {
         it('should call with the right ignoreExpiration option', function() {
             expect(Strategy.JwtVerifier.args[0][2]).to.be.an.object;
             expect(Strategy.JwtVerifier.args[0][2].ignoreExpiration).to.be.false;
+        });
+
+        it('should call with the right maxAge option', function() {
+            expect(Strategy.JwtVerifier.args[0][2]).to.be.an.object;
+            expect(Strategy.JwtVerifier.args[0][2].maxAge).to.equal('1h');
+        });
+
+        it('should call with the right clockTolerance option', function() {
+            expect(Strategy.JwtVerifier.args[0][2]).to.be.an.object;
+            expect(Strategy.JwtVerifier.args[0][2].clockTolerance).to.equal(10);
         });
 
     });
