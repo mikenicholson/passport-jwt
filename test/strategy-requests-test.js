@@ -88,6 +88,38 @@ describe('Strategy', function() {
 
     });
 
+    describe('handling request with NO JWT and `allowEmpty` option enabled', function() {
+        var strategy, user;
+
+        before(function(done) {
+            strategy = new Strategy({
+                    jwtFromRequest: function (r) { return ''; },
+                    secretOrKey: 'secret',
+                    allowEmpty: true
+                },
+                function(jwt_payload, next) {
+                    // Return values aren't important in this case
+                    return next(null, {}, {});
+                }
+            );
+            
+            mockVerifier.reset();
+           
+            chai.passport.use(strategy)
+                .success(function(u) {
+                    user = u
+                    done();
+                })
+                .authenticate();
+        });
+
+
+        it("Should succeed with empty user", function() {
+            sinon.assert.notCalled(mockVerifier);
+            expect(user).to.be.null
+        });
+    });
+
     describe('handling request url set to url.Url instead of string', function() {
 
         var info;
