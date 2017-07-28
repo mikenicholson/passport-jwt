@@ -39,10 +39,12 @@ describe('Strategy', function() {
         });
 
 
-        it('should call with the right secret as an argument', function() {
-            expect(Strategy.JwtVerifier.args[0][1]).to.equal('secret');
+        it('should be given a function that calls done with the secretOrKey when passed the token', function() {
+            const secretOrKeyProvider = Strategy.JwtVerifier.args[0][1];
+            const doneSpy = sinon.spy();
+            secretOrKeyProvider(null, doneSpy);
+            expect(doneSpy.calledWith('secret')).to.be.true;
         });
-
 
         it('should call with the right issuer option', function() {
             expect(Strategy.JwtVerifier.args[0][2]).to.be.an.object;
