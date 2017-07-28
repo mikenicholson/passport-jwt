@@ -170,26 +170,76 @@ describe('Strategy', function() {
 
     });
 
-    describe('verify function', function() {
-        it('should call the secretOrKeyProvider with the token and pass it to verify', function() {
-            const provider = sinon.spy(function(token, done) {
-              done(null, 'secret');
+
+    describe('handling a request when constructed with a secretOrKeyProvider function that succeeds', function() {
+
+        var strategy, fakeSecretOrKeyProvider, expectedReqeust;
+
+        before(function(done) {
+            fakeSecretOrKeyProvider =  sinon.spy(function(request, token, done) {
+                done(null, 'secret from callback');
             });
-            const verifyStub = sinon.stub();
-            verify(test_data.valid_jwt.payload, provider, null, null, verifyStub);
-            expect(provider.calledOnce).to.be.true;
-            expect(provider.calledWith(test_data.valid_jwt.payload)).to.be.true;
-            expect(verifyStub.calledWith(test_data.valid_jwt.payload, 'secret')).to.be.true;
+            opts = {
+                secretOrKeyProvider: fakeSecretOrKeyProvider,
+                jwtFromRequest: function(request) {
+                    return 'an undecoded jwt string';
+                }
+            }
+            strategy = new Strategy(opts, function(jwtPayload, next) {
+                return next(null, {user_id: 'dont care'}, {});
+            });
+
+            chai.passport.use(strategy)
+                .success(function(u, i) {
+                    done();
+                })
+                .req(function(req) {
+                    expectedReqeust = req;
+                })
+                .authenticate();
         });
 
-        it('should call the callback with an error if the secretOrKeyProvider fails to return a key', function() {
-            const providerStub = function(token, done) {
-              done(new Error('invalid key'));
-            };
-            const callback = sinon.spy();
-            verify(test_data.valid_jwt.payload, providerStub, null, callback);
-            expect(callback.calledWith(sinon.match.instanceOf(Error)));
+        it('should call the fake secret or key provider with the reqeust', function() {
+            expect(fakeSecretOrKeyProvider.calledWith(expectedReqeust, sinon.match.any, sinon.match.any)).to.be.true;
+        });
+
+        it('should call the secretOrKeyProvider with the undecoded jwt', function() {
+            expect(fakeSecretOrKeyProvider.calledWith(sinon.match.any, 'an undecoded jwt string', sinon.match.any)).to.be.true;
+        });
+
+        it('should call JwtVerifier with the value returned from secretOrKeyProvider', function() {
+            expect(Strategy.JwtVerifier.calledWith(sinon.match.any, 'secret from callback', sinon.match.any, sinon.match.any)).to.be.true;
         });
     });
 
+
+    describe('handling a request when constructed with a secretOrKeyProvider function that errors', function() {
+        var errorMessage;
+
+        before(function(done) {
+            fakeSecretOrKeyProvider =  sinon.spy(function(request, token, done) {
+                done('Error occurred looking for the secret');
+            });
+            opts = {
+                secretOrKeyProvider: fakeSecretOrKeyProvider,
+                jwtFromRequest: function(request) {
+                    return 'an undecoded jwt string';
+                }
+            }
+            strategy = new Strategy(opts, function(jwtPayload, next) {
+                return next(null, {user_id: 'dont care'}, {});
+            });
+
+            chai.passport.use(strategy)
+                .fail(function(i) {
+                    errorMessage = i;
+                    done();
+                })
+                .authenticate();
+        });
+
+        it('should fail with the error message from the secretOrKeyProvider', function() {
+            expect(errorMessage).to.equal('Error occurred looking for the secret');
+        });
+    });
 });
