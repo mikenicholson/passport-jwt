@@ -29,9 +29,9 @@ extracted from the request or verified.
 * `secretOrKey` is a string or buffer containing the secret
   (symmetric) or PEM-encoded public key (asymmetric) for verifying the token's
   signature. REQUIRED unless `secretOrKeyProvider` is provided.
-* `secretOrKeyProvider` is a callback in the format `function secretOrKeyProvider(token, done)`,
+* `secretOrKeyProvider` is a callback in the format `function secretOrKeyProvider(request, rawJwtToken, done)`,
   which should call `done` with a secret or PEM-encoded public key (asymmetric) for the given key and request combination.
-  `done` accepts arguments in the format `function done(err, secret)`.
+  `done` accepts arguments in the format `function done(err, secret)`. Note it is up to the implementer to decode rawJwtToken.
   REQUIRED unless `secretOrKey` is provided.
 * `jwtFromRequest` (REQUIRED) Function that accepts a request as the only
   parameter and returns either the JWT as a string or *null*. See
