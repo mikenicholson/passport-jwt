@@ -52,13 +52,13 @@ Pass here an options object for any other option you can pass the jsonwebtoken v
   done(error, user, info)
 
 An example configuration which reads the JWT from the http
-Authorization header with the scheme 'JWT':
+Authorization header with the scheme 'bearer':
 
 ```js
 var JwtStrategy = require('passport-jwt').Strategy,
     ExtractJwt = require('passport-jwt').ExtractJwt;
 var opts = {}
-opts.jwtFromRequest = ExtractJwt.fromAuthHeader();
+opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
 opts.secretOrKey = 'secret';
 opts.issuer = 'accounts.examplesoft.com';
 opts.audience = 'yoursite.net';
@@ -97,8 +97,8 @@ functions return a new extractor configured with the given parameters.
   URL query parameter.
 * ```fromAuthHeaderWithScheme(auth_scheme)``` creates a new extractor that looks for the JWT in the
   authorization header, expecting the scheme to match auth_scheme.
-* ```fromAuthHeader()``` creates a new extractor that looks for the JWT in the authorization header
-  with the scheme 'JWT'
+* ```fromAuthHeaderAsBearerToken()``` creates a new extractor that looks for the JWT in the authorization header
+  with the scheme 'bearer'
 * ```fromExtractors([array of extractor functions])``` creates a new extractor using an array of
   extractors provided. Each extractor is attempted in order until one returns a token.
 

@@ -22,7 +22,7 @@ describe('Strategy', function() {
               clockTolerance: 10,
               maxAge: "1h",
             };
-            options.jwtFromRequest = extract_jwt.fromAuthHeader();
+            options.jwtFromRequest = extract_jwt.fromAuthHeaderAsBearerToken();
             strategy = new Strategy(options, verifyStub);
 
             Strategy.JwtVerifier = sinon.stub();
@@ -33,7 +33,7 @@ describe('Strategy', function() {
                     done();
                 })
                 .req(function(req) {
-                    req.headers['authorization'] = "JWT " + test_data.valid_jwt.token;
+                    req.headers['authorization'] = "bearer " + test_data.valid_jwt.token;
                 })
                 .authenticate();
         });
@@ -82,7 +82,7 @@ describe('Strategy', function() {
         var strategy, payload;
 
         before(function(done) {
-            strategy = new Strategy({jwtFromRequest: extract_jwt.fromAuthHeader(), secretOrKey: 'secret'}, function(jwt_payload, next) {
+            strategy = new Strategy({jwtFromRequest: extract_jwt.fromAuthHeaderAsBearerToken(), secretOrKey: 'secret'}, function(jwt_payload, next) {
                 payload = jwt_payload;
                 next(null, {}, {});
             });
@@ -96,7 +96,7 @@ describe('Strategy', function() {
                     done();
                 })
                 .req(function(req) {
-                    req.headers['authorization'] = "JWT " + test_data.valid_jwt.token;
+                    req.headers['authorization'] = "bearer " + test_data.valid_jwt.token;
                 })
                 .authenticate();
         });
@@ -116,7 +116,7 @@ describe('Strategy', function() {
 
         before(function(done) {
 
-            strategy = new Strategy({jwtFromRequest: extract_jwt.fromAuthHeader(), secretOrKey: 'secret'}, verify_spy);
+            strategy = new Strategy({jwtFromRequest: extract_jwt.fromAuthHeaderAsBearerToken(), secretOrKey: 'secret'}, verify_spy);
 
             // Mock errored verification
             Strategy.JwtVerifier = sinon.stub();
@@ -128,7 +128,7 @@ describe('Strategy', function() {
                     done();
                 })
                 .req(function(req) {
-                    req.headers['authorization'] = "JWT " + test_data.valid_jwt.token;
+                    req.headers['authorization'] = "bearer " + test_data.valid_jwt.token;
                 })
                 .authenticate();
         });
@@ -153,7 +153,7 @@ describe('Strategy', function() {
 
         before(function(done) {
 
-            strategy = new Strategy({jwtFromRequest: extract_jwt.fromAuthHeader(), secretOrKey: 'secret'}, verify_spy);
+            strategy = new Strategy({jwtFromRequest: extract_jwt.fromAuthHeaderAsBearerToken(), secretOrKey: 'secret'}, verify_spy);
 
             chai.passport.use(strategy)
                 .fail(function(i) {
