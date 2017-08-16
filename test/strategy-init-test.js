@@ -15,10 +15,21 @@ describe('Strategy', function() {
     });
 
 
-    it('should throw if constructed without a secretOrKey arg', function() {
+    it('should throw if constructed neither a secretOrKey or a secretOrKeyProvider arg', function() {
         expect(function() {
             var s = new Strategy({jwtFromRequest: function(r) {}, secretOrKey: null}, function() {});
         }).to.throw(TypeError, 'JwtStrategy requires a secret or key');
+    });
+
+
+    it('should throw if constructed with both a secretOrKey and a secretOrKeyProvider', function () {
+        expect(function() {
+            var s = new Strategy({
+                secretOrKey: 'secret',
+                secretOrKeyProvider: function(req, token, done) {},
+                jwtFromReqeust: function(r) {}
+            });
+        }).to.throw(TypeError);
     });
 
 

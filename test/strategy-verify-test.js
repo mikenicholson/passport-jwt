@@ -2,19 +2,20 @@ var chai = require('chai')
     , Strategy = require('../lib/strategy')
     , test_data = require('./testdata')
     , sinon = require('sinon')
+    , verify = require('../lib/verify_jwt')
     , extract_jwt = require('../lib/extract_jwt');
 
 
 describe('Strategy', function() {
 
     before(function() {
-        Strategy.JwtVerifier = sinon.stub(); 
+        Strategy.JwtVerifier = sinon.stub();
         Strategy.JwtVerifier.callsArgWith(3, null, test_data.valid_jwt.payload);
     });
 
     describe('Handling a request with a valid JWT and succesful verification', function() {
 
-        var strategy, user, info; 
+        var strategy, user, info;
 
         before(function(done) {
             strategy = new Strategy({jwtFromRequest:extract_jwt.fromAuthHeaderAsBearerToken(), secretOrKey: 'secret'}, function(jwt_paylod, next) {
@@ -74,7 +75,7 @@ describe('Strategy', function() {
             expect(info).to.be.an.object;
             expect(info.message).to.equal('invalid user');
         });
-        
+
     });
 
 
@@ -169,4 +170,76 @@ describe('Strategy', function() {
 
     });
 
+
+    describe('handling a request when constructed with a secretOrKeyProvider function that succeeds', function() {
+
+        var strategy, fakeSecretOrKeyProvider, expectedReqeust;
+
+        before(function(done) {
+            fakeSecretOrKeyProvider =  sinon.spy(function(request, token, done) {
+                done(null, 'secret from callback');
+            });
+            opts = {
+                secretOrKeyProvider: fakeSecretOrKeyProvider,
+                jwtFromRequest: function(request) {
+                    return 'an undecoded jwt string';
+                }
+            }
+            strategy = new Strategy(opts, function(jwtPayload, next) {
+                return next(null, {user_id: 'dont care'}, {});
+            });
+
+            chai.passport.use(strategy)
+                .success(function(u, i) {
+                    done();
+                })
+                .req(function(req) {
+                    expectedReqeust = req;
+                })
+                .authenticate();
+        });
+
+        it('should call the fake secret or key provider with the reqeust', function() {
+            expect(fakeSecretOrKeyProvider.calledWith(expectedReqeust, sinon.match.any, sinon.match.any)).to.be.true;
+        });
+
+        it('should call the secretOrKeyProvider with the undecoded jwt', function() {
+            expect(fakeSecretOrKeyProvider.calledWith(sinon.match.any, 'an undecoded jwt string', sinon.match.any)).to.be.true;
+        });
+
+        it('should call JwtVerifier with the value returned from secretOrKeyProvider', function() {
+            expect(Strategy.JwtVerifier.calledWith(sinon.match.any, 'secret from callback', sinon.match.any, sinon.match.any)).to.be.true;
+        });
+    });
+
+
+    describe('handling a request when constructed with a secretOrKeyProvider function that errors', function() {
+        var errorMessage;
+
+        before(function(done) {
+            fakeSecretOrKeyProvider =  sinon.spy(function(request, token, done) {
+                done('Error occurred looking for the secret');
+            });
+            opts = {
+                secretOrKeyProvider: fakeSecretOrKeyProvider,
+                jwtFromRequest: function(request) {
+                    return 'an undecoded jwt string';
+                }
+            }
+            strategy = new Strategy(opts, function(jwtPayload, next) {
+                return next(null, {user_id: 'dont care'}, {});
+            });
+
+            chai.passport.use(strategy)
+                .fail(function(i) {
+                    errorMessage = i;
+                    done();
+                })
+                .authenticate();
+        });
+
+        it('should fail with the error message from the secretOrKeyProvider', function() {
+            expect(errorMessage).to.equal('Error occurred looking for the secret');
+        });
+    });
 });
