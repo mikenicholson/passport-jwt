@@ -151,12 +151,9 @@ Finally, the URL query parameters will be checked for a field matching either
 `options.tokenQueryParameterName` or `auth_token` if the option was not
 specified.
 
-## Supporters
+## Supported By
 
-This project is supported by
-![](http://passportjs.org/images/supported_logo.svg) [Auth0](https://auth0.com)
-
-If you want to quickly add secure token-based authentication to Node.js apps, feel free to check out Auth0's Node.js SDK and free plan at [auth0.com/overview](https://auth0.com/overview?utm_source=GHsponsor&utm_medium=GHsponsor&utm_campaign=passport-jwt&utm_content=auth)
+If you want to quickly add secure token-based authentication to Node.js apps, feel free to check out Auth0's Node.js SDK and free plan at [auth0.com/overview](https://auth0.com/overview?utm_source=GHsponsor&utm_medium=GHsponsor&utm_campaign=passport-jwt&utm_content=auth) <img alt='Auth0 Logo' src='https://s3.amazonaws.com/passport-jwt-img/Auth0+logo.svg'/>
 
 ## Migrating
 
