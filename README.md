@@ -151,21 +151,14 @@ Finally, the URL query parameters will be checked for a field matching either
 `options.tokenQueryParameterName` or `auth_token` if the option was not
 specified.
 
-## Migrating from 2.x.x to 3.x.x
+## Supported By
 
-Version 3.0.0 removes the `ExtractJwt.fromAuthHeader()` extractor function that would extract
-JWT's from `Authorization` headers with the auth scheme 'jwt'. The default authorization scheme
-of 'jwt' as the was not RFC 6750 compliant.  The extractor was replaced with 
-`ExtractJwt.fromAuthHeaderAsBearerToken()`.  The removal of `ExtractJwt.fromAuthHeader()` was done
-to clearly change the API so any code relying on the old API would clearly break, hopefully saving
-people some debugging time.
+If you want to quickly add secure token-based authentication to Node.js apps, feel free to check out Auth0's Node.js SDK and free plan at [auth0.com/overview](https://auth0.com/overview?utm_source=GHsponsor&utm_medium=GHsponsor&utm_campaign=passport-jwt&utm_content=auth) <img alt='Auth0 Logo' src='https://s3.amazonaws.com/passport-jwt-img/Auth0+logo.svg'/>
 
-If you want to maintain the behavior of `ExtractJwt.fromAuthHeader()` when switching to v3.3.0, simply 
-replace it with `ExtractJwt.fromAuthHeaderWithScheme('jwt')` in your implementation.
+## Migrating
 
-## Migrating from version 1.x.x to 2.x.x
- 
-See [the guide for migrating from v1 to v2](docs/migrating_v1_to_v2.md) for explanation of the major changes.
+The the [Migration Guide](docs/migrating.md) for help upgrading to the latest
+major version of passport-jwt
 
 ## Tests
 
