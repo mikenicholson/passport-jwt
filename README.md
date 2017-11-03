@@ -175,7 +175,7 @@ To generate test-coverage reports:
 
 The [MIT License](http://opensource.org/licenses/MIT)
 
-Copyright (c) 2015 Mike Nicholson
+Copyright (c) 2017 Mike Nicholson
 
 <a target='_blank' rel='nofollow' href='https://app.codesponsor.io/link/wkA4NAa5HS7HRsfBixR5saSs/themikenicholson/passport-jwt'>
   <img alt='Sponsor' width='888' height='68' src='https://app.codesponsor.io/embed/wkA4NAa5HS7HRsfBixR5saSs/themikenicholson/passport-jwt.svg' />
