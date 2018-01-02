@@ -27,7 +27,7 @@ describe('Strategy', function() {
             var s = new Strategy({
                 secretOrKey: 'secret',
                 secretOrKeyProvider: function(req, token, done) {},
-                jwtFromReqeust: function(r) {}
+                jwtFromRequest: function(r) {}
             });
         }).to.throw(TypeError);
     });
