@@ -138,20 +138,12 @@ app.post('/profile', passport.authenticate('jwt', { session: false }),
 
 ### Include the JWT in requests
 
-The strategy will first check the request for the standard *Authorization*
-header. If this header is present and the scheme matches `options.authScheme`
-or 'JWT' if no auth scheme was specified then the token will be retrieved from
-it. e.g.
+The method of including a JWT in a request depends entirely on the extractor
+function you choose. For example, if you use the `fromAuthHeaderAsBearerToken`
+extractor, you would include an `Authorization` header in your request with the
+scheme set to `bearer`. e.g.
 
-    Authorization: JWT JSON_WEB_TOKEN_STRING.....
-
-If the authorization header with the expected scheme is not found, the request
-body will be checked for a field matching either `options.tokenBodyField` or
-`auth_token` if the option was not specified.
-
-Finally, the URL query parameters will be checked for a field matching either
-`options.tokenQueryParameterName` or `auth_token` if the option was not
-specified.
+    Authorization: bearer JSON_WEB_TOKEN_STRING.....
 
 ## Migrating
 
