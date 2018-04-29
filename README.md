@@ -49,6 +49,8 @@ extracted from the request or verified.
   callback. i.e. verify(request, jwt_payload, done_callback).
 * `jsonWebTokenOptions`: passport-jwt is verifying the token using [jsonwebtoken](https://github.com/auth0/node-jsonwebtoken).
 Pass here an options object for any other option you can pass the jsonwebtoken verifier. (i.e maxAge)
+* `tokenInVerifyCallback`: If true the jwt_payload will contain a token property holding the raw unparsed token. 
+  i.e. jwt_payload['token']
 
 `verify` is a function with the parameters `verify(jwt_payload, done)`
 

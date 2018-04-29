@@ -64,7 +64,7 @@ describe('Strategy', function() {
                     info = i;
                     done();
                 })
-                .req(function(req) { 
+                .req(function(req) {
                     req.headers['authorization'] = "bearer " + test_data.valid_jwt.token;
                 })
                 .authenticate();
@@ -94,7 +94,7 @@ describe('Strategy', function() {
                     err = e;
                     done();
                 })
-                .req(function(req) { 
+                .req(function(req) {
                     req.headers['authorization'] = "bearer " + test_data.valid_jwt.token;
                 })
                 .authenticate();
@@ -123,7 +123,7 @@ describe('Strategy', function() {
                     err = e;
                     done();
                 })
-                .req(function(req) { 
+                .req(function(req) {
                     req.headers['authorization'] = "bearer " + test_data.valid_jwt.token;
                 })
                 .authenticate();
@@ -170,8 +170,37 @@ describe('Strategy', function() {
 
     });
 
+    describe('handling a request with a valid jwt and option tokenInVerifyCallback is true', function() {
 
-    describe('handling a request when constructed with a secretOrKeyProvider function that succeeds', function() {
+        var strategy, user;
+
+        before(function (done) {
+            opts = { tokenInVerifyCallback: true };
+            opts.secretOrKey = 'secret';
+            opts.jwtFromRequest = extract_jwt.fromAuthHeaderAsBearerToken();
+            strategy = new Strategy(opts, function (jwt_payload, next) {
+                // Capture the value passed in as the request argument
+                return next(null, { token: jwt_payload.token }, { foo: 'bar' });
+            });
+
+            chai.passport.use(strategy)
+                .success(function (u, i) {
+                    user = u;
+                    done();
+                })
+                .req(function (req) {
+                    req.headers['authorization'] = "bearer " + test_data.valid_jwt.token;
+                })
+                .authenticate();
+        });
+
+        it('will populate jwt_payload with token field containing the raw valid jwt token', function () {
+            expect(user.token).to.equal(test_data.valid_jwt.token);
+        });
+
+    });
+
+    describe('handling a request when constructed with a secretOrKeyProvider function that succeeds', function () {
 
         var strategy, fakeSecretOrKeyProvider, expectedReqeust;
 
