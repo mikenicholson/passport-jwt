@@ -138,6 +138,32 @@ describe('Strategy', function() {
     });
 
 
+    describe('handling a request with malformed or missing auth header ', function() {
+        var strategy, err;
+
+        before(function(done) {
+          strategy = new Strategy({jwtFromRequest: extract_jwt.fromAuthHeaderAsBearerToken(), secretOrKey: 'secret'}, function(jwt_payload, next) {
+            return next(null, {user_id: 1234567890}, {foo:'bar'});
+          });
+
+          chai.passport.use(strategy)
+            .error(function(e) {
+              err = e;
+              done();
+            })
+            .req(function(req) {
+              req.headers['authorization'] = "jwt" + test_data.valid_jwt.token;
+            })
+            .authenticate();
+        });
+
+
+        it('should error', function() {
+          expect(err).to.be.an.instanceof(Error);
+          expect(err.message).to.equal('No auth token');
+        });
+
+    });
 
     describe('handling a request with a valid jwt and option passReqToCallback is true', function() {
 
