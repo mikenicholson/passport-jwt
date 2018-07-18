@@ -65,7 +65,7 @@ describe('Strategy', function() {
             mockVerifier.reset();
            
             chai.passport.use(strategy)
-                .fail(function(i) {
+                .error(function(i) {
                     info = i
                     done();
                 })
@@ -101,7 +101,7 @@ describe('Strategy', function() {
             mockVerifier.reset();
 
             chai.passport.use(strategy)
-                .fail(function(i) {
+                .error(function(i) {
                     info = i
                     done();
                 })

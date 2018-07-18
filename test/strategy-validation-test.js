@@ -156,7 +156,7 @@ describe('Strategy', function() {
             strategy = new Strategy({jwtFromRequest: extract_jwt.fromAuthHeaderAsBearerToken(), secretOrKey: 'secret'}, verify_spy);
 
             chai.passport.use(strategy)
-                .fail(function(i) {
+                .error(function(i) {
                     info = i;
                     done();
                 })
