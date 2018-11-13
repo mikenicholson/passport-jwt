@@ -111,7 +111,9 @@ functions return a new extractor configured with the given parameters.
 
 If the supplied extractors don't meet your needs you can easily provide your own callback. For
 example, if you are using the cookie-parser middleware and want to extract the JWT in a cookie
-you could use the following function as the argument to the jwtFromRequest option:
+you could use the following function as the argument to the jwtFromRequest option, noting that 
+you  dont have to provide request object to  the  extractor  function, passport  will  inject 
+request object into the provided custom extractor automaticly:
 
 ```
 var cookieExtractor = function(req) {
@@ -122,6 +124,10 @@ var cookieExtractor = function(req) {
     }
     return token;
 };
+/
+opts.jwtFromRequest = ExtractJwt.cookieExtractor;//no params passed to extractor function
+
+
 ```
 
 ### Authenticate requests
