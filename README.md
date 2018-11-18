@@ -113,11 +113,11 @@ If the supplied extractors don't meet your needs you can easily provide your own
 example, if you are using the cookie-parser middleware and want to extract the JWT in a cookie
 you could use the following function as the argument to the jwtFromRequest option:
 
-```
+```js
 var cookieExtractor = function(req) {
     var token = null;
-    if (req && req.cookies)
-    {
+    
+    if (req && req.cookies){
         token = req.cookies['jwt'];
     }
     return token;
