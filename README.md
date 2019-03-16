@@ -121,6 +121,8 @@ var cookieExtractor = function(req) {
     }
     return token;
 };
+// ...
+opts.jwtFromRequest = cookieExtractor;
 ```
 
 ### Authenticate requests
