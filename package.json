@@ -29,7 +29,7 @@
     "chai": "^3.0.0",
     "chai-passport-strategy": "^1.0.0",
     "istanbul": "^0.4.5",
-    "mocha": "^3.0.0",
+    "mocha": "^6.1.4",
     "sinon": "^1.0.0"
   },
   "dependencies": {
