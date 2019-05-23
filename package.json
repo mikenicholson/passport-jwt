@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/themikenicholson/passport-jwt.git"
+    "url": "https://github.com/mikenicholson/passport-jwt.git"
   },
   "keywords": [
     "Passport",
@@ -22,9 +22,9 @@
   "author": "Mike Nicholson",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/themikenicholson/passport-jwt/issues"
+    "url": "https://github.com/mikenicholson/passport-jwt/issues"
   },
-  "homepage": "https://github.com/themikenicholson/passport-jwt",
+  "homepage": "https://github.com/mikenicholson/passport-jwt",
   "devDependencies": {
     "chai": "^3.0.0",
     "chai-passport-strategy": "^1.0.0",

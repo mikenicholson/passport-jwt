@@ -1,7 +1,7 @@
 # passport-jwt
 
-[![Build Status](https://travis-ci.org/themikenicholson/passport-jwt.svg?branch=master)](https://travis-ci.org/themikenicholson/passport-jwt)
-[![Code Climate](https://codeclimate.com/github/themikenicholson/passport-jwt/badges/gpa.svg)](https://codeclimate.com/github/themikenicholson/passport-jwt)
+[![Build Status](https://travis-ci.org/mikenicholson/passport-jwt.svg?branch=master)](https://travis-ci.org/mikenicholson/passport-jwt)
+[![Code Climate](https://codeclimate.com/github/mikenicholson/passport-jwt/badges/gpa.svg)](https://codeclimate.com/github/mikenicholson/passport-jwt)
 
 A [Passport](http://passportjs.org/) strategy for authenticating with a
 [JSON Web Token](http://jwt.io).

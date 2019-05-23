@@ -7,7 +7,7 @@ passport-jwt.
 
 Version 4.0.0 was released to update [jsonwebtoken's](https://github.com/auth0/node-jsonwebtoken)
 major version from v7 to v8 in order to fix a security issue (see
-[#147](https://github.com/themikenicholson/passport-jwt/issues/147)).
+[#147](https://github.com/mikenicholson/passport-jwt/issues/147)).
 
 Users of `passport-jwt` are exposed to the API of `jsonwebtoken` through the `jsonWebTokenOptions`
 constructor option.  Therefore, a major version rev of `jsonwebtoken` triggered a major version rev
