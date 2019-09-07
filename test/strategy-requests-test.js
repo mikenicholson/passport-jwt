@@ -119,6 +119,76 @@ describe('Strategy', function() {
         });
 
     });
+    
+    describe('returning Promise instead of string when getting JWT from request', function() {
 
+        var info;
+
+        before(function(done) {
+            strategy = new Strategy({jwtFromRequest: function(r) {return r}, secretOrKey: 'secret'}, function(jwt_payload, next) {
+                // Return values aren't important in this case
+                return next(null, {}, {});
+            });
+            
+            mockVerifier.reset();
+           
+            chai.passport.use(strategy)
+                .fail(function(i) {
+                    info = i
+                    done();
+                })
+                .req(function(req) {
+                    req.body = {}
+                })
+                .authenticate();
+        });
+
+
+        it('should fail authentication', function() {
+            expect(info).to.be.an.object;
+            expect(info.message).to.equal("token must be of type string | Promise<string>");
+        });
+
+
+        it('Should not try to verify anything', function() {
+            sinon.assert.notCalled(mockVerifier);
+        });
+
+    });
+    
+    describe('returning Promise not resolving a string when getting JWT from request', function() {
+
+        var info;
+
+        before(function(done) {
+            strategy = new Strategy({jwtFromRequest: function(r) {return Promise.resolve()}, secretOrKey: 'secret'}, function(jwt_payload, next) {
+                // Return values aren't important in this case
+                return next(null, {}, {});
+            });
+            
+            mockVerifier.reset();
+           
+            chai.passport.use(strategy)
+                .fail(function(i) {
+                    info = i
+                    done();
+                })
+                .req(function(req) {
+                    req.body = {}
+                })
+                .authenticate();
+        });
+
+
+        it('should fail authentication', function() {
+            expect(info).to.be.an.object;
+            expect(info.message).to.equal("token must be of type string");
+        });
+
+        it('Should not try to verify anything', function() {
+            sinon.assert.notCalled(mockVerifier);
+        });
+
+    });
 
 });
