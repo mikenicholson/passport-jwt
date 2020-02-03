@@ -89,7 +89,7 @@ possible the JWT is parsed from the request by a user-supplied callback passed i
 `jwtFromRequest` parameter.  This callback, from now on referred to as an extractor,
 accepts a request object as an argument and returns the encoded JWT string or *null*.
 
-#### Included extractors
+#### Included extractors - [Usage](docs/extractor_header_request_combination.md)
 
 A number of extractor factory functions are provided in passport-jwt.ExtractJwt. These factory
 functions return a new extractor configured with the given parameters.
