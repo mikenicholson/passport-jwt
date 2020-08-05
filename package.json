@@ -5,7 +5,7 @@
   "main": "./lib",
   "scripts": {
     "test": "./node_modules/.bin/mocha --reporter spec --require test/bootstrap test/*test.js",
-    "testcov": "istanbul cover node_modules/mocha/bin/_mocha -- --reporter spec --require test/bootstrap test/*test.js"
+    "testcov": "nyc npm run test"
   },
   "repository": {
     "type": "git",
@@ -28,8 +28,8 @@
   "devDependencies": {
     "chai": "^3.0.0",
     "chai-passport-strategy": "^1.0.0",
-    "istanbul": "^0.4.5",
     "mocha": "^6.1.4",
+    "nyc": "^15.1.0",
     "sinon": "^1.0.0"
   },
   "dependencies": {
