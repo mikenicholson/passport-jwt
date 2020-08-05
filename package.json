@@ -30,6 +30,7 @@
     "chai-passport-strategy": "^1.0.0",
     "mocha": "^6.2.2",
     "nyc": "^15.1.0",
+    "prettier": "2.0.5",
     "sinon": "^1.0.0"
   },
   "dependencies": {
