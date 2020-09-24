@@ -11,7 +11,7 @@ intended to be used to secure RESTful endpoints without sessions.
 
 ## Supported By
 
-If you want to quickly add secure token-based authentication to Node.js apps, feel free to check out Auth0's Node.js SDK and free plan at [auth0.com/overview](https://auth0.com/overview?utm_source=GHsponsor&utm_medium=GHsponsor&utm_campaign=passport-jwt&utm_content=auth) <img alt='Auth0 Logo' src='https://s3.amazonaws.com/passport-jwt-img/Auth0+logo.svg'/>
+If you want to quickly add secure token-based authentication to Node.js apps, feel free to check out Auth0's Node.js SDK and free plan at [auth0.com/developers](https://auth0.com/developers?utm_source=GHsponsor&utm_medium=GHsponsor&utm_campaign=passport-jwt&utm_content=auth) <img alt='Auth0 Logo' src='https://s3.amazonaws.com/passport-jwt-img/Auth0+logo.svg'/>
 
 ## Install
 
