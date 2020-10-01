@@ -5,6 +5,7 @@ function Request() {
     this.method = 'GET';
     this.url = '/';
     this.headers = {};
+    this.cookies = {};
 }
 
 module.exports = Request;
