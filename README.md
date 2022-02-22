@@ -148,8 +148,8 @@ scheme set to `bearer`. e.g.
 
 ## Migrating
 
-The the [Migration Guide](docs/migrating.md) for help upgrading to the latest
-major version of passport-jwt
+Read the [Migration Guide](docs/migrating.md) for help upgrading to the latest
+major version of passport-jwt.
 
 ## Tests
 
