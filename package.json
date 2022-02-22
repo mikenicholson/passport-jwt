@@ -28,12 +28,12 @@
   "devDependencies": {
     "chai": "^3.0.0",
     "chai-passport-strategy": "^1.0.0",
-    "mocha": "^6.2.2",
+    "mocha": "^9.2.1",
     "nyc": "^15.1.0",
     "sinon": "^1.0.0"
   },
   "dependencies": {
-    "jsonwebtoken": "^8.2.0",
+    "jsonwebtoken": "^8.5.1",
     "passport-strategy": "^1.0.0"
   }
 }
