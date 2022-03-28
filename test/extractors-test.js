@@ -139,8 +139,16 @@ describe('Token extractor', function() {
 
             expect(token).to.equal('abcd123');
         });
-    });
 
+        it('should return the value from the authorization header without a comma at the end', function () {
+            var req = new Request()
+            req.headers['authorization'] = 'test_scheme abcd123,';
+
+            var token = extractor(req);
+
+            expect(token).to.equal('abcd123');
+        });
+    });
 
     describe('fromAuthHeader', function() {
         
