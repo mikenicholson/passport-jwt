@@ -176,7 +176,7 @@ jwtDriver: new MyDriver(jwtValid, {issuer: "sdf"}),
 ```
 
 ### `jsonwebtoken` driver
-`jsonwebtoken` is the default library from auth0, although still supported it hasn't received an updated in years.
+`npm install jsonwebtoken` is the default library from auth0, although still supported it hasn't received an updated in years.
 ```typescript
 import jsonwebtoken from "jsonwebtoken";
 import {JsonWebTokenDriver} from "passport-jwt/jsonwebtoken";
@@ -189,7 +189,7 @@ jwtDriver = jwt,
 // ...
 ```
 ### `jose` driver
-`jose` is a moder everything json library. recommended to use over `jsonwebtoken`.
+`npm install jose` is a modern everything json library. recommended to use over `jsonwebtoken`.
 ```typescript
 import * as jose from "jose";
 import {JoseDriver} from "passport-jwt/platform-jose";
@@ -202,7 +202,7 @@ jwtDriver: jos,
 // ...
 ```
 ### `@nestjs/jwt` driver
-use `jsonwebtoken` as core with some tweaks (mainly `none` algorithms), it has a high integration with `nestjs`.
+`npm install @nestjs/jwt` uses `jsonwebtoken` as core with some tweaks (mainly `none` algorithms), it has a high integration with `nestjs`.
 ```typescript
 import {JwtService} from "@nestjs/jwt";
 import {NestJsJwtDriver} from "passport-jwt/platform-nestjsjwt";
