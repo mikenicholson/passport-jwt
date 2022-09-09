@@ -66,6 +66,63 @@ All LEGACY options above are reimplemented in the driver infrastructure.
 * `done` is a passport error first callback accepting arguments
   done(error, user, info)
 
+# Example
+
+An example using legacy configuration which reads the JWT from the http
+Authorization header with the scheme 'bearer':
+
+```js
+var JwtStrategy = require('passport-jwt/auto').Strategy,
+    ExtractJwt = require('passport-jwt').ExtractJwt;
+var opts = {}
+opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
+opts.secretOrKey = 'secret';
+opts.issuer = 'accounts.examplesoft.com';
+opts.audience = 'yoursite.net';
+passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
+    User.findOne({id: jwt_payload.sub}, function(err, user) {
+        if (err) {
+            return done(err, false);
+        }
+        if (user) {
+            return done(null, user);
+        } else {
+            return done(null, false);
+            // or you could create a new account
+        }
+    });
+}));
+```
+A more modern variant of the above example using esm and driver options.
+
+```js
+import {Strategy, ExtractJwt} from "passport-jwt";
+import * as jose from "jose";
+import {JoseDriver} from "passport-jwt/platform-jose";
+
+const myValidator = (jwt_payload, done) => {
+  User.findOne({id: jwt_payload.sub}).then(user => {
+    if (user) {
+      return done(null, user);
+    } else {
+      return done(null, false);
+      // or you could create a new account
+    }
+  }).catch(err => done(err, false));
+}
+
+const strategy = new Strategy({
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  jwtDriver: new JoseDriver(jose, {
+        issuer: 'accounts.examplesoft.com',
+        audience: 'yoursite.net'
+  }),
+  secretOrKey: 'secret'
+}, myValidator);
+
+passport.use(strategy);
+```
+
 # Drivers
 Drivers validate the jwt and return the payload to `passport`. 
 They have a `validation` method that receives a token and a key and returns a result message.
@@ -157,63 +214,6 @@ const nest = new NestJsJwtDriver(JwtService, {
 // ...
 jwtDriver: nest,
 // ...
-```
-
-# Example
-
-An example using legacy configuration which reads the JWT from the http
-Authorization header with the scheme 'bearer':
-
-```js
-var JwtStrategy = require('passport-jwt/auto').Strategy,
-    ExtractJwt = require('passport-jwt').ExtractJwt;
-var opts = {}
-opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
-opts.secretOrKey = 'secret';
-opts.issuer = 'accounts.examplesoft.com';
-opts.audience = 'yoursite.net';
-passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
-    User.findOne({id: jwt_payload.sub}, function(err, user) {
-        if (err) {
-            return done(err, false);
-        }
-        if (user) {
-            return done(null, user);
-        } else {
-            return done(null, false);
-            // or you could create a new account
-        }
-    });
-}));
-```
-A more modern variant of the above example using esm and driver options.
-
-```ecmascript 6
-import {Strategy, ExtractJwt} from "passport-jwt";
-import * as jose from "jose";
-import {JoseDriver} from "passport-jwt/platform-jose";
-
-const myValidator = (jwt_payload, done) => {
-  User.findOne({id: jwt_payload.sub}).then(user => {
-    if (user) {
-      return done(null, user);
-    } else {
-      return done(null, false);
-      // or you could create a new account
-    }
-  }).catch(err => done(err, false));
-}
-
-const strategy = new Strategy({
-  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-  jwtDriver: new JoseDriver(jose, {
-        issuer: 'accounts.examplesoft.com',
-        audience: 'yoursite.net'
-  }),
-  secretOrKey: 'secret'
-}, myValidator);
-
-passport.use(strategy);
 ```
 
 ### Extracting the JWT from the request
