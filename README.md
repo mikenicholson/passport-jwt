@@ -9,7 +9,9 @@ A [Passport](http://passportjs.org/) strategy for authenticating with a
 This module lets you authenticate endpoints using a JSON web token. It is
 intended to be used to secure RESTful endpoints without sessions.
 
-now **updated** to version v5.x.x with support for `typescript` and `jose`
+#### Update
+
+Now **updated** to version v5.x.x with support for `typescript` and `jose`.
 
 ## Supported By
 
