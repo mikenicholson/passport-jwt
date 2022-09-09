@@ -274,7 +274,7 @@ opts.jwtFromRequest = cookieExtractor;
 import {JwtExtractor} from "passport-jwt";
 
 // can return a promise and therefore be async
-export const async commaExtractor: JwtExtractor = (req /* :Request is implicitly added */) => {
+export const commaExtractor: JwtExtractor = async (req /* :Request is implicitly added */) => {
     let token = null;
     if("jwt" in req.cookies && typeof req.cookies["jwt"] === "string") {
       token = req.cookies["jwt"];
