@@ -22,7 +22,7 @@ passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
 }));
 ```
 To convert code to ESM note the following: replace `require` with `import` and `var` with `const` and don't forget `function` with `=>`.
-```ecmascript 6
+```js
 import {Strategy, ExtractJwt} from "passport-jwt";
 import {JoseDriver} from "passport-jwt/platform-jose";
 import * as jose from "jose";
