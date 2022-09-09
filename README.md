@@ -325,8 +325,9 @@ Read the [NestJs Guide](docs/nestjs.md) for help in implementing `passport-jwt` 
 ## Tests
 
     npm install
-    npm test
-
+    npm run build
+    npm run test
+    
 To generate test-coverage reports:
 
     npm install -g istanbul
