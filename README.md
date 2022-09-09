@@ -231,7 +231,7 @@ functions return a new extractor configured with the given parameters.
 * ```fromCookie(cookie_name)``` Creates a new extractor that searches for the JWT in a given cookie.
 * ```fromSignedCookie(cookie_name)``` Creates a new extractor that searches for the JWT in a given signed cookie.
 encrypted cookies are encrypted and therefore cannot be read by the client. you need a third party implementation for this option.
-* ```fromSessionKey(cookie_name)``` creates a new extractor that looks for the JWT in the given http
+* ```fromSessionKey(session_key)``` creates a new extractor that looks for the JWT in the given http
     session.
 * ```fromRequestProperty(req_property_key)``` Creates a new extractor that looks for the JWT in the current request. 
 This can be used if another middleware is extracting the JWT (e.g., from a websocket connection).
@@ -273,7 +273,8 @@ opts.jwtFromRequest = cookieExtractor;
 ```typescript
 import {JwtExtractor} from "passport-jwt";
 
-export const commaExtractor: JwtExtractor = (req /* :Request is implicitly added */) => {
+// can return a promise and therefore be async
+export const async commaExtractor: JwtExtractor = (req /* :Request is implicitly added */) => {
     let token = null;
     if("jwt" in req.cookies && typeof req.cookies["jwt"] === "string") {
       token = req.cookies["jwt"];
