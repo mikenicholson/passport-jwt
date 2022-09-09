@@ -28,6 +28,10 @@ The JWT authentication strategy is constructed as follows:
 `options` is an object literal containing options to control how the token is
 extracted from the request or verified.
 
+**(LEGACY)** options can only be used if the strategy is imported from `passport-jwt/auto`.\
+**(REQUIRED)** options are required for the library to work correctly.\
+**(MODERN)** is the recommended way to use the library and required if the library is imported from the main import.
+
 * `secretOrKey` is a string or buffer containing the secret
   (symmetric) or PEM-encoded public key (asymmetric) for verifying the token's
   signature. REQUIRED unless `secretOrKeyProvider` is provided.
@@ -39,16 +43,18 @@ extracted from the request or verified.
   parameter and returns either the JWT as a string or *null*. See
   [Extracting the JWT from the request](#extracting-the-jwt-from-the-request) for
   more details.
-* `issuer`: If defined the token issuer (iss) will be verified against this
+* `issuer`: (LEGACY) If defined the token issuer (iss) will be verified against this
   value.
-* `audience`: If defined, the token audience (aud) will be verified against
+* `audience`: (LEGACY) If defined, the token audience (aud) will be verified against
   this value.
-* `algorithms`: List of strings with the names of the allowed algorithms. For instance, ["HS256", "HS384"].
-* `ignoreExpiration`: if true do not validate the expiration of the token.
+* `algorithms`: (LEGACY) List of strings with the names of the allowed algorithms. For instance, ["HS256", "HS384"].
+* `ignoreExpiration`: (LEGACY) if true do not validate the expiration of the token.
 * `passReqToCallback`: If true the request will be passed to the verify
   callback. i.e. verify(request, jwt_payload, done_callback).
-* `jsonWebTokenOptions`: passport-jwt is verifying the token using [jsonwebtoken](https://github.com/auth0/node-jsonwebtoken).
+* `jsonWebTokenOptions`: (LEGACY) passport-jwt is verifying the token using [jsonwebtoken](https://github.com/auth0/node-jsonwebtoken).
 Pass here an options object for any other option you can pass the jsonwebtoken verifier. (i.e maxAge)
+* `jwtDriver`: (MODERN) the driver object can be imported from the platforms, for more information about drivers look below. 
+All LEGACY options above are reimplemented in the driver infrastructure.
 
 `verify` is a function with the parameters `verify(jwt_payload, done)`
 
@@ -56,11 +62,106 @@ Pass here an options object for any other option you can pass the jsonwebtoken v
 * `done` is a passport error first callback accepting arguments
   done(error, user, info)
 
-An example configuration which reads the JWT from the http
+# Drivers
+Drivers validate the jwt and return the payload to `passport`. 
+They have a `validation` method that receives a token and a key and returns a result message.
+
+`validate` is a method with the following signature `validate(token, key)` and returns `Promise<SuccesMessage>`.
+* `token` is the token returned by the extractor.
+* `key` is the key parsed by the (internal) keyOrSecret provider.
+
+`SuccesMessage` is an object with the following properties `{success, message, payload}`.
+* `success` is a boolean indicating whether the token is valid.
+* `message` is a string containing the error message.
+* `payload` is an object containing the payload.
+
+`getOptions()` is a method that returns the options given to the constructor merged with the default options.
+
+You can make custom drivers with the above signatures.
+```javascript
+var jwtValid = require('jwt-validator');
+var MyValidator = {validate: function(token, key) {
+    return Promise.resolve({
+      success: jwtValid(token, key, {issuer: "name"}), 
+      payload: {user: "name"}
+    });
+}}
+// ...
+jwtDriver: MyValidator,
+// ...
+```
+**Or** in typescript
+
+```typescript
+import {JwtDriver, JwtResult} from "passport-jwt";
+import jwtValid from "jwt-validator";
+
+type MyCore = typeof jwtValid;
+type MyPayload = {user: string};
+type MyKey = string;
+type MyOptions = {issuer: string};
+
+class MyDriver extends JwtDriver<MyCore, MyOptions, MyKey> {
+  public async validate(token /* :string */, key /* :MyKey */): Promise<JwtResult<MyPayload>> {
+    return {
+        success: this.driver(token, key, this.getOptions()), 
+        payload: {user: "name"}
+    };
+  }
+}
+// ...
+jwtDriver: new MyDriver(jwtValid, {issuer: "sdf"}),
+// ...
+```
+
+### `jsonwebtoken` driver
+`jsonwebtoken` is the default library from auth0, although still supported it hasn't received an updated in years.
+```typescript
+import jsonwebtoken from "jsonwebtoken";
+import {JsonWebTokenDriver} from "passport-jwt/jsonwebtoken";
+// ...
+const jwt = new JsonWebTokenDriver(jsonwebtoken, {
+    // view the jsonwebtoken package for all options, legacy options can be used here.
+});
+// ...
+jwtDriver = jwt,
+// ...
+```
+### `jose` driver
+`jose` is a moder everything json library. recommended to use over `jsonwebtoken`.
+```typescript
+import * as jose from "jose";
+import {JoseDriver} from "passport-jwt/platform-jose";
+//...
+const jos = new JoseDriver(jose, {
+    // view the jose package for all options
+});
+// ...
+jwtDriver: jos,
+// ...
+```
+### `@nestjs/jwt` driver
+use `jsonwebtoken` as core with some tweaks (mainly `none` algorithms), it has a high integration with `nestjs`.
+```typescript
+import {JwtService} from "@nestjs/jwt";
+import {NestJsJwtDriver} from "passport-jwt/platform-nestjsjwt";
+// ...
+const nest = new NestJsJwtDriver(JwtService, {
+    // view the @nestjs/jwt package for all options 
+    // most options are configured by the module see nestjs documentation
+});
+// ...
+jwtDriver: nest,
+// ...
+```
+
+# Example
+
+An example using legacy configuration which reads the JWT from the http
 Authorization header with the scheme 'bearer':
 
 ```js
-var JwtStrategy = require('passport-jwt').Strategy,
+var JwtStrategy = require('passport-jwt/auto').Strategy,
     ExtractJwt = require('passport-jwt').ExtractJwt;
 var opts = {}
 opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
@@ -81,6 +182,35 @@ passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
     });
 }));
 ```
+A more modern variant of the above example using esm and driver options.
+
+```ecmascript 6
+import {Strategy, ExtractJwt} from "passport-jwt";
+import * as jose from "jose";
+import {JoseDriver} from "passport-jwt/platform-jose";
+
+const myValidator = (jwt_payload, done) => {
+  User.findOne({id: jwt_payload.sub}).then(user => {
+    if (user) {
+      return done(null, user);
+    } else {
+      return done(null, false);
+      // or you could create a new account
+    }
+  }).catch(err => done(err, false));
+}
+
+const strategy = new Strategy({
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  jwtDriver: new JoseDriver(jose, {
+        issuer: 'accounts.examplesoft.com',
+        audience: 'yoursite.net'
+  }),
+  secretOrKey: 'secret'
+}, myValidator);
+
+passport.use(strategy);
+```
 
 ### Extracting the JWT from the request
 
@@ -94,8 +224,15 @@ accepts a request object as an argument and returns the encoded JWT string or *n
 A number of extractor factory functions are provided in passport-jwt.ExtractJwt. These factory
 functions return a new extractor configured with the given parameters.
 
+* ```fromCookie(cookie_name)``` Creates a new extractor that searches for the JWT in a given cookie.
+* ```fromSignedCookie(cookie_name)``` Creates a new extractor that searches for the JWT in a given signed cookie.
+encrypted cookies are encrypted and therefore cannot be read by the client. you need a third party implementation for this option.
+* ```fromSessionKey(cookie_name)``` creates a new extractor that looks for the JWT in the given http
+    session.
+* ```fromRequestProperty(req_property_key)``` Creates a new extractor that looks for the JWT in the current request. 
+This can be used if another middleware is extracting the JWT (e.g., from a websocket connection).
 * ```fromHeader(header_name)``` creates a new extractor that looks for the JWT in the given http
-  header
+  header.
 * ```fromBodyField(field_name)``` creates a new extractor that looks for the JWT in the given body
   field.  You must have a body parser configured in order to use this method.
 * ```fromUrlQueryParameter(param_name)``` creates a new extractor that looks for the JWT in the given
@@ -113,16 +250,37 @@ If the supplied extractors don't meet your needs you can easily provide your own
 example, if you are using the cookie-parser middleware and want to extract the JWT in a cookie
 you could use the following function as the argument to the jwtFromRequest option:
 
-```js
-var cookieExtractor = function(req) {
+```javascript
+var commaExtractor = function(req) {
     var token = null;
-    if (req && req.cookies) {
-        token = req.cookies['jwt'];
+    if(req && req.cookies) {
+        token = req.cookies["jwt"];
+        if(token.endsWith(",")) {
+            token = token.slice(0, -1);
+        }
     }
     return token;
 };
 // ...
 opts.jwtFromRequest = cookieExtractor;
+```
+**Or** in typescript (only as of v5.x.x)
+
+```typescript
+import {JwtExtractor} from "passport-jwt";
+
+export const commaExtractor: JwtExtractor = (req /* :Request is implicitly added */) => {
+    let token = null;
+    if("jwt" in req.cookies && typeof req.cookies["jwt"] === "string") {
+      token = req.cookies["jwt"];
+      if(token.endsWith(",")) {
+        token = token.slice(0, -1);
+      }
+    }
+    return token;
+}
+// ...
+jwtFromRequest: commaExtractor
 ```
 
 ### Authenticate requests
@@ -149,7 +307,15 @@ scheme set to `bearer`. e.g.
 ## Migrating
 
 Read the [Migration Guide](docs/migrating.md) for help upgrading to the latest
-major version of passport-jwt.
+major version of `passport-jwt`.
+
+## Typescript
+
+Read the [Typescript Guide](docs/typescript.md) for help upgrading to `typescript`.
+
+## NestJs
+
+Read the [NestJs Guide](docs/nestjs.md) for help in implementing `passport-jwt` in `nestjs`.
 
 ## Tests
 
@@ -159,11 +325,12 @@ major version of passport-jwt.
 To generate test-coverage reports:
 
     npm install -g istanbul
-    npm run-script testcov
+    npm run testcov
     istanbul report
 
 ## License
 
 The [MIT License](http://opensource.org/licenses/MIT)
 
-Copyright (c) 2015 Mike Nicholson
+Copyright (c) 2015 Mike Nicholson (Original Implementation) \
+Copyright (c) 2022 Outernet (Typescript Rewrite)

@@ -3,6 +3,68 @@
 The following instructions should help in migrating to a new major version of
 passport-jwt.
 
+## Migrating from 4.x.x to 5.x.x
+
+Version 5.0.0 was released as a general modernization of the library, including new extractors, typescript support, all issues fixed,
+twice as many tests (98% coverage) and a new abstract driver infrastructure.
+
+Therefore, users of `passport-jwt` are no longer restricted to using the `jsonwebtoken` library.
+The choice of this abstraction was made because the jsonwebtoken library is outdated and only receives security fixes.
+The new abstraction allows the use of any jwt validator and some popular validators are pre-implemented,
+these are: `jsonwebtoken`, `jose`, `@nestjs/jwt`. To make use of this new structure a driver option must be included during loading,
+alternatively to make migration easy it is also possible to include the `passport-jwt/auto` library to automatically load the jsonwebtoken driver.
+
+**From** using v4.x.x (to make this example work in v5.x.x simply change the import path to `passport-jwt/auto` for the strategy)
+```javascript
+var JwtStrategy = require('passport-jwt' /* change here */).Strategy,
+        ExtractJwt = require('passport-jwt').ExtractJwt;
+var opts = {}
+opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
+opts.secretOrKey = 'secret';
+opts.issuer = 'accounts.examplesoft.com';
+passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
+  //... validate user
+  done(null, user)
+}));
+```
+**To** using v5.x.x with the driver infrastructure.
+```javascript
+var JwtStrategy = require('passport-jwt').Strategy,
+        ExtractJwt = require('passport-jwt').ExtractJwt;
+        JwtDriver = require('passport-jwt/platform-jsonwebtoken').JsonWebTokenDriver;
+        jsonwebtoken = require('jsonwebtoken');
+var opts = {}
+opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
+opts.jwtDriver = new JwtDriver(jsonwebtoken, {
+    issuer: 'accounts.examplesoft.com'
+});
+opts.secretOrKey = 'secret';
+passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
+  //... validate user
+  done(null, user);
+}));
+```
+**Or** you can use the more modern `jose` library like this:
+```javascript
+var JwtStrategy = require('passport-jwt').Strategy,
+        ExtractJwt = require('passport-jwt').ExtractJwt;
+        JwtDriver = require('passport-jwt/platform-jose').JoseDriver;
+        jose = require('jose');
+var opts = {}
+opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
+opts.jwtDriver = new JwtDriver(jose, {
+    issuer: 'accounts.examplesoft.com'
+});
+opts.secretOrKey = 'secret';
+passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
+  //... validate user
+  done(null, user);
+}));
+```
+See the documentation for more examples and integration with `typescript` and `@nestjs/jwt`. 
+Click [here](typescript.md) for the typescript documentation and examples to migrate away from `commonjs`. 
+Click [here](nestjs.md) to view examples on how to integrate with `@nestjs/passport`.
+
 ## Migrating from 3.x.x to 4.x.x
 
 Version 4.0.0 was released to update [jsonwebtoken's](https://github.com/auth0/node-jsonwebtoken)

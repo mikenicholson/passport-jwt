@@ -1,11 +1,15 @@
 {
   "name": "passport-jwt",
-  "version": "4.0.0",
+  "version": "5.0.0",
   "description": "Passport authentication strategy using JSON Web Tokens",
-  "main": "./lib",
   "scripts": {
-    "test": "./node_modules/.bin/mocha --reporter spec --require test/bootstrap test/*test.js",
-    "testcov": "nyc npm run test"
+    "test": "mocha --reporter spec --require test/bootstrap test/*test.js --timeout 10000",
+    "testcov": "nyc npm run test",
+    "build": "npm run clean && npm run build:cjs && npm run build:esm && npm run build:types",
+    "build:cjs": "tsc -p config/tsconfig.cjs.json",
+    "build:esm": "tsc -p config/tsconfig.esm.json",
+    "build:types": "tsc -p config/tsconfig.types.json",
+    "clean": "rimraf ./dist"
   },
   "repository": {
     "type": "git",
@@ -26,14 +30,60 @@
   },
   "homepage": "https://github.com/mikenicholson/passport-jwt",
   "devDependencies": {
-    "chai": "^3.0.0",
-    "chai-passport-strategy": "^1.0.0",
-    "mocha": "^9.2.1",
+    "chai": "^4.3.6",
+    "chai-passport-strategy": "^3.0.0",
+    "mocha": "^10.0.0",
     "nyc": "^15.1.0",
-    "sinon": "^1.0.0"
+    "rimraf": "^3.0.2",
+    "sinon": "^14.0.0",
+    "typescript": "^4.4.3"
   },
   "dependencies": {
+    "@types/express": "^4.17.13",
+    "@types/jsonwebtoken": "^8.5.9",
+    "@types/node": "^18.7.16",
+    "@types/passport": "^1.0.10",
     "jsonwebtoken": "^8.5.1",
-    "passport-strategy": "^1.0.0"
+    "passport": "^0.6.0",
+    "tslib": "^2.4.0"
+  },
+  "peerDependencies": {
+    "@nestjs/jwt": "^9.0.0 || ^8.0.0 || ^7.0.0",
+    "jose": "^4.0.0 || ^3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "jose": {
+      "optional": true
+    },
+    "@nestjs/jwt": {
+      "optional": true
+    }
+  },
+  "exports": {
+    ".": {
+      "require": "./dist/cjs/index.js",
+      "import": "./dist/esm/index.js",
+      "types": "./dist/types/index.d.ts"
+    },
+    "./auto": {
+      "require": "./dist/cjs/auto/index.js",
+      "import": "./dist/esm/auto/index.js",
+      "types": "./dist/types/auto/index.d.ts"
+    },
+    "./platform-jose": {
+      "require": "./dist/cjs/platforms/jose.js",
+      "import": "./dist/esm/platforms/jose.js",
+      "types": "./dist/types/platforms/jose.d.ts"
+    },
+    "./platform-jsonwebtoken": {
+      "require": "./dist/cjs/platforms/jsonwebtoken.js",
+      "import": "./dist/esm/platforms/jsonwebtoken.js",
+      "types": "./dist/types/platforms/jsonwebtoken.d.ts"
+    },
+    "./platform-nestjsjwt": {
+      "require": "./dist/cjs/platforms/nestjsjwt.js",
+      "import": "./dist/esm/platforms/nestjsjwt.js",
+      "types": "./dist/types/platforms/nestjsjwt.d.ts"
+    }
   }
 }

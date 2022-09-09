@@ -1,111 +1,204 @@
-var Strategy = require('../lib/strategy')
-    , chai = require('chai')
-    , sinon = require('sinon')
-    , test_data= require('./testdata')
-    , url = require('url')
-    , extract_jwt = require('../lib/extract_jwt')
+var Strategy = require('../dist/cjs/jwt_strategy').JwtStrategy;
+var chai = require('chai');
+var sinon = require('sinon');
+var url = require('url');
+var extract_jwt = require('../dist/cjs/extract_jwt').ExtractJwt;
+var mock = require('./mock_data');
 
-
-describe('Strategy', function() {
-
-    var mockVerifier = null;
-
-    before(function() {
+describe('Strategy Request', function () {
+    var mockVerifier;
+    //
+    before(function () {
         // Replace the JWT Verfier with a stub to capture the value
         // extracted from the request
-        mockVerifier = sinon.stub();
-        mockVerifier.callsArgWith(3, null, test_data.valid_jwt.payload);
-        Strategy.JwtVerifier = mockVerifier;
+        mockVerifier = mockVerifier || sinon.spy(mock.jwtDriver, "validate");
     });
-    
 
+    describe('handling request with an unresolved extractor', function () {
+        var strategy, error;
 
-    describe('handling request JWT present in request', function() {
-        var strategy;
-
-        before(function(done) {
+        before(function (done) {
             strategy = new Strategy({
-                    jwtFromRequest: function (r) { return test_data.valid_jwt.token; },
-                    secretOrKey: 'secret'
+                    jwtFromRequest: function () {
+                        return Promise.reject(new Error('Unrolved extractor'));
+                    },
+                    secretOrKey: 'secret',
+                    jwtDriver: mock.jwtDriver
                 },
-                function(jwt_payload, next) {
+                function (jwt_payload, next) {
                     // Return values aren't important in this case
-                    return next(null, {}, {});
+                    next(null, jwt_payload);
                 }
             );
-            
-            mockVerifier.reset();
-           
+
             chai.passport.use(strategy)
-                .success(function(u, i) {
+                .error(function (err) {
+                    error = err;
                     done();
                 })
                 .authenticate();
         });
 
 
-        it("verifies the right jwt", function() {
+        it("should error when the extractor errors", function () {
+            expect(error).to.be.an.instanceof(Error);
+        });
+    });
+
+    describe('handling request with an resolved extractor', function () {
+        var strategy, user;
+
+        before(function (done) {
+            strategy = new Strategy({
+                    jwtFromRequest: function () {
+                        return Promise.resolve(mock.valid_jwt.token);
+                    },
+                    secretOrKey: 'secret',
+                    jwtDriver: mock.jwtDriver
+                },
+                function (jwt_payload, next) {
+                    // Return values aren't important in this case
+                    next(null, jwt_payload);
+                }
+            );
+
+            chai.passport.use(strategy)
+                .success(function (u) {
+                    user = u;
+                    done();
+                })
+                .authenticate();
+        });
+
+
+        it("should succeed when the extractor resolves", function () {
+            expect(user).to.be.an('object');
+        });
+    });
+
+    describe('handling request with an nulled extractor', function () {
+        var strategy, message;
+
+        before(function (done) {
+            strategy = new Strategy({
+                    jwtFromRequest: function () {
+                        return Promise.resolve(null);
+                    },
+                    secretOrKey: 'secret',
+                    jwtDriver: mock.jwtDriver
+                },
+                function (jwt_payload, next) {
+                    // Return values aren't important in this case
+                    next(null, jwt_payload);
+                }
+            );
+
+            chai.passport.use(strategy)
+                .fail(function (msg) {
+                    message = msg;
+                    done();
+                })
+                .authenticate();
+        });
+
+
+        it("should succeed when the extractor resolves", function () {
+            expect(message).to.be.equal('No auth token has been resolved');
+        });
+    });
+
+    describe('handling request JWT present in request', function () {
+        var strategy;
+
+        before(function (done) {
+            strategy = new Strategy({
+                    jwtFromRequest: mock.jwtExtractor,
+                    secretOrKey: 'secret',
+                    jwtDriver: mock.jwtDriver
+                },
+                function (jwt_payload, next) {
+                    // Return values aren't important in this case
+                    next(null, jwt_payload);
+                }
+            );
+
+            mockVerifier.resetHistory();
+
+            chai.passport.use(strategy)
+                .success(function (u, i) {
+                    done();
+                })
+                .authenticate();
+        });
+
+
+        it("verifies the right jwt", function () {
             sinon.assert.calledOnce(mockVerifier);
-            expect(mockVerifier.args[0][0]).to.equal(test_data.valid_jwt.token);
+            expect(mockVerifier.args[0][0]).to.equal(mock.valid_jwt.token);
         });
     });
 
 
-
-    describe('handling request with NO JWT', function() {
+    describe('handling request with NO JWT', function () {
 
         var info;
 
-        before(function(done) {
-            strategy = new Strategy({jwtFromRequest: function(r) {}, secretOrKey: 'secret'}, function(jwt_payload, next) {
+        before(function (done) {
+            strategy = new Strategy({
+                jwtFromRequest: function (r) {
+                }, secretOrKey: 'secret', jwtDriver: mock.jwtDriver
+            }, function (jwt_payload, next) {
                 // Return values aren't important in this case
                 return next(null, {}, {});
             });
-            
-            mockVerifier.reset();
-           
+
+            mockVerifier.resetHistory();
+
             chai.passport.use(strategy)
-                .fail(function(i) {
+                .fail(function (i) {
                     info = i
                     done();
                 })
-                .req(function(req) {
+                .request(function (req) {
                     req.body = {}
                 })
                 .authenticate();
         });
 
 
-        it('should fail authentication', function() {
-            expect(info).to.be.an.object;
-            expect(info.message).to.equal("No auth token");
+        it('should fail authentication', function () {
+            // expect(info).to.be.an("object");
+            expect(info).to.equal("No auth token");
         });
 
 
-        it('Should not try to verify anything', function() {
+        it('Should not try to verify anything', function () {
             sinon.assert.notCalled(mockVerifier);
         });
 
     });
 
-    describe('handling request url set to url.Url instead of string', function() {
+    describe('handling request url set to url.Url instead of string', function () {
 
         var info;
 
-        before(function(done) {
-            strategy = new Strategy({jwtFromRequest: function(r) {}, secretOrKey: 'secret'}, function(jwt_payload, next) {
+        before(function (done) {
+            strategy = new Strategy({
+                jwtFromRequest: function (r) {
+                }, secretOrKey: 'secret', jwtDriver: mock.jwtDriver
+            }, function (jwt_payload, next) {
                 // Return values aren't important in this case
                 return next(null, {}, {});
             });
 
-            mockVerifier.reset();
+            mockVerifier.resetHistory();
 
             chai.passport.use(strategy)
-                .fail(function(i) {
+                .fail(function (i) {
                     info = i
                     done();
                 })
-                .req(function(req) {
+                .request(function (req) {
                     req.body = {};
                     req.url = new url.Url('/');
                 })
@@ -113,11 +206,15 @@ describe('Strategy', function() {
         });
 
 
-        it('should fail authentication', function() {
-            expect(info).to.be.an.object;
-            expect(info.message).to.equal("No auth token");
+        it('should fail authentication', function () {
+            // expect(info).to.be.an.object;
+            expect(info).to.equal("No auth token");
         });
 
+    });
+
+    after(function () {
+        sinon.restore();
     });
 
 
