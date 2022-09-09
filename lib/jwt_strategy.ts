@@ -10,6 +10,11 @@ export type Payload = Record<string, any> | null | undefined;
 export type VerifyCallback<T extends Record<string, any>> = (user: T, callback: Verified<T>) => boolean;
 export type VerifyCallbackWithReq = (req: Request, payload: Payload, callback: Verified<object>) => boolean;
 
+export enum FailureMessages {
+    NO_TOKEN_ASYNC = "No auth token has been resolved",
+    NO_TOKEN = "No auth token",
+}
+
 export interface JwtStrategyOptionsBase<T = string> {
     jwtDriver: JwtDriver<any, any, T>;
     jwtFromRequest: JwtExtractor;
@@ -121,11 +126,11 @@ export class JwtStrategy<T extends Record<string, any>> extends Strategy {
         if (typeof tokenOrPromise === "string") {
             tokenOrPromise = Promise.resolve(tokenOrPromise);
         } else if (!(tokenOrPromise instanceof Promise)) {
-            return this.fail("No auth token");
+            return this.fail(FailureMessages.NO_TOKEN);
         }
         tokenOrPromise.then((token: string | null) => {
             if (!token) {
-                return this.fail("No auth token has been resolved");
+                return this.fail(FailureMessages.NO_TOKEN_ASYNC);
             }
             this.secretOrKeyProvider(req, token, (secretOrKeyError, secretOrKey) => {
                 if (secretOrKeyError) {
