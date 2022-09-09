@@ -92,7 +92,7 @@
         "default": "./dist/cjs/platforms/jose.js"
       },
       "import": {
-        "types": "./dist/types/platorms/jose.d.ts",
+        "types": "./dist/types/platforms/jose.d.ts",
         "default": "./dist/esm/platforms/jose.js"
       }
     },
@@ -112,7 +112,7 @@
         "default": "./dist/cjs/platforms/nestjsjwt.js"
       },
       "import": {
-        "types": "./dist/types/platorms/nestjsjwt.d.ts",
+        "types": "./dist/types/platforms/nestjsjwt.d.ts",
         "default": "./dist/esm/platforms/nestjsjwt.js"
       }
     }
