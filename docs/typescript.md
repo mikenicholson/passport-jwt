@@ -58,7 +58,7 @@ const strategy = new Strategy<MyPayload>({
         issuer: 'accounts.examplesoft.com'
         // intellisense here because of typescript
     }),
-    secretOrKey: 'secret'
+    secretOrKey: 'secret' // Type is determined by the driver
 }, (jwt_payload, done) => {
     // jwt_payload is of type MyPayload
     done(null, user);
