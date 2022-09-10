@@ -56,7 +56,7 @@ const strategy = new Strategy<MyPayload>({
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     jwtDriver: new JwtDriver(jose, {
         issuer: 'accounts.examplesoft.com'
-        // intellisense here because of typescript
+        // Intellisense here because of typescript
     }),
     secretOrKey: 'secret' // Type is determined by the driver
 }, (jwt_payload, done) => {
