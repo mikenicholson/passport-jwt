@@ -30,8 +30,11 @@
   },
   "homepage": "https://github.com/mikenicholson/passport-jwt",
   "devDependencies": {
+    "@nestjs/jwt": "^9.0.0",
     "chai": "^4.3.6",
     "chai-passport-strategy": "^3.0.0",
+    "jose": "^4.0.0",
+    "jsonwebtoken": "^8.0.0",
     "mocha": "^10.0.0",
     "nyc": "^15.1.0",
     "rimraf": "^3.0.2",
@@ -43,19 +46,22 @@
     "@types/jsonwebtoken": "^8.5.9",
     "@types/node": "^18.7.16",
     "@types/passport": "^1.0.10",
-    "jsonwebtoken": "^8.5.1",
     "passport": "^0.6.0",
     "tslib": "^2.4.0"
   },
   "peerDependencies": {
     "@nestjs/jwt": "^9.0.0 || ^8.0.0 || ^7.0.0",
-    "jose": "^4.0.0 || ^3.0.0"
+    "jose": "^4.0.0 || ^3.0.0",
+    "jsonwebtoken": "^8.0.0"
   },
   "peerDependenciesMeta": {
     "jose": {
       "optional": true
     },
     "@nestjs/jwt": {
+      "optional": true
+    },
+    "jsonwebtoken": {
       "optional": true
     }
   },
@@ -72,14 +78,8 @@
       }
     },
     "./auto": {
-      "require": {
-        "types": "./dist/types/auto/index.d.ts",
-        "default": "./dist/cjs/auto/index.js"
-      },
-      "import": {
-        "types": "./dist/types/auto/index.d.ts",
-        "default": "./dist/esm/auto/index.js"
-      }
+      "require": "./dist/cjs/auto/index.js",
+      "import": "./dist/esm/auto/index.js"
     },
     "./platform-jose": {
       "require": {
@@ -111,6 +111,5 @@
         "default": "./dist/esm/platforms/nestjsjwt.js"
       }
     }
-  },
-  "types": "./fallback.d.ts"
+  }
 }

@@ -21,6 +21,9 @@ If you want to quickly add secure token-based authentication to Node.js apps, fe
 
     npm install passport-jwt
 
+    # to test the new v5.x.x version
+    npm install https://github.com/Outternet/passport-jwt
+
 ## Usage
 
 ### Configure Strategy
@@ -178,7 +181,7 @@ jwtDriver: new MyDriver(jwtValid, {issuer: "sdf"}),
 ### `jsonwebtoken` driver
 `npm install jsonwebtoken` is the default library from auth0, although still supported it hasn't received an updated in years.
 ```typescript
-import jsonwebtoken from "jsonwebtoken";
+import * as jsonwebtoken from "jsonwebtoken";
 import {JsonWebTokenDriver} from "passport-jwt/platform-jsonwebtoken";
 // ...
 const jwt = new JsonWebTokenDriver(jsonwebtoken, {

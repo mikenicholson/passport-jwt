@@ -2,26 +2,27 @@ import { Strategy } from "passport";
 import type { JwtExtractor } from "./extract_jwt";
 import type { Request } from "express";
 import type { JwtDriver } from "./platforms/base";
-export declare type SecretOrKeyProvider<T = string> = (req: Request, rawJwtToken: string, callback: (secretOrKeyError: string | null, secretOrKey: T) => void) => void;
-export declare type Verified<T extends Record<string, any>> = (error: Error | null | string, user: T | null, infoOrMessage?: string | object) => void;
-export declare type Payload = Record<string, any> | null | undefined;
-export declare type VerifyCallback<T extends Record<string, any>> = (user: T, callback: Verified<T>) => boolean;
-export declare type VerifyCallbackWithReq = (req: Request, payload: Payload, callback: Verified<object>) => boolean;
+export declare type SecretOrKeyProvider<Key> = (req: Request, rawJwtToken: string, callback: (secretOrKeyError: string | null, secretOrKey: Key) => void) => void;
+export declare type DefaultPayload = Record<string, any>;
+export declare type DoneCallback = (error: Error | null | string, user: object | null, infoOrMessage?: string | object) => void;
+export declare type VerifyCallback<Payload extends DefaultPayload> = (user: Payload, done: DoneCallback) => void;
+export declare type VerifyCallbackWithReq<Payload extends DefaultPayload> = (req: Request, payload: Payload, done: DoneCallback) => void;
+export declare type BasicVerifyCallback = (reqOrUser: any, payloadOrDone: any, done?: any) => void;
 export declare enum FailureMessages {
     NO_TOKEN_ASYNC = "No auth token has been resolved",
     NO_TOKEN = "No auth token"
 }
-export interface JwtStrategyOptionsBase<T = string> {
-    jwtDriver: JwtDriver<any, any, T>;
+export interface JwtStrategyOptionsBase<Key> {
+    jwtDriver: JwtDriver<any, any, Key>;
     jwtFromRequest: JwtExtractor;
     passReqToCallback?: boolean;
 }
-export declare type ProviderOrValue<T = string> = ({
-    secretOrKeyProvider: SecretOrKeyProvider<T>;
+export declare type ProviderOrValue<Key> = ({
+    secretOrKeyProvider: SecretOrKeyProvider<Key>;
 } | {
-    secretOrKey: T;
+    secretOrKey: Key;
 });
-export declare type JwtStrategyOptions<T = string> = ProviderOrValue<T> & JwtStrategyOptionsBase;
+export declare type JwtStrategyOptions<Key = string> = ProviderOrValue<Key> & JwtStrategyOptionsBase<Key>;
 /**
  * Strategy constructor
  *
@@ -41,7 +42,7 @@ export declare type JwtStrategyOptions<T = string> = ProviderOrValue<T> & JwtStr
  * @param verify - Verify callback with args (jwt_payload, done_callback) if passReqToCallback is false,
  *                 (request, jwt_payload, done_callback) if true.
  */
-export declare class JwtStrategy<T extends Record<string, any>> extends Strategy {
+export declare class JwtStrategy<Payload extends DefaultPayload = DefaultPayload, Verify extends BasicVerifyCallback = VerifyCallback<Payload>, Key = string> extends Strategy {
     protected static ignoreLegacy: boolean;
     name: string;
     private secretOrKeyProvider;
@@ -49,7 +50,8 @@ export declare class JwtStrategy<T extends Record<string, any>> extends Strategy
     private jwtFromRequest;
     private passReqToCallback;
     private driver;
-    constructor(extOptions: JwtStrategyOptions, verify: VerifyCallback<T>);
-    private verifiedInternal;
+    constructor(extOptions: JwtStrategyOptions<Key>, verify: Verify);
+    protected verifiedInternal(err: Error | null | string, user: null | object, infoOrMessage?: string | object): void;
+    protected processTokenInternal(secretOrKeyError: string | null, secretOrKey: Key, token: string, req: Request): void;
     authenticate(req: Request): void;
 }

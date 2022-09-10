@@ -3,40 +3,40 @@ import type {JwtExtractor} from "./extract_jwt";
 import type {Request} from "express";
 import type {JwtDriver} from "./platforms/base";
 
-export type SecretOrKeyProvider<T = string> = (req: Request, rawJwtToken: string, callback: (secretOrKeyError: string | null, secretOrKey: T) => void) => void;
-
-export type Verified<T extends Record<string, any>> = (error: Error | null | string, user: T | null, infoOrMessage?: string | object) => void;
-export type Payload = Record<string, any> | null | undefined;
-export type VerifyCallback<T extends Record<string, any>> = (user: T, callback: Verified<T>) => boolean;
-export type VerifyCallbackWithReq = (req: Request, payload: Payload, callback: Verified<object>) => boolean;
+export type SecretOrKeyProvider<Key> = (req: Request, rawJwtToken: string, callback: (secretOrKeyError: string | null, secretOrKey: Key) => void) => void;
+export type DefaultPayload = Record<string, any>;
+export type DoneCallback = (error: Error | null | string, user: object | null, infoOrMessage?: string | object) => void;
+export type VerifyCallback<Payload extends DefaultPayload> = (user: Payload, done: DoneCallback) => void;
+export type VerifyCallbackWithReq<Payload extends DefaultPayload> = (req: Request, payload: Payload, done: DoneCallback) => void;
+export type BasicVerifyCallback = (reqOrUser: any, payloadOrDone: any, done?: any) => void;
 
 export enum FailureMessages {
     NO_TOKEN_ASYNC = "No auth token has been resolved",
     NO_TOKEN = "No auth token",
 }
 
-export interface JwtStrategyOptionsBase<T = string> {
-    jwtDriver: JwtDriver<any, any, T>;
+export interface JwtStrategyOptionsBase<Key> {
+    jwtDriver: JwtDriver<any, any, Key>;
     jwtFromRequest: JwtExtractor;
     passReqToCallback?: boolean;
 }
 
-export type ProviderOrValue<T = string> = ({
-    secretOrKeyProvider: SecretOrKeyProvider<T>;
+export type ProviderOrValue<Key> = ({
+    secretOrKeyProvider: SecretOrKeyProvider<Key>;
 } | {
-    secretOrKey: T;
+    secretOrKey: Key;
 });
 
-type ProviderAndValue = ({
-    secretOrKeyProvider?: SecretOrKeyProvider;
-    secretOrKey?: string;
+type ProviderAndValue<Key> = ({
+    secretOrKeyProvider?: SecretOrKeyProvider<Key>;
+    secretOrKey?: Key;
     jsonWebTokenOptions: undefined;
     issuer: string;
     audience: string;
 })
 
-export type JwtStrategyOptions<T = string> = ProviderOrValue<T> & JwtStrategyOptionsBase;
-type JwtStrategyOptionsInternal = ProviderAndValue & JwtStrategyOptionsBase;
+export type JwtStrategyOptions<Key = string> = ProviderOrValue<Key> & JwtStrategyOptionsBase<Key>;
+type JwtStrategyOptionsInternal<Key> = ProviderAndValue<Key> & JwtStrategyOptionsBase<Key>;
 
 /**
  * Strategy constructor
@@ -57,20 +57,21 @@ type JwtStrategyOptionsInternal = ProviderAndValue & JwtStrategyOptionsBase;
  * @param verify - Verify callback with args (jwt_payload, done_callback) if passReqToCallback is false,
  *                 (request, jwt_payload, done_callback) if true.
  */
-export class JwtStrategy<T extends Record<string, any>> extends Strategy {
+export class JwtStrategy<Payload extends DefaultPayload = DefaultPayload,
+    Verify extends BasicVerifyCallback = VerifyCallback<Payload>, Key = string> extends Strategy {
 
     protected static ignoreLegacy = false;
 
     public name = "jwt";
-    private secretOrKeyProvider: SecretOrKeyProvider;
-    private verify: VerifyCallback<T>;
+    private secretOrKeyProvider: SecretOrKeyProvider<Key>;
+    private verify: Verify;
     private jwtFromRequest: JwtExtractor;
     private passReqToCallback: boolean;
-    private driver: JwtDriver<any, any, any>;
+    private driver: JwtDriver<any, any, Key>;
 
-    constructor(extOptions: JwtStrategyOptions, verify: VerifyCallback<T>) {
+    constructor(extOptions: JwtStrategyOptions<Key>, verify: Verify) {
         super();
-        const options = extOptions as JwtStrategyOptionsInternal;
+        const options = extOptions as JwtStrategyOptionsInternal<Key>;
         this.secretOrKeyProvider = options.secretOrKeyProvider!;
 
         this.driver = options.jwtDriver;
@@ -108,7 +109,7 @@ export class JwtStrategy<T extends Record<string, any>> extends Strategy {
         this.passReqToCallback = !!options.passReqToCallback;
     }
 
-    private verifiedInternal(err: Error | null | string, user: null | object, infoOrMessage?: string | object) {
+    protected verifiedInternal(err: Error | null | string, user: null | object, infoOrMessage?: string | object) {
         if (err) {
             if (typeof err === 'string') {
                 err = new Error(err);
@@ -121,6 +122,35 @@ export class JwtStrategy<T extends Record<string, any>> extends Strategy {
         }
     };
 
+    protected processTokenInternal(secretOrKeyError: string | null, secretOrKey: Key, token: string, req: Request): void {
+        if (secretOrKeyError) {
+            return this.fail(secretOrKeyError);
+        }
+        // Verify the JWT
+        this.driver.validate<Payload>(token, secretOrKey).then((result) => {
+            if (!result.success) {
+                if (result.message) {
+                    return this.fail(result.message);
+                } else {
+                    return this.error(new Error("Unknown Driver Error"));
+                }
+            }
+            try {
+                if (this.passReqToCallback) {
+                    (this.verify as VerifyCallbackWithReq<Payload>)(req, result.payload,
+                        (error, user, infoOrMessage) => this.verifiedInternal(error, user, infoOrMessage)
+                    );
+                } else {
+                    (this.verify as VerifyCallback<Payload>)(result.payload,
+                        (error, user, infoOrMessage) => this.verifiedInternal(error, user, infoOrMessage)
+                    );
+                }
+            } catch (ex) {
+                this.error(ex);
+            }
+        })
+    }
+
     public authenticate(req: Request): void {
         let tokenOrPromise = this.jwtFromRequest(req);
         if (typeof tokenOrPromise === "string") {
@@ -132,30 +162,9 @@ export class JwtStrategy<T extends Record<string, any>> extends Strategy {
             if (!token) {
                 return this.fail(FailureMessages.NO_TOKEN_ASYNC);
             }
-            this.secretOrKeyProvider(req, token, (secretOrKeyError, secretOrKey) => {
-                if (secretOrKeyError) {
-                    return this.fail(secretOrKeyError);
-                }
-                // Verify the JWT
-                this.driver.validate<T>(token, secretOrKey).then((result) => {
-                    if (!result.success) {
-                        if (result.message) {
-                            return this.fail(result.message);
-                        } else {
-                            return this.error(new Error("Unknown Driver Error"));
-                        }
-                    }
-                    try {
-                        if (this.passReqToCallback) {
-                            (this.verify as unknown as VerifyCallbackWithReq)(req, result.payload, (...args) => this.verifiedInternal(...args));
-                        } else {
-                            this.verify(result.payload, (...args) => this.verifiedInternal(...args));
-                        }
-                    } catch (ex) {
-                        this.error(ex);
-                    }
-                })
-            });
+            this.secretOrKeyProvider(req, token,
+                (err, key) => this.processTokenInternal(err, key, token, req)
+            );
         }).catch((error) => {
             this.error(error);
         });

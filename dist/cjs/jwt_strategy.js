@@ -78,6 +78,34 @@ var JwtStrategy = /** @class */ (function (_super) {
         }
     };
     ;
+    JwtStrategy.prototype.processTokenInternal = function (secretOrKeyError, secretOrKey, token, req) {
+        var _this = this;
+        if (secretOrKeyError) {
+            return this.fail(secretOrKeyError);
+        }
+        // Verify the JWT
+        this.driver.validate(token, secretOrKey).then(function (result) {
+            if (!result.success) {
+                if (result.message) {
+                    return _this.fail(result.message);
+                }
+                else {
+                    return _this.error(new Error("Unknown Driver Error"));
+                }
+            }
+            try {
+                if (_this.passReqToCallback) {
+                    _this.verify(req, result.payload, function (error, user, infoOrMessage) { return _this.verifiedInternal(error, user, infoOrMessage); });
+                }
+                else {
+                    _this.verify(result.payload, function (error, user, infoOrMessage) { return _this.verifiedInternal(error, user, infoOrMessage); });
+                }
+            }
+            catch (ex) {
+                _this.error(ex);
+            }
+        });
+    };
     JwtStrategy.prototype.authenticate = function (req) {
         var _this = this;
         var tokenOrPromise = this.jwtFromRequest(req);
@@ -91,45 +119,7 @@ var JwtStrategy = /** @class */ (function (_super) {
             if (!token) {
                 return _this.fail(FailureMessages.NO_TOKEN_ASYNC);
             }
-            _this.secretOrKeyProvider(req, token, function (secretOrKeyError, secretOrKey) {
-                if (secretOrKeyError) {
-                    return _this.fail(secretOrKeyError);
-                }
-                // Verify the JWT
-                _this.driver.validate(token, secretOrKey).then(function (result) {
-                    if (!result.success) {
-                        if (result.message) {
-                            return _this.fail(result.message);
-                        }
-                        else {
-                            return _this.error(new Error("Unknown Driver Error"));
-                        }
-                    }
-                    try {
-                        if (_this.passReqToCallback) {
-                            _this.verify(req, result.payload, function () {
-                                var args = [];
-                                for (var _i = 0; _i < arguments.length; _i++) {
-                                    args[_i] = arguments[_i];
-                                }
-                                return _this.verifiedInternal.apply(_this, args);
-                            });
-                        }
-                        else {
-                            _this.verify(result.payload, function () {
-                                var args = [];
-                                for (var _i = 0; _i < arguments.length; _i++) {
-                                    args[_i] = arguments[_i];
-                                }
-                                return _this.verifiedInternal.apply(_this, args);
-                            });
-                        }
-                    }
-                    catch (ex) {
-                        _this.error(ex);
-                    }
-                });
-            });
+            _this.secretOrKeyProvider(req, token, function (err, key) { return _this.processTokenInternal(err, key, token, req); });
         }).catch(function (error) {
             _this.error(error);
         });

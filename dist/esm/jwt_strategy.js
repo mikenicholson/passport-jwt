@@ -72,6 +72,33 @@ export class JwtStrategy extends Strategy {
         }
     }
     ;
+    processTokenInternal(secretOrKeyError, secretOrKey, token, req) {
+        if (secretOrKeyError) {
+            return this.fail(secretOrKeyError);
+        }
+        // Verify the JWT
+        this.driver.validate(token, secretOrKey).then((result) => {
+            if (!result.success) {
+                if (result.message) {
+                    return this.fail(result.message);
+                }
+                else {
+                    return this.error(new Error("Unknown Driver Error"));
+                }
+            }
+            try {
+                if (this.passReqToCallback) {
+                    this.verify(req, result.payload, (error, user, infoOrMessage) => this.verifiedInternal(error, user, infoOrMessage));
+                }
+                else {
+                    this.verify(result.payload, (error, user, infoOrMessage) => this.verifiedInternal(error, user, infoOrMessage));
+                }
+            }
+            catch (ex) {
+                this.error(ex);
+            }
+        });
+    }
     authenticate(req) {
         let tokenOrPromise = this.jwtFromRequest(req);
         if (typeof tokenOrPromise === "string") {
@@ -84,33 +111,7 @@ export class JwtStrategy extends Strategy {
             if (!token) {
                 return this.fail(FailureMessages.NO_TOKEN_ASYNC);
             }
-            this.secretOrKeyProvider(req, token, (secretOrKeyError, secretOrKey) => {
-                if (secretOrKeyError) {
-                    return this.fail(secretOrKeyError);
-                }
-                // Verify the JWT
-                this.driver.validate(token, secretOrKey).then((result) => {
-                    if (!result.success) {
-                        if (result.message) {
-                            return this.fail(result.message);
-                        }
-                        else {
-                            return this.error(new Error("Unknown Driver Error"));
-                        }
-                    }
-                    try {
-                        if (this.passReqToCallback) {
-                            this.verify(req, result.payload, (...args) => this.verifiedInternal(...args));
-                        }
-                        else {
-                            this.verify(result.payload, (...args) => this.verifiedInternal(...args));
-                        }
-                    }
-                    catch (ex) {
-                        this.error(ex);
-                    }
-                });
-            });
+            this.secretOrKeyProvider(req, token, (err, key) => this.processTokenInternal(err, key, token, req));
         }).catch((error) => {
             this.error(error);
         });
