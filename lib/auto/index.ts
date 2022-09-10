@@ -10,7 +10,7 @@ interface LegacyOptions {
     jsonWebTokenOptions?: VerifyOptions
 }
 
-export type JwtAutoStrategyOptions =
+type JwtAutoStrategyOptions =
     Omit<JwtStrategyOptionsBase<string>, "jwtDriver">
     & ProviderOrValue<string>
     & LegacyOptions;
@@ -42,4 +42,4 @@ class JwtAutoStrategy<Payload extends DefaultPayload = DefaultPayload,
     }
 }
 
-export {JwtAutoStrategy as Strategy};
+export {JwtAutoStrategy as Strategy, JwtAutoStrategyOptions};

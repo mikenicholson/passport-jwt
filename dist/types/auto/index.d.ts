@@ -8,10 +8,10 @@ interface LegacyOptions {
     ignoreExpiration?: boolean;
     jsonWebTokenOptions?: VerifyOptions;
 }
-export declare type JwtAutoStrategyOptions = Omit<JwtStrategyOptionsBase<string>, "jwtDriver"> & ProviderOrValue<string> & LegacyOptions;
+declare type JwtAutoStrategyOptions = Omit<JwtStrategyOptionsBase<string>, "jwtDriver"> & ProviderOrValue<string> & LegacyOptions;
 declare class JwtAutoStrategy<Payload extends DefaultPayload = DefaultPayload, Verify extends BasicVerifyCallback = VerifyCallback<Payload>> extends JwtStrategy<Payload, Verify, string> {
     static OverrideAutoDriver: typeof JsonWebTokenDriver;
     protected static ignoreLegacy: boolean;
     constructor(extOptions: JwtAutoStrategyOptions, verify: Verify);
 }
-export { JwtAutoStrategy as Strategy };
+export { JwtAutoStrategy as Strategy, JwtAutoStrategyOptions };
