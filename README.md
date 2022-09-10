@@ -125,6 +125,8 @@ const strategy = new Strategy({
 
 passport.use(strategy);
 ```
+To More strictly define the types you could use `new Strategy<MyPayload, MyKey, MyValidator>`.
+But this is optional because the key and validation type are already determined from the given options.
 
 # Drivers
 Drivers validate the jwt and return the payload to `passport`. 
