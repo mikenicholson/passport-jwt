@@ -23,6 +23,7 @@ If you want to quickly add secure token-based authentication to Node.js apps, fe
 
     # to test the new v5.x.x version
     npm install https://github.com/Outternet/passport-jwt
+    npm install <mydriverpackage> // see drivers below for options
 
 ## Usage
 
@@ -30,7 +31,7 @@ If you want to quickly add secure token-based authentication to Node.js apps, fe
 
 The JWT authentication strategy is constructed as follows:
 
-    new JwtStrategy(options, verify)
+    new JwtStrategy(options, verify);
 
 `options` is an object literal containing options to control how the token is
 extracted from the request or verified.
