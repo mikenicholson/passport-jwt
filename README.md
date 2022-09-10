@@ -276,10 +276,10 @@ opts.jwtFromRequest = commaExtractor;
 **Or** in typescript (only as of v5.x.x)
 
 ```typescript
-import {JwtExtractor} from "passport-jwt";
+import {JwtExtractorType} from "passport-jwt";
 
 // can return a promise and therefore be async
-export const commaExtractor: JwtExtractor = async (req /* :Request is implicitly added */) => {
+export const commaExtractor: JwtExtractorType = async (req /* :Request is implicitly added */) => {
     let token = null;
     if("jwt" in req.cookies && typeof req.cookies["jwt"] === "string") {
       token = req.cookies["jwt"];
