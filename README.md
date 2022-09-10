@@ -179,7 +179,7 @@ jwtDriver: new MyDriver(jwtValid, {issuer: "sdf"}),
 `npm install jsonwebtoken` is the default library from auth0, although still supported it hasn't received an updated in years.
 ```typescript
 import jsonwebtoken from "jsonwebtoken";
-import {JsonWebTokenDriver} from "passport-jwt/jsonwebtoken";
+import {JsonWebTokenDriver} from "passport-jwt/platform-jsonwebtoken";
 // ...
 const jwt = new JsonWebTokenDriver(jsonwebtoken, {
     // view the jsonwebtoken package for all options, legacy options can be used here.
@@ -266,7 +266,7 @@ var commaExtractor = function(req) {
     return token;
 };
 // ...
-opts.jwtFromRequest = cookieExtractor;
+opts.jwtFromRequest = commaExtractor;
 ```
 **Or** in typescript (only as of v5.x.x)
 
