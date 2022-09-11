@@ -199,7 +199,7 @@ jwtDriver = jwt,
 // ...
 ```
 ### `jose` driver
-`npm install jose` is a modern everything json library. recommended to use over `jsonwebtoken`.
+`npm install jose` is a modern everything json library, recommended to use over `jsonwebtoken`.
 ```typescript
 import * as jose from "jose";
 import {JoseDriver} from "passport-jwt/platform-jose";
