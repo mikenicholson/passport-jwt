@@ -188,7 +188,7 @@ jwtDriver: new MyDriver(jwtValid, {issuer: "sdf"}),
 ### `jsonwebtoken` driver
 `npm install jsonwebtoken` is the default library from auth0, although still supported it hasn't received an update in years.
 ```typescript
-import * as jsonwebtoken from "jsonwebtoken";
+import jsonwebtoken from "jsonwebtoken"; //requires EsModuleInterop: true
 import {JsonWebTokenDriver} from "passport-jwt/platform-jsonwebtoken";
 // ...
 const jwt = new JsonWebTokenDriver(jsonwebtoken, {
