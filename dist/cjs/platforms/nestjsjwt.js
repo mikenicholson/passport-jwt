@@ -34,5 +34,5 @@ var NestJsJwtDriver = /** @class */ (function (_super) {
         });
     };
     return NestJsJwtDriver;
-}(base_1.JwtDriver));
+}(base_1.JwtProvidedDriver));
 exports.NestJsJwtDriver = NestJsJwtDriver;

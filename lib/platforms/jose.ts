@@ -9,7 +9,7 @@ export class JoseDriver extends JwtDriver<JoseDriverType, VerifyOptions, KeyLike
     protected defaultOptions: VerifyOptions = {algorithms: ["HS256"]};
 
     constructor(
-        protected readonly driver: JoseDriverType,
+        public readonly driver: JoseDriverType,
         protected readonly options?: VerifyOptions
     ) {
         if (typeof driver !== "object" || !("jwtVerify" in driver) || typeof driver["jwtVerify"] !== "function") {

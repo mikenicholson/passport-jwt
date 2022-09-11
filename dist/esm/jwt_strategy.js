@@ -1,6 +1,7 @@
 import { Strategy } from "passport";
 export var FailureMessages;
 (function (FailureMessages) {
+    FailureMessages["NO_KEY_FROM_PROVIDER"] = "Provider did not return a key.";
     FailureMessages["NO_TOKEN_ASYNC"] = "No auth token has been resolved";
     FailureMessages["NO_TOKEN"] = "No auth token";
 })(FailureMessages || (FailureMessages = {}));
@@ -25,15 +26,23 @@ export var FailureMessages;
  */
 export class JwtStrategy extends Strategy {
     constructor(extOptions, verify) {
+        var _a;
         super();
         this.name = "jwt";
         const options = extOptions;
         this.secretOrKeyProvider = options.secretOrKeyProvider;
+        this.checkIfProviderWorksTimeout = (_a = options.checkIfProviderWorksTimeout) !== null && _a !== void 0 ? _a : 30000;
         this.driver = options.jwtDriver;
         if (!this.driver) {
             throw new TypeError("JwtStrategy requires a driver to function (see option jwtDriver) or alternatively import the strategy from 'passport-jwt/auto' to auto register the driver");
         }
-        if (options.secretOrKey || this.driver.constructor.name === "NestJsJwtDriver") {
+        if (this.driver["keyIsProvidedByMe"]) {
+            if (options.secretOrKey || options.secretOrKeyProvider) {
+                throw new TypeError("SecretOrKey is provided by the driver and cannot be given as an option.");
+            }
+            options.secretOrKey = "set by driver";
+        }
+        if (options.secretOrKey) {
             if (this.secretOrKeyProvider) {
                 throw new TypeError('JwtStrategy has been given both a secretOrKey and a secretOrKeyProvider');
             }
@@ -72,9 +81,13 @@ export class JwtStrategy extends Strategy {
         }
     }
     ;
-    processTokenInternal(secretOrKeyError, secretOrKey, token, req) {
-        if (secretOrKeyError) {
-            return this.fail(secretOrKeyError);
+    processTokenInternal(secretOrKeyError, secretOrKey, token, req, timeout) {
+        if (this.checkIfProviderWorksTimeout !== -1) {
+            this.checkIfProviderWorksTimeout = -1;
+            clearTimeout(timeout);
+        }
+        if (secretOrKeyError || !secretOrKey) {
+            return this.fail(secretOrKeyError !== null && secretOrKeyError !== void 0 ? secretOrKeyError : FailureMessages.NO_KEY_FROM_PROVIDER);
         }
         // Verify the JWT
         this.driver.validate(token, secretOrKey).then((result) => {
@@ -101,6 +114,7 @@ export class JwtStrategy extends Strategy {
     }
     authenticate(req) {
         let tokenOrPromise = this.jwtFromRequest(req);
+        let timeout = undefined;
         if (typeof tokenOrPromise === "string") {
             tokenOrPromise = Promise.resolve(tokenOrPromise);
         }
@@ -111,7 +125,25 @@ export class JwtStrategy extends Strategy {
             if (!token) {
                 return this.fail(FailureMessages.NO_TOKEN_ASYNC);
             }
-            this.secretOrKeyProvider(req, token, (err, key) => this.processTokenInternal(err, key, token, req));
+            if (this.checkIfProviderWorksTimeout !== -1) {
+                // 30 seconds should be enough for a provider to give a secret the first time.
+                timeout = setTimeout(() => this.error(new TypeError("Provider did timeout, if you are sure it works you can disable the timeout check by setting checkIfProviderWorksTimeout to -1.")), this.checkIfProviderWorksTimeout);
+            }
+            const provided = this.secretOrKeyProvider(req, token, (err, key) => this.processTokenInternal(err, key, token, req, timeout));
+            if (provided) {
+                if (provided instanceof Promise) {
+                    provided
+                        .then(key => this.processTokenInternal(null, key, token, req, timeout))
+                        .catch(error => {
+                        clearTimeout(timeout);
+                        this.error(error);
+                    });
+                }
+                else {
+                    clearTimeout(timeout);
+                    this.error(new TypeError("SecretOrKeyProvider provided something other then Promise"));
+                }
+            }
         }).catch((error) => {
             this.error(error);
         });

@@ -1,4 +1,4 @@
-import { DefaultPayload, JwtStrategy, JwtStrategyOptionsBase, ProviderOrValue, VerifyCallback, BasicVerifyCallback } from "../jwt_strategy";
+import { DefaultPayload, JwtStrategy, JwtStrategyOptionsBase, VerifyCallback, BasicVerifyCallback, ProviderOrValueBase } from "../jwt_strategy";
 import { JsonWebTokenDriver } from "../platforms/jsonwebtoken";
 import { VerifyOptions, Algorithm } from "jsonwebtoken";
 interface LegacyOptions {
@@ -7,9 +7,10 @@ interface LegacyOptions {
     algorithms?: Algorithm[];
     ignoreExpiration?: boolean;
     jsonWebTokenOptions?: VerifyOptions;
+    jwtDriver?: undefined;
 }
-declare type JwtAutoStrategyOptions = Omit<JwtStrategyOptionsBase<string>, "jwtDriver"> & ProviderOrValue<string> & LegacyOptions;
-declare class JwtAutoStrategy<Payload extends DefaultPayload = DefaultPayload, Verify extends BasicVerifyCallback = VerifyCallback<Payload>> extends JwtStrategy<Payload, Verify, string> {
+declare type JwtAutoStrategyOptions = ProviderOrValueBase<string, "jwtDriver"> & JwtStrategyOptionsBase & LegacyOptions;
+declare class JwtAutoStrategy<Payload extends DefaultPayload = DefaultPayload, Verify extends BasicVerifyCallback = VerifyCallback<Payload>> extends JwtStrategy<Payload, Verify> {
     static OverrideAutoDriver: typeof JsonWebTokenDriver;
     protected static ignoreLegacy: boolean;
     constructor(extOptions: JwtAutoStrategyOptions, verify: Verify);

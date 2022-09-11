@@ -7,7 +7,7 @@ export class JsonWebTokenDriver extends JwtDriver<JsonWebTokenDriverType, Verify
     protected defaultOptions: VerifyOptions = {algorithms: ["HS256"]};
 
     constructor(
-        protected readonly driver: JsonWebTokenDriverType,
+        public readonly driver: JsonWebTokenDriverType,
         protected readonly options?: VerifyOptions
     ) {
         if(typeof driver !== "object" || !("verify" in driver) || typeof driver["verify"] !== "function") {

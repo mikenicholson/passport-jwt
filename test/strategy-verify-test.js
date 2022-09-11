@@ -256,6 +256,159 @@ describe('Strategy Verify', function () {
         });
     });
 
+    describe('handling a request when constructed with a secretOrKeyProvider function that returns something else', function () {
+        var errorMessage;
+
+        before(function (done) {
+            fakeSecretOrKeyProvider = sinon.spy(function (request, token, done) {
+                return {message: "i could be some internal error"};
+            });
+            opts = {
+                secretOrKeyProvider: fakeSecretOrKeyProvider,
+                jwtDriver: mock.jwtDriver,
+                jwtFromRequest: function (request) {
+                    return 'an undecoded jwt string';
+                }
+            }
+            strategy = new Strategy(opts, function (jwtPayload, next) {
+                return next(null, {user_id: 'dont care'}, {});
+            });
+
+            chai.passport.use(strategy)
+                .error(function (i) {
+                    errorMessage = i;
+                    done();
+                })
+                .authenticate();
+        });
+
+        it('should fail with the error message from the secretOrKeyProvider', function () {
+            expect(errorMessage).to.be.instanceof(TypeError);
+        });
+    });
+
+
+    describe('handling a request when constructed with a secretOrKeyProvider function that resolves a promise', function () {
+        var userObject;
+
+        before(function (done) {
+            fakeSecretOrKeyProvider = sinon.spy(function (request, token) {
+                return Promise.resolve('secret');
+            });
+            opts = {
+                secretOrKeyProvider: fakeSecretOrKeyProvider,
+                jwtDriver: mock.jwtDriver,
+                jwtFromRequest: mock.jwtExtractor
+            }
+            strategy = new Strategy(opts, function (jwtPayload, next) {
+                return next(null, {user_id: 'dont care'}, {});
+            });
+
+            chai.passport.use(strategy)
+                .success(function (i) {
+                    userObject = i;
+                    done();
+                })
+                .authenticate();
+        });
+
+        it('should successfully authenticate user', function () {
+            expect(userObject).to.be.deep.equal({user_id: 'dont care'});
+        });
+    });
+
+    describe('handling a request when constructed with a secretOrKeyProvider function that rejects a promise', function () {
+        var errorMessage;
+
+        before(function (done) {
+            fakeSecretOrKeyProvider = sinon.spy(function (request, token) {
+                return Promise.reject(new Error('Error occurred looking for the secret'));
+            });
+            opts = {
+                secretOrKeyProvider: fakeSecretOrKeyProvider,
+                jwtDriver: mock.jwtDriver,
+                jwtFromRequest: function (request) {
+                    return 'an undecoded jwt string';
+                }
+            }
+            strategy = new Strategy(opts, function (jwtPayload, next) {
+                return next(null, {user_id: 'dont care'}, {});
+            });
+
+            chai.passport.use(strategy)
+                .error(function (i) {
+                    errorMessage = i;
+                    done();
+                })
+                .authenticate();
+        });
+
+        it('should fail with the error message from the secretOrKeyProvider Promise', function () {
+            expect(errorMessage).to.be.instanceof(Error);
+        });
+    });
+
+    describe('handling a request when constructed with a secretOrKeyProvider function that gives null to a promise', function () {
+        var errorMessage;
+
+        before(function (done) {
+            fakeSecretOrKeyProvider = sinon.spy(function (request, token) {
+                return Promise.resolve(null);
+            });
+            opts = {
+                secretOrKeyProvider: fakeSecretOrKeyProvider,
+                jwtDriver: mock.jwtDriver,
+                jwtFromRequest: function (request) {
+                    return 'an undecoded jwt string';
+                }
+            }
+            strategy = new Strategy(opts, function (jwtPayload, next) {
+                return next(null, {user_id: 'dont care'}, {});
+            });
+
+            chai.passport.use(strategy)
+                .fail(function (i) {
+                    errorMessage = i;
+                    done();
+                })
+                .authenticate();
+        });
+
+        it('should fail with a generic error message', function () {
+            expect(errorMessage).to.equal('Provider did not return a key.');
+        });
+    });
+
+    describe('handling a request when constructed with a secretOrKeyProvider function that does timeout', function () {
+        var errorObj;
+
+        before(function (done) {
+            fakeSecretOrKeyProvider = sinon.spy(function (request, token) {
+
+            });
+            opts = {
+                secretOrKeyProvider: fakeSecretOrKeyProvider,
+                jwtDriver: mock.jwtDriver,
+                jwtFromRequest: mock.jwtExtractor,
+                checkIfProviderWorksTimeout: 500
+            }
+            strategy = new Strategy(opts, function (jwtPayload, next) {
+                return next(null, {user_id: 'dont care'}, {});
+            });
+
+            chai.passport.use(strategy)
+                .error(function (i) {
+                    errorObj = i;
+                    done();
+                })
+                .authenticate();
+        });
+
+        it('should error with a timeout message', function () {
+            expect(errorObj).to.be.instanceof(TypeError);
+        });
+    });
+
     after(function () {
         sinon.restore();
     })

@@ -1,13 +1,13 @@
-import {JwtDriver, JwtResult, JwtResultInternal} from "./base";
+import {JwtProvidedDriver, JwtResult, JwtResultInternal} from "./base";
 import type {JwtVerifyOptions, JwtService} from "@nestjs/jwt";
 
 type NestJsJwtDriverType = { verify: JwtService["verify"] };
 
-export class NestJsJwtDriver extends JwtDriver<NestJsJwtDriverType, JwtVerifyOptions, undefined> {
+export class NestJsJwtDriver extends JwtProvidedDriver<NestJsJwtDriverType, JwtVerifyOptions> {
     protected defaultOptions: JwtVerifyOptions = {algorithms: ["HS256"]};
 
     constructor(
-        protected readonly driver: NestJsJwtDriverType,
+        public readonly driver: NestJsJwtDriverType,
         protected readonly options?: JwtVerifyOptions
     ) {
         if (typeof driver !== "object" || !("verify" in driver) || typeof driver["verify"] !== "function") {

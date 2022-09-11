@@ -306,6 +306,7 @@ describe("Jwt Driver Validation", function () {
                     done();
                 })
                 .fail(function (err) {
+                    console.log({err});
                     done();
                 })
                 .error(function (err) {

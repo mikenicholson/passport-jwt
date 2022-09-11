@@ -1,6 +1,6 @@
 import { __awaiter } from "tslib";
-import { JwtDriver } from "./base";
-export class NestJsJwtDriver extends JwtDriver {
+import { JwtProvidedDriver } from "./base";
+export class NestJsJwtDriver extends JwtProvidedDriver {
     constructor(driver, options) {
         if (typeof driver !== "object" || !("verify" in driver) || typeof driver["verify"] !== "function") {
             throw new TypeError("A none '@nestjs/jwt' compatible core has been passed.");

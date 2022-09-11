@@ -41,6 +41,16 @@ describe('Strategy Init', function () {
         }).to.throw(TypeError, 'JwtStrategy requires a secret or key');
     });
 
+    it('should throw if a driver with a buildin key and a secretOrKey is provided.', function () {
+        expect(function () {
+            var s = new Strategy({
+                jwtFromRequest: function (r) {
+                }, secretOrKey: "sadf", jwtDriver: {keyIsProvidedByMe: true}
+            }, function () {
+            });
+        }).to.throw(TypeError, 'SecretOrKey is provided by the driver and cannot be given as an option.');
+    });
+
 
     it('should throw if constructed with both a secretOrKey and a secretOrKeyProvider', function () {
         expect(function () {

@@ -3,7 +3,8 @@ import {
     JwtStrategyOptions,
     FailureMessages,
     VerifyCallback,
-    VerifyCallbackWithReq
+    VerifyCallbackWithReq,
+    SecretOrKeyProvider
 } from "./jwt_strategy";
 import {ExtractJwt, JwtExtractor as JwtExtractorType} from "./extract_jwt";
 import {JwtDriver, JwtResult} from "./platforms/base";
@@ -17,5 +18,6 @@ export {
     JwtResult,
     FailureMessages,
     VerifyCallback,
-    VerifyCallbackWithReq
+    VerifyCallbackWithReq,
+    SecretOrKeyProvider
 };

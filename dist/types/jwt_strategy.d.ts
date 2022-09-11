@@ -1,28 +1,44 @@
+/// <reference types="node" />
 import { Strategy } from "passport";
 import type { JwtExtractor } from "./extract_jwt";
 import type { Request } from "express";
 import type { JwtDriver } from "./platforms/base";
-export declare type SecretOrKeyProvider<Key> = (req: Request, rawJwtToken: string, callback: (secretOrKeyError: string | null, secretOrKey: Key) => void) => void;
+import { JwtProvidedDriver } from "./platforms/base";
+export declare type SecretOrKeyProvider<Key = string> = SecretOrKeyProviderCallbackStyle<Key> | SecretOrKeyProviderPromiseStyle<Key>;
+export declare type SecretOrKeyProviderCallbackStyle<Key> = (req: Request, rawJwtToken: string, callback: ProviderDoneCallback<Key>) => void;
+export declare type SecretOrKeyProviderPromiseStyle<Key> = (req: Request, rawJwtToken: string) => Promise<Key | null>;
+export declare type ProviderDoneCallback<Key> = (secretOrKeyError: string | null, secretOrKey: Key | null) => void;
 export declare type DefaultPayload = Record<string, any>;
 export declare type DoneCallback = (error: Error | null | string, user: object | null, infoOrMessage?: string | object) => void;
 export declare type VerifyCallback<Payload extends DefaultPayload> = (user: Payload, done: DoneCallback) => void;
 export declare type VerifyCallbackWithReq<Payload extends DefaultPayload> = (req: Request, payload: Payload, done: DoneCallback) => void;
 export declare type BasicVerifyCallback = (reqOrUser: any, payloadOrDone: any, done?: any) => void;
 export declare enum FailureMessages {
+    NO_KEY_FROM_PROVIDER = "Provider did not return a key.",
     NO_TOKEN_ASYNC = "No auth token has been resolved",
     NO_TOKEN = "No auth token"
 }
-export interface JwtStrategyOptionsBase<Key> {
-    jwtDriver: JwtDriver<any, any, Key>;
+export interface JwtStrategyOptionsBase {
     jwtFromRequest: JwtExtractor;
     passReqToCallback?: boolean;
+    checkIfProviderWorksTimeout?: number;
 }
-export declare type ProviderOrValue<Key> = ({
+export declare type ProviderOrValueDriver = {
+    jwtDriver: JwtProvidedDriver<any, any>;
+    secretOrKey?: undefined;
+    secretOrKeyProvider?: undefined;
+};
+export declare type ProviderOrValueBase<Key, OmitValue extends string> = (Omit<{
+    jwtDriver: JwtDriver<any, any, Key>;
+    secretOrKey?: undefined;
     secretOrKeyProvider: SecretOrKeyProvider<Key>;
-} | {
+}, OmitValue> | Omit<{
+    jwtDriver: JwtDriver<any, any, Key>;
     secretOrKey: Key;
-});
-export declare type JwtStrategyOptions<Key = string> = ProviderOrValue<Key> & JwtStrategyOptionsBase<Key>;
+    secretOrKeyProvider?: undefined;
+}, OmitValue>);
+export declare type ProviderOrValue<Key> = ProviderOrValueBase<Key, "nothing"> | ProviderOrValueDriver;
+export declare type JwtStrategyOptions<Key = string> = ProviderOrValue<Key> & JwtStrategyOptionsBase;
 /**
  * Strategy constructor
  *
@@ -50,8 +66,9 @@ export declare class JwtStrategy<Payload extends DefaultPayload = DefaultPayload
     private jwtFromRequest;
     private passReqToCallback;
     private driver;
+    private checkIfProviderWorksTimeout;
     constructor(extOptions: JwtStrategyOptions<Key>, verify: Verify);
     protected verifiedInternal(err: Error | null | string, user: null | object, infoOrMessage?: string | object): void;
-    protected processTokenInternal(secretOrKeyError: string | null, secretOrKey: Key, token: string, req: Request): void;
+    protected processTokenInternal(secretOrKeyError: string | null, secretOrKey: Key | null, token: string, req: Request, timeout?: NodeJS.Timeout): void;
     authenticate(req: Request): void;
 }

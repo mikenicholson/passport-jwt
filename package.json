@@ -66,7 +66,6 @@
     }
   },
   "exports": {
-    "./package.json": "./package.json",
     ".": {
       "require": {
         "types": "./dist/types/index.d.ts",
@@ -78,8 +77,14 @@
       }
     },
     "./auto": {
-      "require": "./dist/cjs/auto/index.js",
-      "import": "./dist/esm/auto/index.js"
+      "require": {
+        "types": "./dist/types/index.d.ts",
+        "default": "./dist/cjs/auto/index.js"
+      },
+      "import": {
+        "types": "./dist/types/index.d.ts",
+        "default": "./dist/esm/auto/index.js"
+      }
     },
     "./platform-jose": {
       "require": {

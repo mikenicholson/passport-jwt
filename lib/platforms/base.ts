@@ -19,7 +19,9 @@ export type JwtResult<T extends Record<string, any>> = JwtResultPositive<T> | Jw
 
 export abstract class JwtDriver<Driver, Options, Key> {
 
-    protected readonly abstract driver: Driver;
+    protected keyIsProvidedByMe: boolean = false;
+
+    public readonly abstract driver: Driver;
 
     protected readonly abstract options?: Options;
 
@@ -30,4 +32,8 @@ export abstract class JwtDriver<Driver, Options, Key> {
     }
 
     public abstract validate<Output extends Record<string, any>>(token: string, keyOrSecret: Key): Promise<JwtResult<Output>>;
+}
+
+export abstract class JwtProvidedDriver<Driver, Options> extends JwtDriver<Driver, Options, undefined> {
+    protected override keyIsProvidedByMe: true = true;
 }

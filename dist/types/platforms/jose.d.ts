@@ -4,7 +4,7 @@ declare type JoseDriverType = {
     jwtVerify: typeof jwtVerify;
 };
 export declare class JoseDriver extends JwtDriver<JoseDriverType, VerifyOptions, KeyLike | string> {
-    protected readonly driver: JoseDriverType;
+    readonly driver: JoseDriverType;
     protected readonly options?: VerifyOptions | undefined;
     protected defaultOptions: VerifyOptions;
     constructor(driver: JoseDriverType, options?: VerifyOptions | undefined);
