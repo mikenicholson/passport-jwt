@@ -1,4 +1,4 @@
-# NestJs intergration
+# NestJs integration
 
 Below is an example of how to integrate `passport-jwt` with `@nestjs/passport`. These examples can help get you started with `nestjs`.
 
