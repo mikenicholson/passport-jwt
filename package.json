@@ -116,5 +116,14 @@
         "default": "./dist/esm/platforms/nestjsjwt.js"
       }
     }
+  },
+  "typesVersions": {
+    "*": {
+      ".": ["./index.d.ts", "./fallback.d.ts"],
+      "./auto": ["./auto.d.ts", "./fallback.d.ts"],
+      "./platform-nestjsjwt": ["./platform-nestjsjwt.d.ts", "./fallback.d.ts"],
+      "./platform-jose": ["./platform-jose.d.ts", "./fallback.d.ts"],
+      "./platform-jsonwebtoken": ["./platform-jsonwebtoken.d.ts", "./fallback.d.ts"]
+    }
   }
 }
