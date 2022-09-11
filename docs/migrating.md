@@ -28,7 +28,7 @@ passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
   done(null, user)
 }));
 ```
-**To** using v5.x.x with the driver infrastructure.
+**To** using v5.x.x with the new driver infrastructure.
 ```javascript
 var JwtStrategy = require('passport-jwt').Strategy,
         ExtractJwt = require('passport-jwt').ExtractJwt;
