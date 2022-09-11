@@ -56,5 +56,5 @@ export class JwtStrategy extends PassportStrategy(Strategy<MyPayload>) {
     }
 }
 ```
-See the documentation for `@nestjs/passport` for more examples. 
+See the documentation from `@nestjs/passport` for more examples. 
 Only open an issue if there are errors in the `passport-jwt` library, issues for `nestjs` in general will be ignored.
