@@ -9,10 +9,11 @@ Version 5.0.0 was released as a general modernization of the library, including 
 twice as many tests (98% coverage) and a new abstract driver infrastructure.
 
 Therefore, users of `passport-jwt` are no longer restricted to using the `jsonwebtoken` library.
-The choice of this abstraction was made because the jsonwebtoken library is outdated and only receives security fixes.
+The choice of this abstraction was made because the `jsonwebtoken` library is outdated and only receives security fixes.
 The new abstraction allows the use of any jwt validator and some popular validators are pre-implemented,
 these are: `jsonwebtoken`, `jose`, `@nestjs/jwt`. To make use of this new structure a driver option must be included during loading,
 alternatively to make migration easy it is also possible to include the `passport-jwt/auto` library to automatically load the jsonwebtoken driver.
+all options from `jsonWebTokenOptions` and the older legacy options are now passed to the driver directly.
 
 **From** using v4.x.x (to make this example work in v5.x.x simply change the import path to `passport-jwt/auto` for the strategy)
 ```javascript
