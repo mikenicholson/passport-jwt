@@ -43,7 +43,7 @@ extracted from the request or verified.
 * `secretOrKey` is a string or buffer containing the secret
   (symmetric) or PEM-encoded public key (asymmetric) for verifying the token's
   signature. REQUIRED unless `secretOrKeyProvider` is provided.
-* `secretOrKeyProvider` is a callback in the format `function secretOrKeyProvider(request, rawJwtToken, done)`,
+* `secretOrKeyProvider` is a callback in the format `function secretOrKeyProvider(request, rawJwtToken, done)` or `(request, rawJwtToken) => Promise<secretOrKey>`,
   which should call `done` with a secret or PEM-encoded public key (asymmetric) for the given key and request combination.
   `done` accepts arguments in the format `function done(err, secret)`. Note it is up to the implementer to decode rawJwtToken.
   REQUIRED unless `secretOrKey` is provided.
@@ -51,6 +51,8 @@ extracted from the request or verified.
   parameter and returns either the JWT as a string or *null*. See
   [Extracting the JWT from the request](#extracting-the-jwt-from-the-request) for
   more details.
+* `checkIfProviderWorksTimeout`: The amount of time to wait before the secretOrKeyProvider should callback, 
+  Can be set to -1 to disable checking if the provider works.
 * `issuer`: (LEGACY) If defined the token issuer (iss) will be verified against this
   value.
 * `audience`: (LEGACY) If defined, the token audience (aud) will be verified against
