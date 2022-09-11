@@ -43,7 +43,7 @@ import {NestJsJwtDriver} from "passport-jwt/platform-nestjsjwt";
 type MyPayload = {name: string};
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy<MyPayload>) {
+export class JwtStrategy extends PassportStrategy(Strategy) {
     constructor(jwtCore: JwtService) {
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
