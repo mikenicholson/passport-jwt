@@ -65,7 +65,7 @@ passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
 See the documentation for more examples and integration with `typescript` and `@nestjs/jwt`. 
 Click [here](typescript.md) for the `typescript` documentation and examples to migrate away from `commonjs`. 
 Click [here](nestjs.md) to view examples on how to integrate with `@nestjs/passport`. 
-and as a final note, all compatibility with version v1.x.x has been removed, 
+As a final note, all compatibility with version v1.x.x has been removed, 
 for most people this only means that the `versionOneCompatibility` extractor no longer works. 
 
 ## Migrating from 3.x.x to 4.x.x
