@@ -212,7 +212,7 @@ jwtDriver: jos,
 // ...
 ```
 ### `@nestjs/jwt` driver
-`npm install @nestjs/jwt` uses `jsonwebtoken` as core with some tweaks (mainly `none` algorithms), it has a high integration with `nestjs`.
+`npm install @nestjs/jwt` uses `jsonwebtoken` as core with some tweaks (mainly `none` algorithms), it has a high integration with `nestjs` but can be used independently.
 ```typescript
 import {JwtService} from "@nestjs/jwt";
 import {NestJsJwtDriver} from "passport-jwt/platform-nestjsjwt";
