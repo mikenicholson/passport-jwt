@@ -25,9 +25,9 @@ If you want to quickly add secure token-based authentication to Node.js apps, fe
     npm install https://github.com/Outternet/passport-jwt
     npm install <mydriverpackage> // see drivers below for options
 
-## Usage
+# Usage
 
-### Configure Strategy
+## Configure Strategy
 
 The JWT authentication strategy is constructed as follows:
 
@@ -133,6 +133,7 @@ To More strictly define the types you could use `new Strategy<MyPayload, MyKey, 
 But this is optional because the key and validation type are already determined from the given options.
 
 # Drivers
+## Custom
 Drivers validate the jwt and return the payload to `passport`. 
 They have a `validation` method that receives a token and a key and returns a result message.
 
@@ -183,7 +184,7 @@ class MyDriver extends JwtDriver<MyCore, MyOptions, MyKey> {
 jwtDriver: new MyDriver(jwtValid, {issuer: "sdf"}),
 // ...
 ```
-
+## Included Drivers
 ### `jsonwebtoken` driver
 `npm install jsonwebtoken` is the default library from auth0, although still supported it hasn't received an updated in years.
 ```typescript
@@ -225,14 +226,15 @@ jwtDriver: nest,
 // ...
 ```
 
-### Extracting the JWT from the request
+# Ectractors
+## Extracting the JWT from the request
 
 There are a number of ways the JWT may be included in a request.  In order to remain as flexible as
 possible the JWT is parsed from the request by a user-supplied callback passed in as the
 `jwtFromRequest` parameter.  This callback, from now on referred to as an extractor,
 accepts a request object as an argument and returns the encoded JWT string or *null*.
 
-#### Included extractors
+## Included extractors
 
 A number of extractor factory functions are provided in passport-jwt.ExtractJwt. These factory
 functions return a new extractor configured with the given parameters.
@@ -257,7 +259,7 @@ This can be used if another middleware is extracting the JWT (e.g., from a webso
 * ```fromExtractors([array of extractor functions])``` creates a new extractor using an array of
   extractors provided. Each extractor is attempted in order until one returns a token.
 
-### Writing a custom extractor function
+## Writing a custom extractor function
 
 If the supplied extractors don't meet your needs you can easily provide your own callback. For
 example, if you are using the cookie-parser middleware and want to extract the JWT in a cookie
@@ -296,8 +298,8 @@ export const commaExtractor: JwtExtractorType = async (req /* :Request is implic
 // ...
 jwtFromRequest: commaExtractor
 ```
-
-### Authenticate requests
+# Authentication
+## Authenticate requests
 
 Use `passport.authenticate()` specifying `'JWT'` as the strategy.
 
@@ -309,7 +311,7 @@ app.post('/profile', passport.authenticate('jwt', { session: false }),
 );
 ```
 
-### Include the JWT in requests
+## Include the JWT in requests
 
 The method of including a JWT in a request depends entirely on the extractor
 function you choose. For example, if you use the `fromAuthHeaderAsBearerToken`
@@ -318,6 +320,7 @@ scheme set to `bearer`. e.g.
 
     Authorization: bearer JSON_WEB_TOKEN_STRING.....
 
+# Documentation
 ## Migrating
 
 Read the [Migration Guide](docs/migrating.md) for help upgrading to the latest
