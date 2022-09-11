@@ -45,7 +45,7 @@ extracted from the request or verified.
   signature. REQUIRED unless `secretOrKeyProvider` is provided.
 * `secretOrKeyProvider` is a callback in the format `function secretOrKeyProvider(request, rawJwtToken, done)`,
   which should call `done` with a secret or PEM-encoded public key (asymmetric) for the given key and request combination.
-  `done` accepts arguments in the format `function done(err, secret)` or can be used with a promise like `(request, rawJwtToken) => Promise<secretOrKey>`. 
+  `done` accepts arguments in the format `function done(err, secret)` or can be used with a promise like `(request, rawJwtToken) => Promise<secretOrKey|null>`. 
   Note it is up to the implementer to decode rawJwtToken.
   REQUIRED unless `secretOrKey` is provided.
 * `jwtFromRequest` (REQUIRED) Function that accepts a request as the only
