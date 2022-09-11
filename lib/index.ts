@@ -7,7 +7,7 @@ import {
     SecretOrKeyProvider
 } from "./jwt_strategy";
 import {ExtractJwt, JwtExtractor as JwtExtractorType} from "./extract_jwt";
-import {JwtDriver, JwtResult} from "./platforms/base";
+import {JwtDriver, JwtProvidedDriver, JwtResult} from "./platforms/base";
 
 export {
     Strategy,
@@ -19,5 +19,6 @@ export {
     FailureMessages,
     VerifyCallback,
     VerifyCallbackWithReq,
-    SecretOrKeyProvider
+    SecretOrKeyProvider,
+    JwtProvidedDriver
 };
