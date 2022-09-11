@@ -54,14 +54,14 @@ extracted from the request or verified.
   more details.
 * `checkIfProviderWorksTimeout`: The amount of time to wait before the secretOrKeyProvider should callback, 
   Can be set to -1 to disable checking if the provider works.
+* `passReqToCallback`: If true the request will be passed to the verify
+  callback. i.e. verify(request, jwt_payload, done_callback).
 * `issuer`: (LEGACY) If defined the token issuer (iss) will be verified against this
   value.
 * `audience`: (LEGACY) If defined, the token audience (aud) will be verified against
   this value.
 * `algorithms`: (LEGACY) List of strings with the names of the allowed algorithms. For instance, ["HS256", "HS384"].
 * `ignoreExpiration`: (LEGACY) if true do not validate the expiration of the token.
-* `passReqToCallback`: If true the request will be passed to the verify
-  callback. i.e. verify(request, jwt_payload, done_callback).
 * `jsonWebTokenOptions`: (LEGACY) passport-jwt is verifying the token using [jsonwebtoken](https://github.com/auth0/node-jsonwebtoken).
 Pass here an options object for any other option you can pass the jsonwebtoken verifier. (i.e maxAge)
 * `jwtDriver`: (MODERN) the driver object can be imported from the platforms, for more information about drivers look below. 
