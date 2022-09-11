@@ -186,7 +186,7 @@ jwtDriver: new MyDriver(jwtValid, {issuer: "sdf"}),
 ```
 ## Included Drivers
 ### `jsonwebtoken` driver
-`npm install jsonwebtoken` is the default library from auth0, although still supported it hasn't received an updated in years.
+`npm install jsonwebtoken` is the default library from auth0, although still supported it hasn't received an update in years.
 ```typescript
 import * as jsonwebtoken from "jsonwebtoken";
 import {JsonWebTokenDriver} from "passport-jwt/platform-jsonwebtoken";
