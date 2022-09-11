@@ -23,6 +23,7 @@ import {JwtStrategy} from "./jwt.strategy";
     proivders: [
         JwtStrategy,
         {
+            // you probably still need to define a public route somewhere to log in.
             provide: APP_GUARD,
             useClass: AuthGuard('jwt')
         }
@@ -36,7 +37,7 @@ export class AppModule {
 // jwt.strategy.ts
 import {PassportStrategy} from "@nestjs/passport"
 import {Injectable} from "@nestjs/common";
-import {Strategy, ExtractJwt} from "passport-jwt";
+import {Strategy, ExtractJwt, JwtStrategyOptions} from "passport-jwt";
 import {JwtService} from "@nestjs/jwt";
 import {NestJsJwtDriver} from "passport-jwt/platform-nestjsjwt";
 
@@ -48,7 +49,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
             jwtDriver: new NestJsJwtDriver(jwtCore)
-        });
+        } as JwtStrategyOptions);
     }
 
     public async validate(payload: MyPayload): Promise<MyUser> {
