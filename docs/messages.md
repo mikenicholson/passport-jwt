@@ -1,4 +1,4 @@
-# Error message
+# Error Messages
 In the v5.x.x release, error messages are included in an enum,
 this allows the message to be changed later without breaking existing code that looks at it.
 
