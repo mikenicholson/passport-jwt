@@ -2,18 +2,23 @@
 
 Below is an example of how to integrate `passport-jwt` with `@nestjs/passport`, storing the JWT as a cookie. These examples can help get you started with `nestjs`.
 
-#### main.ts
+### main.ts
+The main file of the nestjs framework, the current example uses a cookie to store the token, so we need to add a cookie parser
 ```typescript
 import * as cookieParser from 'cookie-parser';
 // somewhere in your initialization file
 app.use(cookieParser());
 ```
-#### user.type.ts
+### user.type.ts
+The file of the user type where we store the signature of our payload and our profile, this must be an entity associated with an orm in a production framework
 ```typescript
 export type MyPayload = { sub: number; name: string };
 export type MyProfile = { id: number; username: string; displayname: string };
 ```
-#### app.module.ts
+### app.module.ts
+The main module of our example, note that the jwt service and our jwtstragy are imported here. 
+the secret is passed to the jwt module, of course this is extracted from the environment in a product application.
+The jwt module is seen by our package as a `JwtProvidedDriver` or a driver that takes care of a secret itself.
 ```typescript
 import { Module } from "@nestjs/common";
 import { PassportModlue } from "@nestjs/passport";
@@ -45,7 +50,8 @@ export class AppModule {
 
 }
 ```
-#### app.controller.ts
+### app.controller.ts
+The controller uses our strategy as `AuthGuard` which is called `jwt` by default.
 ```typescript
 import { Res, Body, Controller, Get, Post } from '@nestjs/common';
 import { UsersService } from './user.service';
@@ -81,7 +87,10 @@ export class AppController {
   }
 }
 ```
-#### jwt.strategy.ts
+### jwt.strategy.ts
+This is the strategy and main intergation of `passport-jwt` with `nestjs`. 
+Notice how we use the `passport-jwt/platform-nestjsjwt` for better intergration and therefore we don't need to pass a `secretOrProvider` (because it's in the `AppModule`). 
+Of course any driver can be used and you are not stuck with the one from `nestjs`.
 ```typescript
 import { PassportStrategy } from "@nestjs/passport"
 import { Injectable, UnauthorizedException } from "@nestjs/common";
