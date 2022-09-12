@@ -13,7 +13,7 @@ function onFail(msg) {
     };
 }
 ```
-This can be replaced with an enum, keep in mind that it is still not recommended, but always better than hardcoding
+This can be replaced with an enum, keep in mind that it is still **not recommended**, but always better than hardcoding
 ```javascript
 /** CommonJs */
 var errors = require("passport-jwt").FailureMessages
