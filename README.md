@@ -64,7 +64,7 @@ extracted from the request or verified.
 * `ignoreExpiration`: (LEGACY) if true do not validate the expiration of the token.
 * `jsonWebTokenOptions`: (LEGACY) passport-jwt is verifying the token using [jsonwebtoken](https://github.com/auth0/node-jsonwebtoken).
 Pass here an options object for any other option you can pass the jsonwebtoken verifier. (i.e maxAge)
-* `jwtDriver`: (MODERN) the driver object can be imported from the platforms, for more information about drivers look below. 
+* `jwtDriver`: (MODERN) the driver object can be imported from the platforms, for more information about drivers look [below](#drivers). 
 All LEGACY options above are reimplemented in the driver infrastructure.
 
 `verify` is a function with the parameters `verify(jwt_payload, done)`
