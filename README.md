@@ -308,7 +308,7 @@ See the passport documentation [here](https://www.passportjs.org/) for more info
 Use `passport.authenticate()` specifying `'JWT'` as the strategy.
 
 ```js
-app.post('/profile', passport.authenticate('jwt', { session: false }),
+app.get('/profile', passport.authenticate('jwt', { session: false }),
     (req, res) => {
         res.send(req.user.profile);
     }
