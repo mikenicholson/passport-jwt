@@ -1,14 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.JwtStrategy = exports.FailureMessages = void 0;
+exports.JwtStrategy = void 0;
 var tslib_1 = require("tslib");
 var passport_1 = require("passport");
-var FailureMessages;
-(function (FailureMessages) {
-    FailureMessages["NO_KEY_FROM_PROVIDER"] = "Provider did not return a key.";
-    FailureMessages["NO_TOKEN_ASYNC"] = "No auth token has been resolved";
-    FailureMessages["NO_TOKEN"] = "No auth token";
-})(FailureMessages = exports.FailureMessages || (exports.FailureMessages = {}));
+var error_messages_1 = require("./error_messages");
 /**
  * Strategy constructor
  *
@@ -20,10 +15,11 @@ var FailureMessages;
  *                               combination. done has the signature function done(err, secret).
  *                               REQUIRED unless `secretOrKey` is provided.
  *          jwtFromRequest: (REQUIRED) Function that accepts a request as the only parameter and returns the either JWT as a string or null
- *          issuer: If defined issuer will be verified against this value
- *          audience: If defined audience will be verified against this value
- *          algorithms: List of strings with the names of the allowed algorithms. For instance, ["HS256", "HS384"].
- *          ignoreExpiration: if true do not validate the expiration of the token.
+ *          jwtFromDriver: (REQUIRED) Validate Function that accepts a JWT signature, a key and the options below, and returns a validation message.
+ *              issuer: If defined issuer will be verified against this value
+ *              audience: If defined audience will be verified against this value
+ *              algorithms: List of strings with the names of the allowed algorithms. For instance, ["HS256", "HS384"].
+ *              ignoreExpiration: if true do not validate the expiration of the token.
  *          passReqToCallback: If true the verify callback will be called with args (request, jwt_payload, done_callback).
  * @param verify - Verify callback with args (jwt_payload, done_callback) if passReqToCallback is false,
  *                 (request, jwt_payload, done_callback) if true.
@@ -40,35 +36,38 @@ var JwtStrategy = /** @class */ (function (_super) {
         _this.checkIfProviderWorksTimeout = (_a = options.checkIfProviderWorksTimeout) !== null && _a !== void 0 ? _a : 30000;
         _this.driver = options.jwtDriver;
         if (!_this.driver) {
-            throw new TypeError("JwtStrategy requires a driver to function (see option jwtDriver) or alternatively import the strategy from 'passport-jwt/auto' to auto register the driver");
+            throw new TypeError(error_messages_1.ErrorMessages.NO_DRIVER_PROVIDED);
+        }
+        if (typeof _this.driver !== "object" || !('validate' in _this.driver) || typeof !_this.driver.validate === "function") {
+            throw new TypeError(error_messages_1.ErrorMessages.INVALID_DRIVER);
         }
         if (_this.driver["keyIsProvidedByMe"]) {
             if (options.secretOrKey || options.secretOrKeyProvider) {
-                throw new TypeError("SecretOrKey is provided by the driver and cannot be given as an option.");
+                throw new TypeError(error_messages_1.ErrorMessages.DRIVER_PROVIDES_KEY);
             }
             options.secretOrKey = "set by driver";
         }
         if (options.secretOrKey) {
             if (_this.secretOrKeyProvider) {
-                throw new TypeError('JwtStrategy has been given both a secretOrKey and a secretOrKeyProvider');
+                throw new TypeError(error_messages_1.ErrorMessages.BOTH_KEY_AND_PROVIDER);
             }
             _this.secretOrKeyProvider = function (request, rawJwtToken, done) {
                 done(null, options.secretOrKey);
             };
         }
         if (!_this.constructor["ignoreLegacy"] && (options.jsonWebTokenOptions || options.issuer || options.audience)) {
-            throw new TypeError("JwtStrategy has gained a JsonWebToken option, this is no longer supported in the current version. You can pass these options to the driver instead or import the library from 'passport-jwt/auto' to keep the legacy options.");
+            throw new TypeError(error_messages_1.ErrorMessages.LEGACY_OPTIONS_PASSED);
         }
         if (!_this.secretOrKeyProvider) {
-            throw new TypeError('JwtStrategy requires a secret or key');
+            throw new TypeError(error_messages_1.ErrorMessages.NO_SECRET_KEY);
         }
         _this.verify = verify;
         if (!_this.verify) {
-            throw new TypeError('JwtStrategy requires a verify callback');
+            throw new TypeError(error_messages_1.ErrorMessages.NO_VERIFY_CALLBACK);
         }
         _this.jwtFromRequest = options.jwtFromRequest;
         if (!_this.jwtFromRequest) {
-            throw new TypeError('JwtStrategy requires a function to retrieve jwt from requests (see option jwtFromRequest)');
+            throw new TypeError(error_messages_1.ErrorMessages.NO_EXTRACTOR_FOUND);
         }
         _this.passReqToCallback = !!options.passReqToCallback;
         return _this;
@@ -80,12 +79,22 @@ var JwtStrategy = /** @class */ (function (_super) {
             }
             return this.error(err);
         }
-        else if (!user && typeof infoOrMessage === "string") {
+        if (user) {
+            if (typeof infoOrMessage === 'undefined' || typeof infoOrMessage === 'object') {
+                return this.success(user, infoOrMessage);
+            }
+            else {
+                return this.error(new TypeError(error_messages_1.ErrorMessages.USER_TURE_WITH_MESSAGE));
+            }
+        }
+        // fail must be a string in the new passport
+        if (typeof infoOrMessage === 'object' && 'message' in infoOrMessage) {
+            infoOrMessage = infoOrMessage.message;
+        }
+        if (typeof infoOrMessage === 'string') {
             return this.fail(infoOrMessage);
         }
-        else if (user && typeof infoOrMessage !== "string") {
-            return this.success(user, infoOrMessage);
-        }
+        return this.fail(error_messages_1.FailureMessages.USER_NOT_TRUE);
     };
     ;
     JwtStrategy.prototype.processTokenInternal = function (secretOrKeyError, secretOrKey, token, req, timeout) {
@@ -95,16 +104,16 @@ var JwtStrategy = /** @class */ (function (_super) {
             clearTimeout(timeout);
         }
         if (secretOrKeyError || !secretOrKey) {
-            return this.fail(secretOrKeyError !== null && secretOrKeyError !== void 0 ? secretOrKeyError : FailureMessages.NO_KEY_FROM_PROVIDER);
+            return this.fail(secretOrKeyError !== null && secretOrKeyError !== void 0 ? secretOrKeyError : error_messages_1.FailureMessages.NO_KEY_FROM_PROVIDER);
         }
         // Verify the JWT
         this.driver.validate(token, secretOrKey).then(function (result) {
             if (!result.success) {
-                if (result.message) {
+                if (typeof result.message === "string") {
                     return _this.fail(result.message);
                 }
                 else {
-                    return _this.error(new Error("Unknown Driver Error"));
+                    return _this.error(new Error(error_messages_1.ErrorMessages.NO_DRIVER_FAILURE_INFO));
                 }
             }
             try {
@@ -128,15 +137,15 @@ var JwtStrategy = /** @class */ (function (_super) {
             tokenOrPromise = Promise.resolve(tokenOrPromise);
         }
         else if (!(tokenOrPromise instanceof Promise)) {
-            return this.fail(FailureMessages.NO_TOKEN);
+            return this.fail(error_messages_1.FailureMessages.NO_TOKEN);
         }
         tokenOrPromise.then(function (token) {
             if (!token) {
-                return _this.fail(FailureMessages.NO_TOKEN_ASYNC);
+                return _this.fail(error_messages_1.FailureMessages.NO_TOKEN_ASYNC);
             }
             if (_this.checkIfProviderWorksTimeout !== -1) {
                 // 30 seconds should be enough for a provider to give a secret the first time.
-                timeout = setTimeout(function () { return _this.error(new TypeError("Provider did timeout, if you are sure it works you can disable the timeout check by setting checkIfProviderWorksTimeout to -1.")); }, _this.checkIfProviderWorksTimeout);
+                timeout = setTimeout(function () { return _this.error(new TypeError(error_messages_1.ErrorMessages.PROVIDER_TIME_OUT)); }, _this.checkIfProviderWorksTimeout);
             }
             var provided = _this.secretOrKeyProvider(req, token, function (err, key) { return _this.processTokenInternal(err, key, token, req, timeout); });
             if (provided) {
@@ -150,7 +159,7 @@ var JwtStrategy = /** @class */ (function (_super) {
                 }
                 else {
                     clearTimeout(timeout);
-                    _this.error(new TypeError("SecretOrKeyProvider provided something other then Promise"));
+                    _this.error(new TypeError(error_messages_1.ErrorMessages.NO_PROMISE_RETURNED));
                 }
             }
         }).catch(function (error) {

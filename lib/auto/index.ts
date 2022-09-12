@@ -1,5 +1,4 @@
 import {
-    DefaultPayload,
     JwtStrategy,
     JwtStrategyOptionsBase,
     VerifyCallback,
@@ -9,6 +8,7 @@ import {
 } from "../jwt_strategy";
 import {JsonWebTokenDriver} from "../platforms/jsonwebtoken";
 import jsonwebtoken, {VerifyOptions, Algorithm} from "jsonwebtoken";
+import type { DefaultPayload } from "../platforms/base";
 
 interface LegacyOptions {
     audience?: string;

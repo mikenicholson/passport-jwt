@@ -3,6 +3,7 @@ var chai = require('chai');
 var mock = require('./mock_data');
 var sinon = require('sinon');
 var extract_jwt = require('../dist/cjs/extract_jwt').ExtractJwt;
+var msg = require('../dist/cjs/error_messages').ErrorMessages;
 
 describe('Strategy Validation', function () {
     var mockVerifier;
@@ -115,6 +116,36 @@ describe('Strategy Validation', function () {
 
     });
 
+    describe('handling a callback with both a user and failure message.', function () {
+        var strategy, error;
+
+        before(function (done) {
+
+            strategy = new Strategy({
+                jwtFromRequest: mock.jwtExtractor,
+                secretOrKey: 'secret',
+                jwtDriver: mock.jwtDriver
+            }, function (payload, cb) {
+                cb(null, {name: "some unexpected code"}, "could not find user.");
+            });
+
+            chai.passport.use(strategy)
+                .error(function (i) {
+                    error = i;
+                    done();
+                })
+                .authenticate();
+        });
+
+
+        it('should give an error to notify the user of an unexpected result.', function () {
+            expect(error).to.be.an.instanceof(TypeError);
+            expect(error.message).to.be.a.string(msg["USER_TURE_WITH_MESSAGE"]);
+
+        });
+
+
+    });
 
     describe('handling an invalid authentication header', function () {
         var strategy, info;
@@ -148,7 +179,7 @@ describe('Strategy Validation', function () {
         it('should fail with error message.', function () {
             // expect(info).to.be.an("object");
             // expect(info).to.be.an.instanceof(Error);
-            expect(info).to.be.equal("No auth token");
+            expect(info).to.be.equal(msg["NO_TOKEN"]);
         });
 
     });

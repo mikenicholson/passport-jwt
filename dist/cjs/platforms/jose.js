@@ -4,12 +4,13 @@ exports.JoseDriver = void 0;
 var tslib_1 = require("tslib");
 var base_1 = require("./base");
 var crypto_1 = require("crypto");
+var error_messages_1 = require("../error_messages");
 var JoseDriver = /** @class */ (function (_super) {
     tslib_1.__extends(JoseDriver, _super);
     function JoseDriver(driver, options) {
         var _this = this;
         if (typeof driver !== "object" || !("jwtVerify" in driver) || typeof driver["jwtVerify"] !== "function") {
-            throw new TypeError("A none 'jose' compatible core has been passed.");
+            throw new TypeError(error_messages_1.ErrorMessages.JOSE_CORE_INCOMPATIBLE);
         }
         _this = _super.call(this) || this;
         _this.driver = driver;
@@ -42,7 +43,7 @@ var JoseDriver = /** @class */ (function (_super) {
                         return [3 /*break*/, 4];
                     case 3:
                         err_1 = _a.sent();
-                        result.message = err_1.message;
+                        result.message = err_1 === null || err_1 === void 0 ? void 0 : err_1.message;
                         return [3 /*break*/, 4];
                     case 4: return [2 /*return*/, result];
                 }

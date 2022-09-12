@@ -263,7 +263,8 @@ This can be used if another middleware is extracting the JWT (e.g., from a webso
 
 If the supplied extractors don't meet your needs you can easily provide your own callback. For
 example, if you are using the cookie-parser middleware and want to extract the JWT in a cookie
-you could use the following function as the argument to the jwtFromRequest option:
+but your implementation somehow returns the token with a trailing comma.
+Then you could use the following function as the argument to the jwtFromRequest option:
 
 ```javascript
 var commaExtractor = function(req) {
@@ -289,9 +290,9 @@ export const commaExtractor: JwtExtractorType = async (req /* :Request is implic
     let token = null;
     if("jwt" in req.cookies && typeof req.cookies["jwt"] === "string") {
       token = req.cookies["jwt"];
-      if(token.endsWith(",")) {
-        token = token.slice(0, -1);
-      }
+      token = token.endsWith(",") 
+          ? await stripComma(token)
+          : token;
     }
     return token;
 }
@@ -299,16 +300,30 @@ export const commaExtractor: JwtExtractorType = async (req /* :Request is implic
 jwtFromRequest: commaExtractor
 ```
 # Authentication
-## Authenticate requests
+## Authentication requests
+How to authenticate the request with `passport` and `passport-jwt` depends on your webframework.
+See the passport documentation [here](https://www.passportjs.org/) for more information.
+### Express 
 
 Use `passport.authenticate()` specifying `'JWT'` as the strategy.
 
 ```js
 app.post('/profile', passport.authenticate('jwt', { session: false }),
-    function(req, res) {
+    (req, res) => {
         res.send(req.user.profile);
     }
 );
+```
+### NestJS
+
+Use the `AuthGuard` from `@nestjs/passport` and specifying `'JWT'` as the strategy.
+
+```typescript
+@Get('profile')
+@UseGuards(AuthGuard('jwt'))
+public profile(@Req() req: Request) {
+    return req.user.profile;
+}
 ```
 
 ## Include the JWT in requests
@@ -332,7 +347,11 @@ Read the [Typescript Guide](docs/typescript.md) for help upgrading to `typescrip
 
 ## NestJs
 
-Read the [NestJs Guide](docs/nestjs.md) for help in implementing `passport-jwt` in `nestjs`.
+Read the [NestJs Guide](docs/nestjs.md) for more help in implementing `passport-jwt` in `nestjs`.
+
+## Failure Messages
+
+Read the [Message Guide](docs/messages.md) for more help on using failure messages and how **not** to use it.
 
 ## Tests
 

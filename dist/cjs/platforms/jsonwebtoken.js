@@ -3,12 +3,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.JsonWebTokenDriver = void 0;
 var tslib_1 = require("tslib");
 var base_1 = require("./base");
+var error_messages_1 = require("../error_messages");
 var JsonWebTokenDriver = /** @class */ (function (_super) {
     tslib_1.__extends(JsonWebTokenDriver, _super);
     function JsonWebTokenDriver(driver, options) {
         var _this = this;
         if (typeof driver !== "object" || !("verify" in driver) || typeof driver["verify"] !== "function") {
-            throw new TypeError("A none 'jsonwebtoken' compatible core has been passed.");
+            throw new TypeError(error_messages_1.ErrorMessages.JWT_CORE_INCOMPATIBLE);
         }
         _this = _super.call(this) || this;
         _this.driver = driver;
@@ -27,7 +28,7 @@ var JsonWebTokenDriver = /** @class */ (function (_super) {
                     result.payload = validation;
                 }
                 catch (err) {
-                    result.message = err.message;
+                    result.message = err === null || err === void 0 ? void 0 : err.message;
                 }
                 return [2 /*return*/, result];
             });

@@ -1,10 +1,11 @@
 import { __awaiter } from "tslib";
 import { JwtDriver } from "./base";
 import { createSecretKey } from "crypto";
+import { ErrorMessages } from "../error_messages";
 export class JoseDriver extends JwtDriver {
     constructor(driver, options) {
         if (typeof driver !== "object" || !("jwtVerify" in driver) || typeof driver["jwtVerify"] !== "function") {
-            throw new TypeError("A none 'jose' compatible core has been passed.");
+            throw new TypeError(ErrorMessages.JOSE_CORE_INCOMPATIBLE);
         }
         super();
         this.driver = driver;
@@ -27,7 +28,7 @@ export class JoseDriver extends JwtDriver {
                 result.payload = validation.payload;
             }
             catch (err) {
-                result.message = err.message;
+                result.message = err === null || err === void 0 ? void 0 : err.message;
             }
             return result;
         });

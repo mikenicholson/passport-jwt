@@ -1,4 +1,4 @@
-import { JwtDriver, JwtResult } from "./base";
+import { DefaultPayload, JwtDriver, JwtResult } from "./base";
 import type { VerifyOptions, jwtVerify, KeyLike } from "jose";
 declare type JoseDriverType = {
     jwtVerify: typeof jwtVerify;
@@ -8,6 +8,6 @@ export declare class JoseDriver extends JwtDriver<JoseDriverType, VerifyOptions,
     protected readonly options?: VerifyOptions | undefined;
     protected defaultOptions: VerifyOptions;
     constructor(driver: JoseDriverType, options?: VerifyOptions | undefined);
-    validate<T extends Record<string, any>>(token: string, keyOrSecret: string | KeyLike): Promise<JwtResult<T>>;
+    validate<Payload extends DefaultPayload>(token: string, keyOrSecret: string | KeyLike): Promise<JwtResult<Payload>>;
 }
 export {};

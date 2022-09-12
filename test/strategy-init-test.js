@@ -1,6 +1,7 @@
 var Strategy = require('../dist/cjs/jwt_strategy').JwtStrategy;
 var mock = require('./mock_data');
 var sinon = require('sinon');
+var msg = require("../dist/cjs/error_messages").ErrorMessages;
 
 describe('Strategy Init', function () {
     var strategy = new Strategy({
@@ -18,7 +19,7 @@ describe('Strategy Init', function () {
         expect(function () {
             var s = new Strategy({jwtFromRequest: mock.jwtExtractor, secretOrKey: 'secret'}, function () {
             });
-        }).to.throw(TypeError, "JwtStrategy requires a driver to function (see option jwtDriver) or alternatively import the strategy from 'passport-jwt/auto' to auto register the driver");
+        }).to.throw(TypeError, msg["NO_DRIVER_PROVIDED"]);
     });
 
     it('should throw if constructed without a verify callback', function () {
@@ -27,7 +28,7 @@ describe('Strategy Init', function () {
                 jwtFromRequest: function (r) {
                 }, secretOrKey: 'secret', jwtDriver: mock.jwtDriver
             });
-        }).to.throw(TypeError, "JwtStrategy requires a verify callback");
+        }).to.throw(TypeError, msg["NO_VERIFY_CALLBACK"]);
     });
 
 
@@ -38,17 +39,17 @@ describe('Strategy Init', function () {
                 }, secretOrKey: null, jwtDriver: mock.jwtDriver
             }, function () {
             });
-        }).to.throw(TypeError, 'JwtStrategy requires a secret or key');
+        }).to.throw(TypeError, msg["NO_SECRET_KEY"]);
     });
 
     it('should throw if a driver with a buildin key and a secretOrKey is provided.', function () {
         expect(function () {
             var s = new Strategy({
                 jwtFromRequest: function (r) {
-                }, secretOrKey: "sadf", jwtDriver: {keyIsProvidedByMe: true}
+                }, secretOrKey: "sadf", jwtDriver: {keyIsProvidedByMe: true, validate: function () {}}
             }, function () {
             });
-        }).to.throw(TypeError, 'SecretOrKey is provided by the driver and cannot be given as an option.');
+        }).to.throw(TypeError, msg["DRIVER_PROVIDES_KEY"]);
     });
 
 
@@ -62,15 +63,13 @@ describe('Strategy Init', function () {
                 },
                 jwtDriver: mock.jwtDriver
             });
-        }).to.throw(TypeError);
+        }).to.throw(TypeError, msg["BOTH_KEY_AND_PROVIDER"]);
     });
 
     it('should throw if legacy options are passed', function () {
         expect(function () {
             var s = new Strategy({
                 secretOrKey: 'secret',
-                secretOrKeyProvider: function (req, token, done) {
-                },
                 jwtFromRequest: function (r) {
                 },
                 jwtDriver: mock.jwtDriver,
@@ -78,7 +77,17 @@ describe('Strategy Init', function () {
                     audience: "TestAudience"
                 }
             });
-        }).to.throw(TypeError);
+        }).to.throw(TypeError, msg["LEGACY_OPTIONS_PASSED"]);
+    });
+
+    it('should throw if an invalid driver is passed', function () {
+        expect(function () {
+            var s = new Strategy({
+                secretOrKey: 'secret',
+                jwtFromRequest: mock.jwtExtractor,
+                jwtDriver: {},
+            });
+        }).to.throw(TypeError, msg["INVALID_DRIVER"]);
     });
 
 
@@ -86,7 +95,7 @@ describe('Strategy Init', function () {
         expect(function () {
             var s = new Strategy({secretOrKey: 'secret', jwtDriver: mock.jwtDriver}, function () {
             });
-        }).to.throw(TypeError);
+        }).to.throw(TypeError, msg["NO_EXTRACTOR_FOUND"]);
     });
 
     after(function () {

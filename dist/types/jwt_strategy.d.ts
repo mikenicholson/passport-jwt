@@ -2,22 +2,15 @@
 import { Strategy } from "passport";
 import type { JwtExtractor } from "./extract_jwt";
 import type { Request } from "express";
-import type { JwtDriver } from "./platforms/base";
-import { JwtProvidedDriver } from "./platforms/base";
+import type { JwtProvidedDriver, DefaultPayload, JwtDriver } from "./platforms/base";
 export declare type SecretOrKeyProvider<Key = string> = SecretOrKeyProviderCallbackStyle<Key> | SecretOrKeyProviderPromiseStyle<Key>;
 export declare type SecretOrKeyProviderCallbackStyle<Key> = (req: Request, rawJwtToken: string, callback: ProviderDoneCallback<Key>) => void;
 export declare type SecretOrKeyProviderPromiseStyle<Key> = (req: Request, rawJwtToken: string) => Promise<Key | null>;
 export declare type ProviderDoneCallback<Key> = (secretOrKeyError: string | null, secretOrKey: Key | null) => void;
-export declare type DefaultPayload = Record<string, any>;
 export declare type DoneCallback = (error: Error | null | string, user: object | null, infoOrMessage?: string | object) => void;
 export declare type VerifyCallback<Payload extends DefaultPayload> = (user: Payload, done: DoneCallback) => void;
 export declare type VerifyCallbackWithReq<Payload extends DefaultPayload> = (req: Request, payload: Payload, done: DoneCallback) => void;
 export declare type BasicVerifyCallback = (reqOrUser: any, payloadOrDone: any, done?: any) => void;
-export declare enum FailureMessages {
-    NO_KEY_FROM_PROVIDER = "Provider did not return a key.",
-    NO_TOKEN_ASYNC = "No auth token has been resolved",
-    NO_TOKEN = "No auth token"
-}
 export interface JwtStrategyOptionsBase {
     jwtFromRequest: JwtExtractor;
     passReqToCallback?: boolean;
@@ -50,10 +43,11 @@ export declare type JwtStrategyOptions<Key = string> = ProviderOrValue<Key> & Jw
  *                               combination. done has the signature function done(err, secret).
  *                               REQUIRED unless `secretOrKey` is provided.
  *          jwtFromRequest: (REQUIRED) Function that accepts a request as the only parameter and returns the either JWT as a string or null
- *          issuer: If defined issuer will be verified against this value
- *          audience: If defined audience will be verified against this value
- *          algorithms: List of strings with the names of the allowed algorithms. For instance, ["HS256", "HS384"].
- *          ignoreExpiration: if true do not validate the expiration of the token.
+ *          jwtFromDriver: (REQUIRED) Validate Function that accepts a JWT signature, a key and the options below, and returns a validation message.
+ *              issuer: If defined issuer will be verified against this value
+ *              audience: If defined audience will be verified against this value
+ *              algorithms: List of strings with the names of the allowed algorithms. For instance, ["HS256", "HS384"].
+ *              ignoreExpiration: if true do not validate the expiration of the token.
  *          passReqToCallback: If true the verify callback will be called with args (request, jwt_payload, done_callback).
  * @param verify - Verify callback with args (jwt_payload, done_callback) if passReqToCallback is false,
  *                 (request, jwt_payload, done_callback) if true.

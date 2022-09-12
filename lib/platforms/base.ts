@@ -1,3 +1,5 @@
+export type DefaultPayload = Record<string, any>;
+
 export interface JwtResultPositive<Output extends Record<string, any>> {
     success: true;
     payload: Output;
@@ -15,7 +17,7 @@ export interface JwtResultInternal {
     message?: string;
 }
 
-export type JwtResult<T extends Record<string, any>> = JwtResultPositive<T> | JwtResultNegative;
+export type JwtResult<T extends DefaultPayload> = JwtResultPositive<T> | JwtResultNegative;
 
 export abstract class JwtDriver<Driver, Options, Key> {
 
@@ -31,7 +33,7 @@ export abstract class JwtDriver<Driver, Options, Key> {
         return {...this.defaultOptions, ...this.options};
     }
 
-    public abstract validate<Output extends Record<string, any>>(token: string, keyOrSecret: Key): Promise<JwtResult<Output>>;
+    public abstract validate<Output extends DefaultPayload>(token: string, keyOrSecret: Key): Promise<JwtResult<Output>>;
 }
 
 export abstract class JwtProvidedDriver<Driver, Options> extends JwtDriver<Driver, Options, undefined> {

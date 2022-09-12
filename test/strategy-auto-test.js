@@ -2,7 +2,6 @@ var Strategy = require("../dist/cjs/auto/index").Strategy;
 var mock = require("./mock_data");
 var chai = require("chai");
 
-
 describe('Strategy Auto', function () {
 
 

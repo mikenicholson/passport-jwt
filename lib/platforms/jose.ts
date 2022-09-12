@@ -1,6 +1,7 @@
-import {JwtDriver, JwtResult, JwtResultInternal} from "./base";
+import {DefaultPayload, JwtDriver, JwtResult, JwtResultInternal} from "./base";
 import type {VerifyOptions, jwtVerify, KeyLike} from "jose";
 import {createSecretKey} from "crypto";
+import {ErrorMessages} from "../error_messages";
 
 type JoseDriverType = { jwtVerify: typeof jwtVerify }
 
@@ -13,12 +14,12 @@ export class JoseDriver extends JwtDriver<JoseDriverType, VerifyOptions, KeyLike
         protected readonly options?: VerifyOptions
     ) {
         if (typeof driver !== "object" || !("jwtVerify" in driver) || typeof driver["jwtVerify"] !== "function") {
-            throw new TypeError("A none 'jose' compatible core has been passed.");
+            throw new TypeError(ErrorMessages.JOSE_CORE_INCOMPATIBLE);
         }
         super();
     }
 
-    public async validate<T extends Record<string, any>>(token: string, keyOrSecret: string | KeyLike): Promise<JwtResult<T>> {
+    public async validate<Payload extends DefaultPayload>(token: string, keyOrSecret: string | KeyLike): Promise<JwtResult<Payload>> {
         let jwk: KeyLike | undefined = undefined;
         if (typeof keyOrSecret === "string") {
             jwk = createSecretKey(Buffer.from(keyOrSecret));
@@ -31,9 +32,9 @@ export class JoseDriver extends JwtDriver<JoseDriverType, VerifyOptions, KeyLike
             result.success = true;
             result.payload = validation.payload;
         } catch (err: any) {
-            result.message = (err as Error).message;
+            result.message = err?.message;
         }
-        return result as JwtResult<T>;
+        return result as JwtResult<Payload>;
     }
 
 }

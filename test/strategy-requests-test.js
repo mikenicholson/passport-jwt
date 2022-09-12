@@ -2,8 +2,8 @@ var Strategy = require('../dist/cjs/jwt_strategy').JwtStrategy;
 var chai = require('chai');
 var sinon = require('sinon');
 var url = require('url');
-var extract_jwt = require('../dist/cjs/extract_jwt').ExtractJwt;
 var mock = require('./mock_data');
+var msg = require('../dist/cjs/error_messages').ErrorMessages;
 
 describe('Strategy Request', function () {
     var mockVerifier;
@@ -102,8 +102,8 @@ describe('Strategy Request', function () {
         });
 
 
-        it("should succeed when the extractor resolves", function () {
-            expect(message).to.be.equal('No auth token has been resolved');
+        it("should fail when the extractor fails to resolves", function () {
+            expect(message).to.be.equal(msg["NO_TOKEN_ASYNC"]);
         });
     });
 

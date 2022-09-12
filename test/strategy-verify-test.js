@@ -3,6 +3,8 @@ var Strategy = require('../dist/cjs/jwt_strategy').JwtStrategy;
 var sinon = require('sinon');
 var extract_jwt = require('../dist/cjs/extract_jwt').ExtractJwt;
 var mock = require('./mock_data');
+var msg = require("../dist/cjs/error_messages").ErrorMessages;
+msg = Object.assign(msg, require('../dist/cjs/error_messages').FailureMessages);
 
 describe('Strategy Verify', function () {
 
@@ -52,17 +54,41 @@ describe('Strategy Verify', function () {
     });
 
 
-    describe('handling a request with valid jwt and failed verification', function () {
+    describe('handling a request with valid jwt and failed verification with a failure message', function () {
 
-        var strategy, info;
+        var strategy, fail;
 
         before(function (done) {
             strategy = new Strategy({
-                jwtFromRequest: extract_jwt.fromAuthHeaderAsBearerToken(),
+                jwtFromRequest: mock.jwtExtractor,
                 secretOrKey: 'secret',
                 jwtDriver: mock.jwtDriver
             }, function (jwt_payload, next) {
-                return next(null, false, 'invalid user');
+                return next(null, false, {message: 'invalid user custom'});
+            });
+
+            chai.passport.use(strategy)
+                .fail(function (i) {
+                    fail = i;
+                    done();
+                })
+                .authenticate();
+        });
+
+        it("should fail to authenticate with the custom message", function () {
+            expect(fail).to.be.a.string("invalid user custom");
+        })
+
+    });
+
+    describe('handling a request when the callback gives a non true user without an message', function () {
+        before(function (done) {
+            strategy = new Strategy({
+                jwtFromRequest: mock.jwtExtractor,
+                secretOrKey: 'secret',
+                jwtDriver: mock.jwtDriver
+            }, function (jwt_payload, next) {
+                return next(null, false);
             });
 
             chai.passport.use(strategy)
@@ -70,18 +96,14 @@ describe('Strategy Verify', function () {
                     info = i;
                     done();
                 })
-                .request(function (req) {
-                    req.headers['authorization'] = "bearer " + mock.valid_jwt.token;
-                })
                 .authenticate();
         });
 
 
-        it('should fail with info', function () {
-            expect(info).to.be.string("invalid user");
+        it('should fail with the generic user not found message', function () {
+            expect(info).to.be.a.string(msg["USER_NOT_TRUE"]);
         });
-
-    });
+    })
 
 
     describe('handling a request with a valid jwt and an error during verification', function () {
@@ -94,7 +116,7 @@ describe('Strategy Verify', function () {
                 secretOrKey: 'secret',
                 jwtDriver: mock.jwtDriver
             }, function (jwt_payload, next) {
-                return next(new Error("ERROR"), false, {message: 'invalid user'});
+                return next("ERROR", false, {message: 'invalid user'});
             });
 
             chai.passport.use(strategy)
@@ -284,6 +306,7 @@ describe('Strategy Verify', function () {
 
         it('should fail with the error message from the secretOrKeyProvider', function () {
             expect(errorMessage).to.be.instanceof(TypeError);
+            expect(errorMessage.message).to.be.an.string(msg["NO_PROMISE_RETURNED"])
         });
     });
 
@@ -375,7 +398,7 @@ describe('Strategy Verify', function () {
         });
 
         it('should fail with a generic error message', function () {
-            expect(errorMessage).to.equal('Provider did not return a key.');
+            expect(errorMessage).to.equal(msg["NO_KEY_FROM_PROVIDER"]);
         });
     });
 
@@ -406,6 +429,7 @@ describe('Strategy Verify', function () {
 
         it('should error with a timeout message', function () {
             expect(errorObj).to.be.instanceof(TypeError);
+            expect(errorObj.message).to.be.an.string(msg["PROVIDER_TIME_OUT"]);
         });
     });
 

@@ -5,15 +5,78 @@ var sinon = require("sinon");
 var joseDriver = require("../dist/cjs/platforms/jose").JoseDriver;
 var jose = require("jose");
 var jsonwebtoken = require("jsonwebtoken");
+var createSecretKey = require("crypto").createSecretKey;
 var jwtDriver = require("../dist/cjs/platforms/jsonwebtoken").JsonWebTokenDriver;
 var nestDriver = require("../dist/cjs/platforms/nestjsjwt").NestJsJwtDriver;
 var nestService = require("@nestjs/jwt").JwtService;
+var msg = require("../dist/cjs/error_messages").ErrorMessages;
 
 describe("Jwt Driver Validation", function () {
 
     before(function () {
 
     });
+
+    describe('Driver Errors', function () {
+        var error;
+
+        before(function (done) {
+            var driver = {
+                validate: function () {
+                    throw new Error("Unexpected driver error");
+                }
+            };
+            var strategy = new Strategy({
+                jwtFromRequest: mock.jwtExtractor,
+                secretOrKey: "secret",
+                jwtDriver: driver
+            }, function (payload, next) {
+                next(null, payload);
+            });
+            chai.passport.use(strategy)
+                .error(function (err) {
+                    error = err;
+                    done();
+                })
+                .authenticate();
+        });
+
+        it("should be able to handle a failing driver", function () {
+            expect(error).to.be.instanceof(Error);
+            expect(error.message).to.be.a.string("Unexpected driver error");
+        });
+    });
+
+    describe("Driver Failures", function () {
+        var error;
+
+        before(function (done) {
+            var driver = {
+                validate: function () {
+                    return Promise.resolve({success: false, message: null});
+                }
+            };
+            var strategy = new Strategy({
+                jwtFromRequest: mock.jwtExtractor,
+                secretOrKey: "secret",
+                jwtDriver: driver
+            }, function (payload, next) {
+                next(null, payload);
+            });
+            chai.passport.use(strategy)
+                .error(function (err) {
+                    error = err;
+                    done();
+                })
+                .authenticate();
+        });
+
+        it("should be able to handle a failing driver", function () {
+            expect(error).to.be.instanceof(Error);
+            expect(error.message).to.be.a.string(msg["NO_DRIVER_FAILURE_INFO"]);
+        });
+    });
+
 
     describe('Mock Driver', function () {
         var strategy, driver, validationSpy, secretOrKeyStub;
@@ -90,7 +153,7 @@ describe("Jwt Driver Validation", function () {
             validationSpy.resetHistory();
             if (!secretOrKeyStub) {
                 secretOrKeyStub = sinon.stub();
-                secretOrKeyStub.onCall(0).returns("invalid-secret");
+                secretOrKeyStub.onCall(0).returns(createSecretKey("invalid-secret"));
                 secretOrKeyStub.onCall(1).returns("secret");
             }
             driver = new joseDriver(jose, {});
@@ -276,7 +339,7 @@ describe("Jwt Driver Validation", function () {
 
         it("should fail when an non valid core is give", function () {
             expect(function () {
-                    new jwtDriver({})
+                new jwtDriver({})
             }).to.throw(TypeError);
         });
 
