@@ -89,7 +89,7 @@ export class AppController {
 ```
 ### jwt.strategy.ts
 This is the strategy and main intergation of `passport-jwt` with `nestjs`. 
-Notice how we use the `passport-jwt/platform-nestjsjwt` for better intergration and therefore we don't need to pass a `secretOrProvider` (because it's in the `AppModule`). 
+Notice how we use the `passport-jwt/platform-nestjsjwt` for better intergration and therefore we don't need to pass a `secretOrKey` option (because it's in the `AppModule`). 
 Of course any driver can be used and you are not stuck with the one from `nestjs`.
 ```typescript
 import { PassportStrategy } from "@nestjs/passport"
