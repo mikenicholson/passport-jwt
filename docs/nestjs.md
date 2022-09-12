@@ -18,7 +18,7 @@ export type MyProfile = { id: number; username: string; displayname: string };
 ### app.module.ts
 The main module of our example, note that the jwt service and our jwtstragy are imported here. 
 the secret is passed to the jwt module, of course this is extracted from the environment in a product application.
-The jwt module is seen by our package as a `JwtProvidedDriver` or a driver that takes care of a secret itself.
+The `JwtService` from the `JwtModule` is seen by our package as a `JwtProvidedDriver` (e.g. a driver that takes care of a secret itself).
 ```typescript
 import { Module } from "@nestjs/common";
 import { PassportModlue } from "@nestjs/passport";
