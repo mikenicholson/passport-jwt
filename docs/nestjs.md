@@ -3,14 +3,14 @@
 Below is an example of how to integrate `passport-jwt` with `@nestjs/passport`, storing the JWT as a cookie. These examples can help get you started with `nestjs`.
 
 ### main.ts
-The main file of the nestjs framework, the current example uses a cookie to store the token, so we need to add a cookie parser
+The main file of the nestjs framework, the current example uses a cookie to store the token, so we need to add a cookie parser from `cookie-parser`.
 ```typescript
 import * as cookieParser from 'cookie-parser';
 // somewhere in your initialization file
 app.use(cookieParser());
 ```
 ### user.type.ts
-The file of the user type where we store the signature of our payload and our profile, this must be an entity associated with an orm in a production framework
+The file of the user type where we store the signature of our payload and our profile, this must be an entity associated with an orm in a production framework.
 ```typescript
 export type MyPayload = { sub: number; name: string };
 export type MyProfile = { id: number; username: string; displayname: string };
