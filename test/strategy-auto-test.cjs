@@ -1,4 +1,4 @@
-var Strategy = require("../dist/cjs/auto/index.cjs").Strategy;
+var Strategy = require("../dist/cjs/auto_load.cjs").Strategy;
 var mock = require("./mock_data.cjs");
 var chai = require("chai");
 

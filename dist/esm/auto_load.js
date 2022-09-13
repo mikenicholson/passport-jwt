@@ -1,5 +1,5 @@
-import { JwtStrategy } from "../jwt_strategy";
-import { JsonWebTokenDriver } from "../platforms/jsonwebtoken";
+import { JwtStrategy } from "./jwt_strategy";
+import { JsonWebTokenDriver } from "./platforms/jsonwebtoken";
 import jsonwebtoken from "jsonwebtoken";
 class JwtAutoStrategy extends JwtStrategy {
     constructor(extOptions, verify) {
@@ -17,4 +17,4 @@ class JwtAutoStrategy extends JwtStrategy {
 JwtAutoStrategy.OverrideAutoDriver = JsonWebTokenDriver;
 JwtAutoStrategy.ignoreLegacy = true;
 export { JwtAutoStrategy as Strategy };
-//# sourceMappingURL=index.js.map
+//# sourceMappingURL=auto_load.js.map

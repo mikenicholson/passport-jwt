@@ -1,4 +1,4 @@
-import * as auto from "./dist/types/auto/index";
+import * as auto from "./dist/types/auto_load";
 import * as strategy from "./dist/types/jwt_strategy";
 
 declare module "passport-jwt/auto" {

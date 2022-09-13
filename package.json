@@ -88,16 +88,16 @@
         "./dist/types/index.d.ts"
       ],
       "./auto": [
-        "./dist/types/auto/index.d.ts"
+        "./dist/types/auto_load.d.ts"
       ],
       "./platform-nestjsjwt": [
-        "./dist/types/platforms/platform-nestjsjwt.d.ts"
+        "./dist/types/platforms/nestjsjwt.d.ts"
       ],
       "./platform-jose": [
-        "./dist/types/platforms/platform-jose.d.ts"
+        "./dist/types/platforms/jose.d.ts"
       ],
       "./platform-jsonwebtoken": [
-        "./dist/types/platforms/platform-jsonwebtoken.d.ts"
+        "./dist/types/platforms/jsonwebtoken.d.ts"
       ]
     }
   },
@@ -115,11 +115,11 @@
     "./auto": {
       "require": {
         "types": "./dist/types/index.d.ts",
-        "default": "./dist/cjs/auto/index.cjs"
+        "default": "./dist/cjs/auto_load.cjs"
       },
       "import": {
         "types": "./dist/types/index.d.ts",
-        "default": "./dist/esm/auto/index.js"
+        "default": "./dist/esm/auto_load.js"
       }
     },
     "./platform-jose": {

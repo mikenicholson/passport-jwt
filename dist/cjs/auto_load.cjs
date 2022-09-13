@@ -7,9 +7,9 @@ exports.Strategy = void 0;
 
 var tslib_1 = require("tslib");
 
-var jwt_strategy_1 = require("../jwt_strategy.cjs");
+var jwt_strategy_1 = require("./jwt_strategy.cjs");
 
-var jsonwebtoken_1 = require("../platforms/jsonwebtoken.cjs");
+var jsonwebtoken_1 = require("./platforms/jsonwebtoken.cjs");
 
 var jsonwebtoken_2 = tslib_1.__importDefault(require("jsonwebtoken"));
 
@@ -41,4 +41,4 @@ function (_super) {
 }(jwt_strategy_1.JwtStrategy);
 
 exports.Strategy = JwtAutoStrategy;
-//# sourceMappingURL=index.cjs.map
+//# sourceMappingURL=auto_load.cjs.map
