@@ -114,11 +114,11 @@
     },
     "./auto": {
       "require": {
-        "types": "./dist/types/index.d.ts",
+        "types": "./dist/types/auto_load.d.ts",
         "default": "./dist/cjs/auto_load.cjs"
       },
       "import": {
-        "types": "./dist/types/index.d.ts",
+        "types": "./dist/types/auto_load.d.ts",
         "default": "./dist/esm/auto_load.js"
       }
     },
