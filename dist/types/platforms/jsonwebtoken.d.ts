@@ -4,10 +4,8 @@ declare type JsonWebTokenDriverType = {
     verify: typeof verify;
 };
 export declare class JsonWebTokenDriver extends JwtDriver<JsonWebTokenDriverType, VerifyOptions, string> {
-    readonly driver: JsonWebTokenDriverType;
-    protected readonly options?: VerifyOptions | undefined;
     protected defaultOptions: VerifyOptions;
-    constructor(driver: JsonWebTokenDriverType, options?: VerifyOptions | undefined);
+    constructor(core: JsonWebTokenDriverType, options?: VerifyOptions);
     validate<Payload extends DefaultPayload>(token: string, keyOrSecret: string): Promise<JwtResult<Payload>>;
 }
 export {};

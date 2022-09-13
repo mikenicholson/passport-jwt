@@ -1,15 +1,22 @@
 {
   "name": "passport-jwt",
   "version": "5.0.0",
+  "type": "module",
+  "main": "./fallback.cjs",
+  "types": "./fallback.d.ts",
   "description": "Passport authentication strategy using JSON Web Tokens",
+  "engines": {
+    "node": ">=12.19.0 || >=14.6.0 || >=16.0.0"
+  },
   "scripts": {
-    "test": "mocha --reporter spec --require test/bootstrap test/*test.js --timeout 10000",
+    "test": "mocha --reporter spec --require test/bootstrap.cjs test/*test.cjs --timeout 10000",
     "testcov": "nyc npm run test",
-    "build": "npm run clean && npm run build:cjs && npm run build:esm && npm run build:types",
+    "build": "npm run build:prebuild && npm run build:cjs && npm run build:esm && npm run build:types && npm run build:postbuild",
+    "build:prebuild": "rimraf ./dist",
     "build:cjs": "tsc -p config/tsconfig.cjs.json",
     "build:esm": "tsc -p config/tsconfig.esm.json",
     "build:types": "tsc -p config/tsconfig.types.json",
-    "clean": "rimraf ./dist"
+    "build:postbuild": "convert-extension cjs ./dist/cjs"
   },
   "repository": {
     "type": "git",
@@ -29,10 +36,20 @@
     "url": "https://github.com/mikenicholson/passport-jwt/issues"
   },
   "homepage": "https://github.com/mikenicholson/passport-jwt",
+  "files": [
+    "dist",
+    "fallback.cjs",
+    "fallback.d.ts",
+    "auto.d.ts",
+    "platform-jose.d.ts",
+    "platform-jsonwebtoken.d.ts",
+    "platform-nestjsjwt.d.ts"
+  ],
   "devDependencies": {
     "@nestjs/jwt": "^9.0.0",
     "chai": "^4.3.6",
     "chai-passport-strategy": "^3.0.0",
+    "convert-extension": "^0.3.0",
     "jose": "^4.0.0",
     "jsonwebtoken": "^8.0.0",
     "mocha": "^10.0.0",
@@ -65,11 +82,30 @@
       "optional": true
     }
   },
+  "typesVersions": {
+    "<4.7": {
+      ".": [
+        "./dist/types/index.d.ts"
+      ],
+      "./auto": [
+        "./dist/types/auto/index.d.ts"
+      ],
+      "./platform-nestjsjwt": [
+        "./dist/types/platforms/platform-nestjsjwt.d.ts"
+      ],
+      "./platform-jose": [
+        "./dist/types/platforms/platform-jose.d.ts"
+      ],
+      "./platform-jsonwebtoken": [
+        "./dist/types/platforms/platform-jsonwebtoken.d.ts"
+      ]
+    }
+  },
   "exports": {
     ".": {
       "require": {
         "types": "./dist/types/index.d.ts",
-        "default": "./dist/cjs/index.js"
+        "default": "./dist/cjs/index.cjs"
       },
       "import": {
         "types": "./dist/types/index.d.ts",
@@ -79,7 +115,7 @@
     "./auto": {
       "require": {
         "types": "./dist/types/index.d.ts",
-        "default": "./dist/cjs/auto/index.js"
+        "default": "./dist/cjs/auto/index.cjs"
       },
       "import": {
         "types": "./dist/types/index.d.ts",
@@ -89,7 +125,7 @@
     "./platform-jose": {
       "require": {
         "types": "./dist/types/platforms/jose.d.ts",
-        "default": "./dist/cjs/platforms/jose.js"
+        "default": "./dist/cjs/platforms/jose.cjs"
       },
       "import": {
         "types": "./dist/types/platforms/jose.d.ts",
@@ -99,7 +135,7 @@
     "./platform-jsonwebtoken": {
       "require": {
         "types": "./dist/types/platforms/jsonwebtoken.d.ts",
-        "default": "./dist/cjs/platforms/jsonwebtoken.js"
+        "default": "./dist/cjs/platforms/jsonwebtoken.cjs"
       },
       "import": {
         "types": "./dist/types/platorms/jsonwebtoken.d.ts",
@@ -109,21 +145,12 @@
     "./platform-nestjsjwt": {
       "require": {
         "types": "./dist/types/platforms/nestjsjwt.d.ts",
-        "default": "./dist/cjs/platforms/nestjsjwt.js"
+        "default": "./dist/cjs/platforms/nestjsjwt.cjs"
       },
       "import": {
         "types": "./dist/types/platforms/nestjsjwt.d.ts",
         "default": "./dist/esm/platforms/nestjsjwt.js"
       }
-    }
-  },
-  "typesVersions": {
-    "*": {
-      ".": ["./index.d.ts", "./fallback.d.ts"],
-      "./auto": ["./auto.d.ts", "./fallback.d.ts"],
-      "./platform-nestjsjwt": ["./platform-nestjsjwt.d.ts", "./fallback.d.ts"],
-      "./platform-jose": ["./platform-jose.d.ts", "./fallback.d.ts"],
-      "./platform-jsonwebtoken": ["./platform-jsonwebtoken.d.ts", "./fallback.d.ts"]
     }
   }
 }

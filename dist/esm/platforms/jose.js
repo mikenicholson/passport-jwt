@@ -3,13 +3,11 @@ import { JwtDriver } from "./base";
 import { createSecretKey } from "crypto";
 import { ErrorMessages } from "../error_messages";
 export class JoseDriver extends JwtDriver {
-    constructor(driver, options) {
-        if (typeof driver !== "object" || !("jwtVerify" in driver) || typeof driver["jwtVerify"] !== "function") {
+    constructor(core, options) {
+        if (typeof core !== "object" || !("jwtVerify" in core) || typeof core["jwtVerify"] !== "function") {
             throw new TypeError(ErrorMessages.JOSE_CORE_INCOMPATIBLE);
         }
-        super();
-        this.driver = driver;
-        this.options = options;
+        super(core, options);
         this.defaultOptions = { algorithms: ["HS256"] };
     }
     validate(token, keyOrSecret) {
@@ -23,7 +21,7 @@ export class JoseDriver extends JwtDriver {
             }
             const result = { success: false, message: undefined };
             try {
-                const validation = yield this.driver.jwtVerify(token, jwk, this.getOptions());
+                const validation = yield this.core.jwtVerify(token, jwk, this.getOptions());
                 result.success = true;
                 result.payload = validation.payload;
             }
@@ -34,3 +32,4 @@ export class JoseDriver extends JwtDriver {
         });
     }
 }
+//# sourceMappingURL=jose.js.map

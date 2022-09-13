@@ -1,5 +1,7 @@
 export class JwtDriver {
-    constructor() {
+    constructor(core, options) {
+        this.core = core;
+        this.options = options;
         this.keyIsProvidedByMe = false;
     }
     getOptions() {
@@ -12,3 +14,4 @@ export class JwtProvidedDriver extends JwtDriver {
         this.keyIsProvidedByMe = true;
     }
 }
+//# sourceMappingURL=base.js.map

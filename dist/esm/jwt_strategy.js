@@ -160,3 +160,4 @@ export class JwtStrategy extends Strategy {
     ;
 }
 JwtStrategy.ignoreLegacy = false;
+//# sourceMappingURL=jwt_strategy.js.map

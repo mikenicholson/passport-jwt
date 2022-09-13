@@ -2,20 +2,18 @@ import { __awaiter } from "tslib";
 import { JwtDriver } from "./base";
 import { ErrorMessages } from "../error_messages";
 export class JsonWebTokenDriver extends JwtDriver {
-    constructor(driver, options) {
-        if (typeof driver !== "object" || !("verify" in driver) || typeof driver["verify"] !== "function") {
+    constructor(core, options) {
+        if (typeof core !== "object" || !("verify" in core) || typeof core["verify"] !== "function") {
             throw new TypeError(ErrorMessages.JWT_CORE_INCOMPATIBLE);
         }
-        super();
-        this.driver = driver;
-        this.options = options;
+        super(core, options);
         this.defaultOptions = { algorithms: ["HS256"] };
     }
     validate(token, keyOrSecret) {
         return __awaiter(this, void 0, void 0, function* () {
             const result = { success: false, message: undefined };
             try {
-                const validation = this.driver.verify(token, keyOrSecret, this.getOptions());
+                const validation = this.core.verify(token, keyOrSecret, this.getOptions());
                 result.success = true;
                 result.payload = validation;
             }
@@ -26,3 +24,4 @@ export class JsonWebTokenDriver extends JwtDriver {
         });
     }
 }
+//# sourceMappingURL=jsonwebtoken.js.map

@@ -17,3 +17,4 @@ class JwtAutoStrategy extends JwtStrategy {
 JwtAutoStrategy.OverrideAutoDriver = JsonWebTokenDriver;
 JwtAutoStrategy.ignoreLegacy = true;
 export { JwtAutoStrategy as Strategy };
+//# sourceMappingURL=index.js.map

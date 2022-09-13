@@ -1,5 +1,23 @@
-declare module "passport-jwt" {}
-declare module "passport-jwt/auto" {}
-declare module "passport-jwt/platform-jose" {}
-declare module "passport-jwt/platform-nestjsjwt" {}
-declare module "passport-jwt/platform-jsonwebtoken" {}
+import * as index from "./dist/types/index";
+import * as base from "./dist/types/platforms/base";
+import * as strategy from "./dist/types/jwt_strategy";
+
+declare module "passport-jwt" {
+    export class Strategy<Payload extends base.DefaultPayload, Verify extends strategy.BasicVerifyCallback = strategy.VerifyCallback<Payload>, Key = string> extends index.Strategy<Payload, Verify, Key> {}
+    export const ErrorMessages: index.ErrorMessages;
+    export const FailureMessages: index.FailureMessages;
+    export class ExtractJwt extends index.ExtractJwt {}
+    export abstract class JwtDriver<Core = any, Options = any, Key = any> extends index.JwtDriver<Core, Options, Key> {}
+    export abstract class JwtProvidedDriver<Core = any, Options = any> extends index.JwtProvidedDriver<Core, Options> {}
+    export type JwtStrategyOptions<Key = string> = index.JwtStrategyOptions<Key>;
+    export type JwtExtractorType = index.JwtExtractorType;
+    export type JwtResult<Payload extends base.DefaultPayload = base.DefaultPayload> = index.JwtResult<Payload>;
+    export type VerifyCallback<Payload extends base.DefaultPayload = base.DefaultPayload> = index.VerifyCallback<Payload>;
+    export type VerifyCallbackWithReq<Payload extends base.DefaultPayload = base.DefaultPayload> = index.VerifyCallbackWithReq<Payload>;
+    export type SecretOrKeyProvider<Key = string> = index.SecretOrKeyProvider<Key>;
+}
+
+import "./auto";
+import "./platform-nestjsjwt";
+import "./platform-jose";
+import "./platform-jsonwebtoken"

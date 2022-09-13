@@ -147,6 +147,7 @@ They have a `validation` method that receives a token and a key and returns a re
 * `payload` is an object containing the payload.
 
 `getOptions()` is a method that returns the options given to the constructor merged with the default options.
+`core` is a property which contains the provided core.
 
 You can make custom drivers with the above signatures.
 ```javascript
@@ -175,7 +176,7 @@ type MyOptions = {issuer: string};
 class MyDriver extends JwtDriver<MyCore, MyOptions, MyKey> {
   public async validate(token /* :string */, key /* :MyKey */): Promise<JwtResult<MyPayload>> {
     return {
-        success: this.driver(token, key, this.getOptions()), 
+        success: this.core(token, key, this.getOptions()), 
         payload: {user: "name"}
     };
   }

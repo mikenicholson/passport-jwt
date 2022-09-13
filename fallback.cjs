@@ -1,0 +1,2 @@
+process.emitWarning("Your node version does not support submodules, therefore the fallback is used to load the library as if it had been imported from 'passport-jwt/auto'. You should update your node version, this may work but is **not supported**.");
+module.exports = require("./dist/cjs/auto/index.cjs");

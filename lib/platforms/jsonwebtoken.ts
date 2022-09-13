@@ -8,20 +8,20 @@ export class JsonWebTokenDriver extends JwtDriver<JsonWebTokenDriverType, Verify
     protected defaultOptions: VerifyOptions = {algorithms: ["HS256"]};
 
     constructor(
-        public readonly driver: JsonWebTokenDriverType,
-        protected readonly options?: VerifyOptions
+        core: JsonWebTokenDriverType,
+        options?: VerifyOptions
     ) {
-        if(typeof driver !== "object" || !("verify" in driver) || typeof driver["verify"] !== "function") {
+        if(typeof core !== "object" || !("verify" in core) || typeof core["verify"] !== "function") {
             throw new TypeError(ErrorMessages.JWT_CORE_INCOMPATIBLE);
         }
-        super();
+        super(core, options);
     }
 
 
     public async validate<Payload extends DefaultPayload> (token: string, keyOrSecret: string): Promise<JwtResult<Payload>> {
         const result: JwtResultInternal = {success: false, message: undefined};
         try {
-            const validation = this.driver.verify(token, keyOrSecret, this.getOptions());
+            const validation = this.core.verify(token, keyOrSecret, this.getOptions());
             result.success = true;
             result.payload = validation as JwtPayload;
         } catch (err: any) {

@@ -10,13 +10,13 @@ export class JoseDriver extends JwtDriver<JoseDriverType, VerifyOptions, KeyLike
     protected defaultOptions: VerifyOptions = {algorithms: ["HS256"]};
 
     constructor(
-        public readonly driver: JoseDriverType,
-        protected readonly options?: VerifyOptions
+        core: JoseDriverType,
+        options?: VerifyOptions
     ) {
-        if (typeof driver !== "object" || !("jwtVerify" in driver) || typeof driver["jwtVerify"] !== "function") {
+        if (typeof core !== "object" || !("jwtVerify" in core) || typeof core["jwtVerify"] !== "function") {
             throw new TypeError(ErrorMessages.JOSE_CORE_INCOMPATIBLE);
         }
-        super();
+        super(core, options);
     }
 
     public async validate<Payload extends DefaultPayload>(token: string, keyOrSecret: string | KeyLike): Promise<JwtResult<Payload>> {
@@ -28,7 +28,7 @@ export class JoseDriver extends JwtDriver<JoseDriverType, VerifyOptions, KeyLike
         }
         const result: JwtResultInternal = {success: false, message: undefined};
         try {
-            const validation = await this.driver.jwtVerify(token, jwk, this.getOptions());
+            const validation = await this.core.jwtVerify(token, jwk, this.getOptions());
             result.success = true;
             result.payload = validation.payload;
         } catch (err: any) {

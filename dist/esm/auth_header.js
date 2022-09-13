@@ -6,3 +6,4 @@ export function parseAuthHeader(hdrValue) {
     const matches = hdrValue.match(HdrRegex);
     return matches && { scheme: matches[1], value: matches[2] };
 }
+//# sourceMappingURL=auth_header.js.map

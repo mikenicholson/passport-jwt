@@ -8,19 +8,19 @@ export class NestJsJwtDriver extends JwtProvidedDriver<NestJsJwtDriverType, JwtV
     protected defaultOptions: JwtVerifyOptions = {algorithms: ["HS256"]};
 
     constructor(
-        public readonly driver: NestJsJwtDriverType,
-        protected readonly options?: JwtVerifyOptions
+        core: NestJsJwtDriverType,
+        options?: JwtVerifyOptions
     ) {
-        if (typeof driver !== "object" || !("verifyAsync" in driver) || typeof driver["verifyAsync"] !== "function") {
+        if (typeof core !== "object" || !("verifyAsync" in core) || typeof core["verifyAsync"] !== "function") {
             throw new TypeError(ErrorMessages.NEST_CORE_INCOMPATIBLE);
         }
-        super();
+        super(core, options);
     }
 
     public async validate<Payload extends DefaultPayload>(token: string, keyOrSecret?: string): Promise<JwtResult<Payload>> {
         const result: JwtResultInternal = {success: false, message: undefined};
         try {
-            const validation = await this.driver.verifyAsync(token, this.getOptions());
+            const validation = await this.core.verifyAsync(token, this.getOptions());
             result.success = true;
             result.payload = validation;
         } catch (err: any) {

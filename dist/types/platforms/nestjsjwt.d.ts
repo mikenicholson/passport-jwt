@@ -4,10 +4,8 @@ declare type NestJsJwtDriverType = {
     verifyAsync: JwtService["verifyAsync"];
 };
 export declare class NestJsJwtDriver extends JwtProvidedDriver<NestJsJwtDriverType, JwtVerifyOptions> {
-    readonly driver: NestJsJwtDriverType;
-    protected readonly options?: JwtVerifyOptions | undefined;
     protected defaultOptions: JwtVerifyOptions;
-    constructor(driver: NestJsJwtDriverType, options?: JwtVerifyOptions | undefined);
+    constructor(core: NestJsJwtDriverType, options?: JwtVerifyOptions);
     validate<Payload extends DefaultPayload>(token: string, keyOrSecret?: string): Promise<JwtResult<Payload>>;
 }
 export {};

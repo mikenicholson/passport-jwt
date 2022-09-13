@@ -1,8 +1,8 @@
 export type DefaultPayload = Record<string, any>;
 
-export interface JwtResultPositive<Output extends Record<string, any>> {
+export interface JwtResultPositive<Payload extends DefaultPayload> {
     success: true;
-    payload: Output;
+    payload: Payload;
     message: undefined;
 }
 
@@ -17,15 +17,16 @@ export interface JwtResultInternal {
     message?: string;
 }
 
-export type JwtResult<T extends DefaultPayload> = JwtResultPositive<T> | JwtResultNegative;
+export type JwtResult<Payload extends DefaultPayload> = JwtResultPositive<Payload> | JwtResultNegative;
 
-export abstract class JwtDriver<Driver, Options, Key> {
+export abstract class JwtDriver<Core, Options, Key> {
 
     protected keyIsProvidedByMe: boolean = false;
 
-    public readonly abstract driver: Driver;
-
-    protected readonly abstract options?: Options;
+    constructor(
+        protected readonly core: Core,
+        protected readonly options?: Options
+    ) {}
 
     protected abstract defaultOptions: Options;
 
@@ -36,6 +37,6 @@ export abstract class JwtDriver<Driver, Options, Key> {
     public abstract validate<Output extends DefaultPayload>(token: string, keyOrSecret: Key): Promise<JwtResult<Output>>;
 }
 
-export abstract class JwtProvidedDriver<Driver, Options> extends JwtDriver<Driver, Options, undefined> {
+export abstract class JwtProvidedDriver<Core, Options> extends JwtDriver<Core, Options, undefined> {
     protected override keyIsProvidedByMe: true = true;
 }
