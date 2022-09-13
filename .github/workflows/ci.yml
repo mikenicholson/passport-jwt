@@ -16,5 +16,6 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: Install dependencies
         run: npm ci
+      - run: .github/scripts/install-peer-deps.sh
       - run: npm run build --if-present
       - run: npm test
