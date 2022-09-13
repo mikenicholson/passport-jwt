@@ -1,15 +1,14 @@
-var Strategy = require('../dist/cjs/jwt_strategy').JwtStrategy;
-var mock = require('./mock_data');
+var Strategy = require("../dist/cjs/jwt_strategy.cjs").JwtStrategy;
+var mock = require("./mock_data.cjs");
 var sinon = require('sinon');
-var msg = require("../dist/cjs/error_messages").ErrorMessages;
+var msg = require("../dist/cjs/error_messages.cjs").ErrorMessages;
 
 describe('Strategy Init', function () {
     var strategy = new Strategy({
         jwtFromRequest: mock.jwtExtractor,
         secretOrKey: 'secret',
         jwtDriver: mock.jwtDriver
-    }, function () {
-    });
+    }, function () {});
 
     it('should be named jwt', function () {
         expect(strategy.name).to.equal('jwt');
@@ -17,7 +16,10 @@ describe('Strategy Init', function () {
 
     it('should throw if constructed without a driver', function () {
         expect(function () {
-            var s = new Strategy({jwtFromRequest: mock.jwtExtractor, secretOrKey: 'secret'}, function () {
+            var s = new Strategy({
+                jwtFromRequest: mock.jwtExtractor,
+                secretOrKey: 'secret'
+            }, function () {
             });
         }).to.throw(TypeError, msg["NO_DRIVER_PROVIDED"]);
     });
@@ -26,17 +28,20 @@ describe('Strategy Init', function () {
         expect(function () {
             var s = new Strategy({
                 jwtFromRequest: function (r) {
-                }, secretOrKey: 'secret', jwtDriver: mock.jwtDriver
+                },
+                secretOrKey: 'secret',
+                jwtDriver: mock.jwtDriver
             });
         }).to.throw(TypeError, msg["NO_VERIFY_CALLBACK"]);
     });
-
 
     it('should throw if constructed neither a secretOrKey or a secretOrKeyProvider arg', function () {
         expect(function () {
             var s = new Strategy({
                 jwtFromRequest: function (r) {
-                }, secretOrKey: null, jwtDriver: mock.jwtDriver
+                },
+                secretOrKey: null,
+                jwtDriver: mock.jwtDriver
             }, function () {
             });
         }).to.throw(TypeError, msg["NO_SECRET_KEY"]);
@@ -46,12 +51,17 @@ describe('Strategy Init', function () {
         expect(function () {
             var s = new Strategy({
                 jwtFromRequest: function (r) {
-                }, secretOrKey: "sadf", jwtDriver: {keyIsProvidedByMe: true, validate: function () {}}
+                },
+                secretOrKey: "sadf",
+                jwtDriver: {
+                    keyIsProvidedByMe: true,
+                    validate: function () {
+                    }
+                }
             }, function () {
             });
         }).to.throw(TypeError, msg["DRIVER_PROVIDES_KEY"]);
     });
-
 
     it('should throw if constructed with both a secretOrKey and a secretOrKeyProvider', function () {
         expect(function () {
@@ -85,20 +95,22 @@ describe('Strategy Init', function () {
             var s = new Strategy({
                 secretOrKey: 'secret',
                 jwtFromRequest: mock.jwtExtractor,
-                jwtDriver: {},
+                jwtDriver: {}
             });
         }).to.throw(TypeError, msg["INVALID_DRIVER"]);
     });
 
-
     it('should throw if constructed without a jwtFromRequest arg', function () {
         expect(function () {
-            var s = new Strategy({secretOrKey: 'secret', jwtDriver: mock.jwtDriver}, function () {
+            var s = new Strategy({
+                secretOrKey: 'secret',
+                jwtDriver: mock.jwtDriver
+            }, function () {
             });
         }).to.throw(TypeError, msg["NO_EXTRACTOR_FOUND"]);
     });
 
     after(function () {
         sinon.restore();
-    })
+    });
 });

@@ -17,9 +17,15 @@ const self = {
     jwtDriver: {
         validate: function (token, secret) {
             if (secret === self.valid_jwt.secret) {
-                return Promise.resolve({success: true, payload: self.valid_jwt.payload});
+                return Promise.resolve({
+                    success: true,
+                    payload: self.valid_jwt.payload
+                });
             } else {
-                return Promise.resolve({success: false, message: "Not Valid"});
+                return Promise.resolve({
+                    success: false,
+                    message: "Not Valid"
+                });
             }
         }
     },
@@ -45,5 +51,4 @@ const self = {
         secret: null
     }
 };
-
 module.exports = self;

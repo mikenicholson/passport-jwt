@@ -1,21 +1,17 @@
-var Strategy = require("../dist/cjs/jwt_strategy").JwtStrategy;
-var mock = require("./mock_data");
+var Strategy = require("../dist/cjs/jwt_strategy.cjs").JwtStrategy;
+var mock = require("./mock_data.cjs");
 var chai = require("chai");
 var sinon = require("sinon");
-var joseDriver = require("../dist/cjs/platforms/jose").JoseDriver;
+var joseDriver = require("../dist/cjs/platforms/jose.cjs").JoseDriver;
 var jose = require("jose");
 var jsonwebtoken = require("jsonwebtoken");
 var createSecretKey = require("crypto").createSecretKey;
-var jwtDriver = require("../dist/cjs/platforms/jsonwebtoken").JsonWebTokenDriver;
-var nestDriver = require("../dist/cjs/platforms/nestjsjwt").NestJsJwtDriver;
+var jwtDriver = require("../dist/cjs/platforms/jsonwebtoken.cjs").JsonWebTokenDriver;
+var nestDriver = require("../dist/cjs/platforms/nestjsjwt.cjs").NestJsJwtDriver;
 var nestService = require("@nestjs/jwt").JwtService;
-var msg = require("../dist/cjs/error_messages").ErrorMessages;
+var msg = require("../dist/cjs/error_messages.cjs").ErrorMessages;
 
 describe("Jwt Driver Validation", function () {
-
-    before(function () {
-
-    });
 
     describe('Driver Errors', function () {
         var error;
@@ -33,12 +29,11 @@ describe("Jwt Driver Validation", function () {
             }, function (payload, next) {
                 next(null, payload);
             });
-            chai.passport.use(strategy)
-                .error(function (err) {
-                    error = err;
-                    done();
-                })
-                .authenticate();
+
+            chai.passport.use(strategy).error(function (err) {
+                error = err;
+                done();
+            }).authenticate();
         });
 
         it("should be able to handle a failing driver", function () {
@@ -53,7 +48,10 @@ describe("Jwt Driver Validation", function () {
         before(function (done) {
             var driver = {
                 validate: function () {
-                    return Promise.resolve({success: false, message: null});
+                    return Promise.resolve({
+                        success: false,
+                        message: null
+                    });
                 }
             };
             var strategy = new Strategy({
@@ -63,12 +61,11 @@ describe("Jwt Driver Validation", function () {
             }, function (payload, next) {
                 next(null, payload);
             });
-            chai.passport.use(strategy)
-                .error(function (err) {
-                    error = err;
-                    done();
-                })
-                .authenticate();
+
+            chai.passport.use(strategy).error(function (err) {
+                error = err;
+                done();
+            }).authenticate();
         });
 
         it("should be able to handle a failing driver", function () {
@@ -77,18 +74,19 @@ describe("Jwt Driver Validation", function () {
         });
     });
 
-
     describe('Mock Driver', function () {
         var strategy, driver, validationSpy, secretOrKeyStub;
 
         before(function (done) {
             validationSpy = sinon.stub();
             validationSpy.resetHistory();
+
             if (!secretOrKeyStub) {
                 secretOrKeyStub = sinon.stub();
                 secretOrKeyStub.onCall(0).returns("invalid-secret");
                 secretOrKeyStub.onCall(1).returns("secret");
             }
+
             driver = mock.jwtDriver;
             strategy = new Strategy({
                 jwtFromRequest: mock.jwtExtractor,
@@ -101,18 +99,15 @@ describe("Jwt Driver Validation", function () {
                 validationSpy();
                 next(null, payload);
             });
-            chai.passport.use(strategy)
-                .success(function (u, i) {
-                    done();
-                })
-                .fail(function (err) {
-                    done();
-                })
-                .error(function (err) {
-                    expect(err).to.not.exist;
-                    done();
-                })
-                .authenticate();
+
+            chai.passport.use(strategy).success(function (u, i) {
+                done();
+            }).fail(function (err) {
+                done();
+            }).error(function (err) {
+                expect(err).to.not.exist;
+                done();
+            }).authenticate();
         });
 
         it("should fail in full when a non-valid JWT token is provided", function () {
@@ -142,7 +137,6 @@ describe("Jwt Driver Validation", function () {
                 done();
             });
         });
-
     });
 
     describe('Jose Driver', function () {
@@ -157,6 +151,7 @@ describe("Jwt Driver Validation", function () {
                 secretOrKeyStub.onCall(1).returns("secret");
             }
             driver = new joseDriver(jose, {});
+
             strategy = new Strategy({
                 jwtFromRequest: mock.jwtExtractor,
                 secretOrKeyProvider: function (req, token, cb) {
@@ -168,18 +163,15 @@ describe("Jwt Driver Validation", function () {
                 validationSpy();
                 next(null, payload);
             });
-            chai.passport.use(strategy)
-                .success(function (u, i) {
-                    done();
-                })
-                .fail(function (err) {
-                    done();
-                })
-                .error(function (err) {
-                    expect(err).to.not.exist;
-                    done();
-                })
-                .authenticate();
+
+            chai.passport.use(strategy).success(function (u, i) {
+                done();
+            }).fail(function (err) {
+                done();
+            }).error(function (err) {
+                expect(err).to.not.exist;
+                done();
+            }).authenticate();
         });
 
         it("should fail in full when a non-valid JWT token is provided", function () {
@@ -211,7 +203,9 @@ describe("Jwt Driver Validation", function () {
         });
 
         it("should be able to fail with an invalid issuer", function (done) {
-            driver.validate(mock.valid_jwt.token, "invalid-secret", {issuer: "invalid-iss"}).then(function (valid) {
+            driver.validate(mock.valid_jwt.token, "invalid-secret", {
+                issuer: "invalid-iss"
+            }).then(function (valid) {
                 expect(valid.success).to.be.false;
                 expect(valid.message).to.be.an("string");
                 expect(valid.payload).to.be.undefined;
@@ -220,7 +214,9 @@ describe("Jwt Driver Validation", function () {
         });
 
         it("should be able to fail with an invalid audience", function (done) {
-            driver.validate(mock.valid_jwt.token, "invalid-secret", {audience: "invalid-aud"}).then(function (valid) {
+            driver.validate(mock.valid_jwt.token, "invalid-secret", {
+                audience: "invalid-aud"
+            }).then(function (valid) {
                 expect(valid.success).to.be.false;
                 expect(valid.message).to.be.an("string");
                 expect(valid.payload).to.be.undefined;
@@ -239,10 +235,11 @@ describe("Jwt Driver Validation", function () {
 
         it("should fail when an non valid core is give", function () {
             expect(function () {
-                new joseDriver({validate: true})
+                new joseDriver({
+                    validate: true
+                });
             }).to.throw(TypeError);
         });
-
     });
 
     describe('JsonWebToken Driver', function () {
@@ -251,11 +248,13 @@ describe("Jwt Driver Validation", function () {
         before(function (done) {
             validationSpy = sinon.stub();
             validationSpy.resetHistory();
+
             if (!secretOrKeyStub) {
                 secretOrKeyStub = sinon.stub();
                 secretOrKeyStub.onCall(0).returns("invalid-secret");
                 secretOrKeyStub.onCall(1).returns("secret");
             }
+
             driver = new jwtDriver(jsonwebtoken);
             strategy = new Strategy({
                 jwtFromRequest: mock.jwtExtractor,
@@ -268,18 +267,15 @@ describe("Jwt Driver Validation", function () {
                 validationSpy();
                 next(null, payload);
             });
-            chai.passport.use(strategy)
-                .success(function (u, i) {
-                    done();
-                })
-                .fail(function (err) {
-                    done();
-                })
-                .error(function (err) {
-                    expect(err).to.not.exist;
-                    done();
-                })
-                .authenticate();
+
+            chai.passport.use(strategy).success(function (u, i) {
+                done();
+            }).fail(function (err) {
+                done();
+            }).error(function (err) {
+                expect(err).to.not.exist;
+                done();
+            }).authenticate();
         });
 
         it("should fail in full when a non-valid JWT token is provided", function () {
@@ -311,7 +307,9 @@ describe("Jwt Driver Validation", function () {
         });
 
         it("should be able to fail with an invalid issuer", function (done) {
-            driver.validate(mock.valid_jwt.token, "invalid-secret", {issuer: "invalid-iss"}).then(function (valid) {
+            driver.validate(mock.valid_jwt.token, "invalid-secret", {
+                issuer: "invalid-iss"
+            }).then(function (valid) {
                 expect(valid.success).to.be.false;
                 expect(valid.message).to.be.an("string");
                 expect(valid.payload).to.be.undefined;
@@ -320,7 +318,9 @@ describe("Jwt Driver Validation", function () {
         });
 
         it("should be able to fail with an invalid audience", function (done) {
-            driver.validate(mock.valid_jwt.token, "invalid-secret", {audience: "invalid-aud"}).then(function (valid) {
+            driver.validate(mock.valid_jwt.token, "invalid-secret", {
+                audience: "invalid-aud"
+            }).then(function (valid) {
                 expect(valid.success).to.be.false;
                 expect(valid.message).to.be.an("string");
                 expect(valid.payload).to.be.undefined;
@@ -339,10 +339,9 @@ describe("Jwt Driver Validation", function () {
 
         it("should fail when an non valid core is give", function () {
             expect(function () {
-                new jwtDriver({})
+                new jwtDriver({});
             }).to.throw(TypeError);
         });
-
     });
 
     describe('NestJsJwt Driver Success', function () {
@@ -351,12 +350,17 @@ describe("Jwt Driver Validation", function () {
         before(function (done) {
             validationSpy = sinon.stub();
             validationSpy.resetHistory();
+
             if (!secretOrKeyStub) {
                 secretOrKeyStub = sinon.stub();
                 secretOrKeyStub.onCall(0).returns("invalid-secret");
                 secretOrKeyStub.onCall(1).returns("secret");
             }
-            driver = new nestDriver(new nestService({secret: "secret"}));
+
+            driver = new nestDriver(new nestService({
+                secret: "secret"
+            }));
+
             strategy = new Strategy({
                 jwtFromRequest: mock.jwtExtractor,
                 jwtDriver: driver
@@ -364,19 +368,18 @@ describe("Jwt Driver Validation", function () {
                 validationSpy();
                 next(null, payload);
             });
-            chai.passport.use(strategy)
-                .success(function (u, i) {
-                    done();
-                })
-                .fail(function (err) {
-                    console.log({err});
-                    done();
-                })
-                .error(function (err) {
-                    expect(err).to.not.exist;
-                    done();
-                })
-                .authenticate();
+
+            chai.passport.use(strategy).success(function (u, i) {
+                done();
+            }).fail(function (err) {
+                console.log({
+                    err
+                });
+                done();
+            }).error(function (err) {
+                expect(err).to.not.exist;
+                done();
+            }).authenticate();
         });
 
         it("should construct the strategy without keyOrSecret", function () {
@@ -399,7 +402,7 @@ describe("Jwt Driver Validation", function () {
 
         it("should fail when no core is passed", function () {
             expect(function () {
-                new nestDriver()
+                new nestDriver();
             }).to.throw(TypeError);
         });
     });
@@ -410,12 +413,17 @@ describe("Jwt Driver Validation", function () {
         before(function (done) {
             validationSpy = sinon.stub();
             validationSpy.resetHistory();
+
             if (!secretOrKeyStub) {
                 secretOrKeyStub = sinon.stub();
                 secretOrKeyStub.onCall(0).returns("invalid-secret");
                 secretOrKeyStub.onCall(1).returns("secret");
             }
-            driver = new nestDriver(new nestService({secret: "invalid-secret"}));
+
+            driver = new nestDriver(new nestService({
+                secret: "invalid-secret"
+            }));
+
             strategy = new Strategy({
                 jwtFromRequest: mock.jwtExtractor,
                 jwtDriver: driver
@@ -423,18 +431,15 @@ describe("Jwt Driver Validation", function () {
                 validationSpy();
                 next(null, payload);
             });
-            chai.passport.use(strategy)
-                .success(function (u, i) {
-                    done();
-                })
-                .fail(function (err) {
-                    done();
-                })
-                .error(function (err) {
-                    expect(err).to.not.exist;
-                    done();
-                })
-                .authenticate();
+
+            chai.passport.use(strategy).success(function (u, i) {
+                done();
+            }).fail(function (err) {
+                done();
+            }).error(function (err) {
+                expect(err).to.not.exist;
+                done();
+            }).authenticate();
         });
 
         it("should fail in full when a non-valid JWT token is provided", function () {
@@ -452,7 +457,9 @@ describe("Jwt Driver Validation", function () {
         });
 
         it("should be able to fail with an invalid issuer", function (done) {
-            driver.validate(mock.valid_jwt.token, "invalid-secret", {issuer: "invalid-iss"}).then(function (valid) {
+            driver.validate(mock.valid_jwt.token, "invalid-secret", {
+                issuer: "invalid-iss"
+            }).then(function (valid) {
                 expect(valid.success).to.be.false;
                 expect(valid.message).to.be.an("string");
                 expect(valid.payload).to.be.undefined;
@@ -461,7 +468,9 @@ describe("Jwt Driver Validation", function () {
         });
 
         it("should be able to fail with an invalid audience", function (done) {
-            driver.validate(mock.valid_jwt.token, "invalid-secret", {audience: "invalid-aud"}).then(function (valid) {
+            driver.validate(mock.valid_jwt.token, "invalid-secret", {
+                audience: "invalid-aud"
+            }).then(function (valid) {
                 expect(valid.success).to.be.false;
                 expect(valid.message).to.be.an("string");
                 expect(valid.payload).to.be.undefined;
@@ -481,6 +490,5 @@ describe("Jwt Driver Validation", function () {
 
     after(function () {
         sinon.restore();
-    })
-
+    });
 });
