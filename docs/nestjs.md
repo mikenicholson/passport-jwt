@@ -117,7 +117,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
 }
 ```
-See the documentation [here](https://docs.nestjs.com/security/authentication#implementing-passport-jwt) from `@nestjs/passport` for more examples.
+See the documentation [here](https://docs.nestjs.com/security/authentication#jwt-functionality) from `@nestjs/passport` for more examples.
 Only open an issue if there are errors in the `passport-jwt` library, issues for `nestjs` in general will be ignored.
 
 This example shows a most basic implementation which should only be used for refrence purposes,
