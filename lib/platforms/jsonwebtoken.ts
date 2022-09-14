@@ -1,6 +1,6 @@
 import {DefaultPayload, JwtDriver, JwtResult, JwtResultInternal} from "./base";
 import type {VerifyOptions, verify, JwtPayload} from "jsonwebtoken";
-import { ErrorMessages } from "../error_messages";
+import {ErrorMessages} from "../error_messages";
 
 type JsonWebTokenDriverCore = { verify: typeof verify };
 
@@ -11,17 +11,19 @@ export class JsonWebTokenDriver extends JwtDriver<JsonWebTokenDriverCore, Verify
         core: JsonWebTokenDriverCore,
         options?: VerifyOptions
     ) {
-        if(typeof core !== "object" || !("verify" in core) || typeof core["verify"] !== "function") {
+        if (typeof core !== "object" || !("verify" in core) || typeof core["verify"] !== "function") {
             throw new TypeError(ErrorMessages.JWT_CORE_INCOMPATIBLE);
         }
         super(core, options);
     }
 
 
-    public async validate<Payload extends DefaultPayload> (token: string, keyOrSecret: string): Promise<JwtResult<Payload>> {
+    public async validate<Payload extends DefaultPayload>(token: string, keyOrSecret: string): Promise<JwtResult<Payload>> {
         const result: JwtResultInternal = {success: false, message: undefined};
         try {
-            const validation = this.core.verify(token, keyOrSecret, this.getOptions());
+            const validation = await new Promise((resolve, reject) => this.core.verify(
+                    token, keyOrSecret, this.getOptions(), (err, result) => err ? reject(err) : resolve(result)
+            ));
             result.success = true;
             result.payload = validation as JwtPayload;
         } catch (err: any) {
