@@ -241,8 +241,47 @@ possible the JWT is parsed from the request by a user-supplied callback passed i
 `jwtFromRequest` parameter.  This callback, from now on referred to as an extractor,
 accepts a request object as an argument and returns the encoded JWT string or *null*.
 
-## Included extractors
+## Writing a custom extractor function
+If the supplied extractors don't meet your needs you can easily provide your own callback. For
+example, if you are using the cookie-parser middleware and want to extract the JWT in a cookie
+but your implementation somehow returns the token with a trailing comma.
+Then you could use the following function as the argument to the jwtFromRequest option:
 
+```javascript
+var commaExtractor = function(req) {
+    var token = null;
+    if(req && req.cookies) {
+        token = req.cookies["jwt"];
+        if(token.endsWith(",")) {
+            token = token.slice(0, -1);
+        }
+    }
+    return token;
+};
+// ...
+opts.jwtFromRequest = commaExtractor;
+```
+**Or** in typescript (only as of v5.x.x)
+
+```typescript
+import {jwtFromRequestFunction} from "passport-jwt";
+
+// can return a promise and therefore be async
+export const commaExtractor: jwtFromRequestFunction = async (req /* :Request is implicitly added */) => {
+    let token = null;
+    if("jwt" in req.cookies && typeof req.cookies["jwt"] === "string") {
+      token = req.cookies["jwt"];
+      token = token.endsWith(",") 
+          ? await stripComma(token)
+          : token;
+    }
+    return token;
+}
+// ...
+jwtFromRequest: commaExtractor
+```
+
+## Included extractors
 A number of extractor factory functions are provided in passport-jwt.ExtractJwt. These factory
 functions return a new extractor configured with the given parameters.
 
@@ -266,46 +305,6 @@ This can be used if another middleware is extracting the JWT (e.g., from a webso
 * ```fromExtractors([array of extractor functions])``` creates a new extractor using an array of
   extractors provided. Each extractor is attempted in order until one returns a token.
 
-## Writing a custom extractor function
-
-If the supplied extractors don't meet your needs you can easily provide your own callback. For
-example, if you are using the cookie-parser middleware and want to extract the JWT in a cookie
-but your implementation somehow returns the token with a trailing comma.
-Then you could use the following function as the argument to the jwtFromRequest option:
-
-```javascript
-var commaExtractor = function(req) {
-    var token = null;
-    if(req && req.cookies) {
-        token = req.cookies["jwt"];
-        if(token.endsWith(",")) {
-            token = token.slice(0, -1);
-        }
-    }
-    return token;
-};
-// ...
-opts.jwtFromRequest = commaExtractor;
-```
-**Or** in typescript (only as of v5.x.x)
-
-```typescript
-import {JwtExtractorType} from "passport-jwt";
-
-// can return a promise and therefore be async
-export const commaExtractor: JwtExtractorType = async (req /* :Request is implicitly added */) => {
-    let token = null;
-    if("jwt" in req.cookies && typeof req.cookies["jwt"] === "string") {
-      token = req.cookies["jwt"];
-      token = token.endsWith(",") 
-          ? await stripComma(token)
-          : token;
-    }
-    return token;
-}
-// ...
-jwtFromRequest: commaExtractor
-```
 # Authentication
 ## Authentication requests
 How to authenticate the request with `passport` and `passport-jwt` depends on your webframework.
