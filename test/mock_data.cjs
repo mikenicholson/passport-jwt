@@ -44,7 +44,7 @@ const self = {
         secret: 'secret'
     },
     invalid_jwt_none: {
-        token: "eyAiYWxnIiA6ICJOb25lIiwgInR5cCIgOiAiSldUIiB9Cg.eyB1c2VyX25hbWUgOiBhZG1pbiB9Cg.",
+        token: "eyJhbGciOiAiTm9uZSIsICJ0eXAiOiAiSldUIn0.eyJ1c2VyIjoiYWRtaW4ifQ.",
         payload: {
             user: "admin"
         },
