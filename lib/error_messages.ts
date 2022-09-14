@@ -14,7 +14,7 @@ export enum ErrorMessages {
     JOSE_CORE_INCOMPATIBLE = "JoseDriver has been given a core which is incompatible with 'jose' library.",
     JWT_CORE_INCOMPATIBLE = "JsonWebTokenDriver has been given a core which is incompatible with 'jsonwebtoken' library.",
     NEST_CORE_INCOMPATIBLE = "NestJsJwtDriver has been given a core which is incompatible with '@nestjs/jwt' library.",
-    USER_TURE_WITH_MESSAGE = "JwtStrategy validate callback did give both a truthful user object and a failure message, could not determine is user should be authenticated."
+    USER_TRUE_WITH_MESSAGE = "JwtStrategy validate callback did give both a truthy user object and a failure message, could not determine is user should be authenticated."
 }
 
 export enum FailureMessages {
