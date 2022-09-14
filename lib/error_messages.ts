@@ -19,7 +19,7 @@ export enum ErrorMessages {
 
 export enum FailureMessages {
     NO_KEY_FROM_PROVIDER = "Provider did not return a key.",
-    USER_NOT_TRUE = "The provided user is not truthful",
+    USER_NOT_TRUTHY = "The provided user is not truthy",
     NO_TOKEN_ASYNC = "No auth token has been resolved",
     NO_TOKEN = "No auth token",
 }
