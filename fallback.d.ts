@@ -3,7 +3,7 @@ import * as base from "./dist/types/platforms/base";
 import * as strategy from "./dist/types/jwt_strategy";
 
 declare module "passport-jwt" {
-    export class Strategy<Payload extends base.DefaultPayload, Key = string, Request extends boolean = false> extends index.Strategy<Payload, Key, Request> {}
+    export class Strategy<Payload extends base.DefaultPayload = base.DefaultPayload, Key = string, Request extends boolean = false> extends index.Strategy<Payload, Key, Request> {}
     export const ErrorMessages: index.ErrorMessages;
     export const FailureMessages: index.FailureMessages;
     export class ExtractJwt extends index.ExtractJwt {}
