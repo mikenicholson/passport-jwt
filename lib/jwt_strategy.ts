@@ -181,13 +181,9 @@ export class JwtStrategy<Payload extends DefaultPayload = DefaultPayload,
             }
             try {
                 if (this.passReqToCallback) {
-                    (this.verify as BasicVerifyCallback<Payload, true>)(req, result.payload,
-                        (error, user, infoOrMessage) => this.callbackGenerator()(error, user, infoOrMessage)
-                    );
+                    (this.verify as BasicVerifyCallback<Payload, true>)(req, result.payload, this.callbackGenerator());
                 } else {
-                    (this.verify as BasicVerifyCallback<Payload, false>)(result.payload,
-                        (error, user, infoOrMessage) => this.callbackGenerator()(error, user, infoOrMessage)
-                    );
+                    (this.verify as BasicVerifyCallback<Payload, false>)(result.payload, this.callbackGenerator());
                 }
             } catch (ex) {
                 this.error(ex);
