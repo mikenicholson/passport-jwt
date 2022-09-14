@@ -54,12 +54,12 @@ extracted from the request or verified.
   `done` accepts arguments in the format `function done(err, secret)` or can be used with a promise like `(request, rawJwtToken) => Promise<secretOrKey|null>`. 
   Note it is up to the implementer to decode rawJwtToken.
   REQUIRED unless `secretOrKey` is provided.
+* `secretOrKeyProviderTimeoutSeconds`: The amount of time in seconds to wait before the secretOrKeyProvider should callback, 
+  Can be set to -1 to disable checking if the provider works.
 * `jwtFromRequest` (REQUIRED) Function that accepts a request as the only
   parameter and returns either the JWT as a string or *null*. See
   [Extracting the JWT from the request](#extracting-the-jwt-from-the-request) for
   more details.
-* `secretOrKeyProviderTimeoutSeconds`: The amount of time in seconds to wait before the secretOrKeyProvider should callback, 
-  Can be set to -1 to disable checking if the provider works.
 * `passReqToCallback`: If true the request will be passed to the verify
   callback. i.e. verify(request, jwt_payload, done_callback).
 * `issuer`: (LEGACY) If defined the token issuer (iss) will be verified against this
