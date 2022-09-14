@@ -147,7 +147,7 @@ describe("Jwt Driver Validation", function () {
             validationSpy.resetHistory();
             if (!secretOrKeyStub) {
                 secretOrKeyStub = sinon.stub();
-                secretOrKeyStub.onCall(0).returns(createSecretKey("invalid-secret"));
+                secretOrKeyStub.onCall(0).returns(createSecretKey(Buffer.from("invalid-secret")));
                 secretOrKeyStub.onCall(1).returns("secret");
             }
             driver = new joseDriver(jose, {});
