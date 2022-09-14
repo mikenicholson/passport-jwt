@@ -12,9 +12,9 @@ describe('Strategy Validation', function () {
         var strategy;
 
         before(function (done) {
-            verifyStub = sinon.stub();
+            var verifyStub = sinon.stub();
             verifyStub.callsArgWith(1, null, {}, {});
-            options = {};
+            var options = {};
             options.secretOrKey = 'secret';
             options.jwtDriver = mock.jwtDriver;
             options.jwtFromRequest = extract_jwt.fromAuthHeaderAsBearerToken();

@@ -122,7 +122,7 @@ describe('Strategy Request', function () {
         var info;
 
         before(function (done) {
-            strategy = new Strategy({
+            var strategy = new Strategy({
                 jwtFromRequest: function (r) {
                 },
                 secretOrKey: 'secret',
@@ -156,7 +156,7 @@ describe('Strategy Request', function () {
         var info;
 
         before(function (done) {
-            strategy = new Strategy({
+            var strategy = new Strategy({
                 jwtFromRequest: function (r) {
                 },
                 secretOrKey: 'secret',
