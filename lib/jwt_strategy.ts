@@ -147,7 +147,7 @@ export class JwtStrategy<Payload extends DefaultPayload = DefaultPayload,
             if (typeof infoOrMessage === 'undefined' || typeof infoOrMessage === 'object') {
                 return this.success(user, infoOrMessage);
             } else {
-                return this.error(new TypeError(ErrorMessages.USER_TURE_WITH_MESSAGE));
+                return this.error(new TypeError(ErrorMessages.USER_TRUE_WITH_MESSAGE));
             }
         }
         // fail must be a string in the new passport
@@ -157,7 +157,7 @@ export class JwtStrategy<Payload extends DefaultPayload = DefaultPayload,
         if (typeof infoOrMessage === 'string') {
             return this.fail(infoOrMessage);
         }
-        return this.fail(FailureMessages.USER_NOT_TRUE);
+        return this.fail(FailureMessages.USER_NOT_TRUTHY);
     };
 
     protected processTokenInternal(secretOrKeyError: string | null, secretOrKey: Key | null, token: string, req: Request, timeout?: NodeJS.Timeout): void {
