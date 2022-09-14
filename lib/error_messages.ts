@@ -13,7 +13,7 @@ export enum ErrorMessages {
     NO_PROMISE_RETURNED = "JwtStrategy requires a promise from the SecretOrKeyProvider or the provider should use the callback, something else has been returned.",
     JOSE_CORE_INCOMPATIBLE = "JoseDriver has been given a core which is incompatible with 'jose' library.",
     JWT_CORE_INCOMPATIBLE = "JsonWebTokenDriver has been given a core which is incompatible with 'jsonwebtoken' library.",
-    NEST_CORE_INCOMPATIBLE = "NestJsJwtDriver has been given an core which is incompatible with '@nestjs/jwt' library.",
+    NEST_CORE_INCOMPATIBLE = "NestJsJwtDriver has been given a core which is incompatible with '@nestjs/jwt' library.",
     USER_TURE_WITH_MESSAGE = "JwtStrategy validate callback did give both a truthful user object and a failure message, could not determine is user should be authenticated."
 }
 
