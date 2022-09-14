@@ -18,7 +18,7 @@ export type BasicVerifyCallback = (reqOrUser: any, payloadOrDone: any, done?: an
 export interface JwtStrategyOptionsBase {
     jwtFromRequest: JwtExtractor;
     passReqToCallback?: boolean;
-    checkIfProviderWorksTimeout?: number;
+    secretOrKeyProviderTimeoutSeconds?: number;
 }
 
 export type ProviderOrValueDriver = {
@@ -81,13 +81,13 @@ export class JwtStrategy<Payload extends DefaultPayload = DefaultPayload,
     private jwtFromRequest: JwtExtractor;
     private passReqToCallback: boolean;
     private driver: JwtDriver<any, any, Key>;
-    private checkIfProviderWorksTimeout: number;
+    private secretOrKeyProviderTimeout: number;
 
     constructor(extOptions: JwtStrategyOptions<Key>, verify: Verify) {
         super();
         const options = extOptions as JwtStrategyOptionsInternal<Key>;
         this.secretOrKeyProvider = options.secretOrKeyProvider!;
-        this.checkIfProviderWorksTimeout = options.checkIfProviderWorksTimeout ?? 30_000;
+        this.secretOrKeyProviderTimeout = (options.secretOrKeyProviderTimeoutSeconds ?? 30) * 1000;
 
         this.driver = options.jwtDriver;
         if (!this.driver) {
@@ -161,8 +161,8 @@ export class JwtStrategy<Payload extends DefaultPayload = DefaultPayload,
     };
 
     protected processTokenInternal(secretOrKeyError: string | null, secretOrKey: Key | null, token: string, req: Request, timeout?: NodeJS.Timeout): void {
-        if (this.checkIfProviderWorksTimeout !== -1) {
-            this.checkIfProviderWorksTimeout = -1;
+        if (this.secretOrKeyProviderTimeout !== -1) {
+            this.secretOrKeyProviderTimeout = -1;
             clearTimeout(timeout);
         }
         if (secretOrKeyError || !secretOrKey) {
@@ -205,11 +205,11 @@ export class JwtStrategy<Payload extends DefaultPayload = DefaultPayload,
             if (!token) {
                 return this.fail(FailureMessages.NO_TOKEN_ASYNC);
             }
-            if (this.checkIfProviderWorksTimeout !== -1) {
+            if (this.secretOrKeyProviderTimeout !== -1) {
                 // 30 seconds should be enough for a provider to give a secret the first time.
                 timeout = setTimeout(
                     () => this.error(new TypeError(ErrorMessages.PROVIDER_TIME_OUT)),
-                    this.checkIfProviderWorksTimeout
+                    this.secretOrKeyProviderTimeout
                 );
             }
             const provided = this.secretOrKeyProvider(req, token,

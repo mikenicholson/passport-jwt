@@ -52,7 +52,7 @@ extracted from the request or verified.
   parameter and returns either the JWT as a string or *null*. See
   [Extracting the JWT from the request](#extracting-the-jwt-from-the-request) for
   more details.
-* `checkIfProviderWorksTimeout`: The amount of time to wait before the secretOrKeyProvider should callback, 
+* `secretOrKeyProviderTimeoutSeconds`: The amount of time in seconds to wait before the secretOrKeyProvider should callback, 
   Can be set to -1 to disable checking if the provider works.
 * `passReqToCallback`: If true the request will be passed to the verify
   callback. i.e. verify(request, jwt_payload, done_callback).
