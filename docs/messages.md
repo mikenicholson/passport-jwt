@@ -32,7 +32,7 @@ FailureMessages.NO_TOKEN
 ````
 These are currently all the standard errors messages that the library can throw.
 ```typescript
-enum ErrorMessages {
+export enum ErrorMessages {
     INVALID_DRIVER = "JwtStrategy has been given an invalid driver without a validate function",
     NO_DRIVER_PROVIDED = "JwtStrategy requires a driver to function (see option jwtDriver) or alternatively import the strategy from 'passport-jwt/auto' to auto register the driver.",
     DRIVER_PROVIDES_KEY = "JwtStrategy has been provided with a SecretOrKey and a driver which contains a building secret.",
@@ -44,16 +44,16 @@ enum ErrorMessages {
     UNKNOWN_DRIVER_ERROR = "JwtStrategy Unknown driver error occurred",
     NO_DRIVER_FAILURE_INFO = "JwtStrategy the driver did not return a failure message, this is required to be a string",
     PROVIDER_TIME_OUT = "JwtStrategy given SecretOrKey Provider did timeout, if you are sure it works you can disable the timeout check by setting checkIfProviderWorksTimeout to -1.",
-    NO_PROMISE_RETURNED = "JwtStrategy requires a promise from the SecretOrKeyProvider or the provider should use the callback, something else has been passed.",
-    JOSE_CORE_INCOMPATIBLE = "JoseDriver has been given an core which is incompatible with 'jose' library.",
-    JWT_CORE_INCOMPATIBLE = "JsonWebTokenDriver has been given an core which is incompatible with 'jsonwebtoken' library.",
-    NEST_CORE_INCOMPATIBLE = "NestJsJwtDriver has been given an core which is incompatible with '@nestjs/jwt' library.",
-    USER_TURE_WITH_MESSAGE = "JwtStrategy validate callback did give both a truthful user object and a failure message, could not determine is user should be authenticated."
+    NO_PROMISE_RETURNED = "JwtStrategy requires a promise from the SecretOrKeyProvider or the provider should use the callback, something else has been returned.",
+    JOSE_CORE_INCOMPATIBLE = "JoseDriver has been given a core which is incompatible with 'jose' library.",
+    JWT_CORE_INCOMPATIBLE = "JsonWebTokenDriver has been given a core which is incompatible with 'jsonwebtoken' library.",
+    NEST_CORE_INCOMPATIBLE = "NestJsJwtDriver has been given a core which is incompatible with '@nestjs/jwt' library.",
+    USER_TRUE_WITH_MESSAGE = "JwtStrategy validate callback did give both a truthy user object and a failure message, could not determine is user should be authenticated."
 }
 
-enum FailureMessages {
+export enum FailureMessages {
     NO_KEY_FROM_PROVIDER = "Provider did not return a key.",
-    USER_NOT_TRUE = "The provided user is not truthful",
+    USER_NOT_TRUTHY = "The provided user is not truthy",
     NO_TOKEN_ASYNC = "No auth token has been resolved",
     NO_TOKEN = "No auth token",
 }
