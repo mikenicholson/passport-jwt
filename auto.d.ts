@@ -2,6 +2,6 @@ import * as auto from "./dist/types/auto_load";
 import * as strategy from "./dist/types/jwt_strategy";
 
 declare module "passport-jwt/auto" {
-    export class Strategy<Payload = string, Verify extends strategy.BasicVerifyCallback = strategy.VerifyCallback<Payload>> extends auto.Strategy<Payload, Verify> {}
-    export type JwtAutoStrategyOptions = auto.JwtAutoStrategyOptions;
+    export class Strategy<Payload = string, Request extends boolean = false, Verify extends strategy.BasicVerifyCallback<Payload, Request> = strategy.BasicVerifyCallback<Payload, Request>> extends auto.Strategy<Payload, Request, Verify> {}
+    export type JwtAutoStrategyOptions<Request extends boolean = false> = auto.JwtAutoStrategyOptions<Request>;
 }

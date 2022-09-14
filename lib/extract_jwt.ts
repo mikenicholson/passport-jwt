@@ -9,11 +9,11 @@ enum SchemaType {
     BEARER_AUTH_SCHEME = 'bearer'
 }
 
-export type JwtExtractor = (request: Request) => string | null | Promise<string | null>;
+export type JwtFromRequestFunction = (request: Request) => string | null | Promise<string | null>;
 
 export class ExtractJwt {
 
-    public static fromSignedCookie(name: string): JwtExtractor {
+    public static fromSignedCookie(name: string): JwtFromRequestFunction {
         return (request) => {
             let token = null;
             if (request.signedCookies && name in request.signedCookies && typeof request.signedCookies[name] === "string") {
@@ -23,7 +23,7 @@ export class ExtractJwt {
         }
     };
 
-    public static fromSessionKey(name: string): JwtExtractor {
+    public static fromSessionKey(name: string): JwtFromRequestFunction {
         return (request: any) => {
             let token = null;
             if (request.session && name in request.session && typeof request.session[name] === "string") {
@@ -33,7 +33,7 @@ export class ExtractJwt {
         }
     }
 
-    public static fromCookie(name: string): JwtExtractor {
+    public static fromCookie(name: string): JwtFromRequestFunction {
         return (request: Request) => {
             let token = null;
             if (request.cookies && name in request.cookies && typeof request.cookies[name] === "string") {
@@ -43,7 +43,7 @@ export class ExtractJwt {
         }
     }
 
-    public static fromRequestProperty(property: string): JwtExtractor {
+    public static fromRequestProperty(property: string): JwtFromRequestFunction {
         return (request) => {
             let token = null;
             if (property in request && typeof request[property] === "string") {
@@ -53,7 +53,7 @@ export class ExtractJwt {
         }
     }
 
-    public static fromHeader(header_name: string): JwtExtractor {
+    public static fromHeader(header_name: string): JwtFromRequestFunction {
         return (request) => {
             let token = null;
             if (request.headers && header_name in request.headers && typeof request.headers[header_name] === "string") {
@@ -64,7 +64,7 @@ export class ExtractJwt {
     }
 
 
-    public static fromBodyField(field_name: string): JwtExtractor {
+    public static fromBodyField(field_name: string): JwtFromRequestFunction {
 
         return (request) => {
             let token = null;
@@ -75,7 +75,7 @@ export class ExtractJwt {
         };
     };
 
-    public static fromUrlQueryParameter(param_name: string): JwtExtractor {
+    public static fromUrlQueryParameter(param_name: string): JwtFromRequestFunction {
         return (request) => {
             let token = null;
             const parsed_url = parse(request.url, true);
@@ -86,7 +86,7 @@ export class ExtractJwt {
         };
     };
 
-    public static fromAuthHeaderWithScheme(auth_scheme: string): JwtExtractor {
+    public static fromAuthHeaderWithScheme(auth_scheme: string): JwtFromRequestFunction {
         const auth_scheme_lower = auth_scheme.toLowerCase();
         return (request) => {
 
@@ -101,11 +101,11 @@ export class ExtractJwt {
         };
     };
 
-    public static fromAuthHeaderAsBearerToken(): JwtExtractor {
+    public static fromAuthHeaderAsBearerToken(): JwtFromRequestFunction {
         return this.fromAuthHeaderWithScheme(SchemaType.BEARER_AUTH_SCHEME);
     };
 
-    public static fromExtractors(extractors: JwtExtractor[]): JwtExtractor {
+    public static fromExtractors(extractors: JwtFromRequestFunction[]): JwtFromRequestFunction {
         if (!Array.isArray(extractors)) {
             throw new TypeError('extractors.fromExtractors expects an array')
         }
