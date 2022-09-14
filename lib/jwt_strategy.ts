@@ -11,7 +11,7 @@ export type ProviderDoneCallback<Key> = (secretOrKeyError: string | null, secret
 export type DoneCallback = (error: Error | null | string, user: object | null | boolean, infoOrMessage?: string | object | number | { message: string }) => void;
 export type VerifyCallback<Payload extends DefaultPayload> = (user: Payload, done: DoneCallback) => void;
 export type VerifyCallbackWithReq<Payload extends DefaultPayload> = (req: ExpressRequest, payload: Payload, done: DoneCallback) => void;
-export type UnifiedVerifyCallback<Payload extends DefaultPayload, Request extends boolean> = Request extends false ? VerifyCallback<Payload> : VerifyCallbackWithReq<Payload>;
+export type UnifiedVerifyCallback<Payload extends DefaultPayload, Request extends boolean> = Request extends true ? VerifyCallbackWithReq<Payload> : VerifyCallback<Payload>;
 
 export interface JwtStrategyOptionsBase<Request extends boolean> {
     jwtFromRequest: JwtFromRequestFunction;
@@ -217,11 +217,11 @@ export class JwtStrategy<Payload extends DefaultPayload = DefaultPayload,
                     provided
                         .then(key => this.processTokenInternal(null, key, token, req, timeout))
                         .catch(error => {
-                            clearTimeout(timeout);
+                            timeout ? clearTimeout(timeout) : void 0;
                             this.error(error)
                         });
                 } else {
-                    clearTimeout(timeout);
+                    timeout ? clearTimeout(timeout) : void 0;
                     this.error(new TypeError(ErrorMessages.NO_PROMISE_RETURNED));
                 }
             }
