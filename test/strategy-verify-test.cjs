@@ -76,7 +76,7 @@ describe('Strategy Verify', function () {
 
     describe('handling a request when the callback gives a non true user without an message', function () {
         before(function (done) {
-            strategy = new Strategy({
+            var strategy = new Strategy({
                 jwtFromRequest: mock.jwtExtractor,
                 secretOrKey: 'secret',
                 jwtDriver: mock.jwtDriver
@@ -152,7 +152,7 @@ describe('Strategy Verify', function () {
         var strategy, expected_request, request_arg;
 
         before(function (done) {
-            opts = {
+            var opts = {
                 passReqToCallback: true
             };
             opts.secretOrKey = 'secret';
@@ -188,7 +188,7 @@ describe('Strategy Verify', function () {
             fakeSecretOrKeyProvider = sinon.spy(function (request, token, done) {
                 done(null, 'secret from callback');
             });
-            opts = {
+            var opts = {
                 jwtDriver: mock.jwtDriver,
                 secretOrKeyProvider: fakeSecretOrKeyProvider,
                 jwtFromRequest: function (request) {
@@ -226,11 +226,11 @@ describe('Strategy Verify', function () {
         var errorMessage;
 
         before(function (done) {
-            fakeSecretOrKeyProvider = sinon.spy(function (request, token, done) {
+            var fakeSecretOrKeyProvider = sinon.spy(function (request, token, done) {
                 done('Error occurred looking for the secret');
             });
 
-            opts = {
+            var opts = {
                 secretOrKeyProvider: fakeSecretOrKeyProvider,
                 jwtDriver: mock.jwtDriver,
                 jwtFromRequest: function (request) {
@@ -238,7 +238,7 @@ describe('Strategy Verify', function () {
                 }
             };
 
-            strategy = new Strategy(opts, function (jwtPayload, next) {
+            var strategy = new Strategy(opts, function (jwtPayload, next) {
                 return next(null, {
                     user_id: 'dont care'
                 }, {});
@@ -259,13 +259,13 @@ describe('Strategy Verify', function () {
         var errorMessage;
 
         before(function (done) {
-            fakeSecretOrKeyProvider = sinon.spy(function (request, token, done) {
+            var fakeSecretOrKeyProvider = sinon.spy(function (request, token, done) {
                 return {
                     message: "i could be some internal error"
                 };
             });
 
-            opts = {
+            var opts = {
                 secretOrKeyProvider: fakeSecretOrKeyProvider,
                 jwtDriver: mock.jwtDriver,
                 jwtFromRequest: function (request) {
@@ -273,7 +273,7 @@ describe('Strategy Verify', function () {
                 }
             };
 
-            strategy = new Strategy(opts, function (jwtPayload, next) {
+            var strategy = new Strategy(opts, function (jwtPayload, next) {
                 return next(null, {
                     user_id: 'dont care'
                 }, {});
@@ -295,17 +295,17 @@ describe('Strategy Verify', function () {
         var userObject;
 
         before(function (done) {
-            fakeSecretOrKeyProvider = sinon.spy(function (request, token) {
+            var fakeSecretOrKeyProvider = sinon.spy(function (request, token) {
                 return Promise.resolve('secret');
             });
 
-            opts = {
+            var opts = {
                 secretOrKeyProvider: fakeSecretOrKeyProvider,
                 jwtDriver: mock.jwtDriver,
                 jwtFromRequest: mock.jwtExtractor
             };
 
-            strategy = new Strategy(opts, function (jwtPayload, next) {
+            var strategy = new Strategy(opts, function (jwtPayload, next) {
                 return next(null, {
                     user_id: 'dont care'
                 }, {});
@@ -328,11 +328,11 @@ describe('Strategy Verify', function () {
         var errorMessage;
 
         before(function (done) {
-            fakeSecretOrKeyProvider = sinon.spy(function (request, token) {
+            var fakeSecretOrKeyProvider = sinon.spy(function (request, token) {
                 return Promise.reject(new Error('Error occurred looking for the secret'));
             });
 
-            opts = {
+            var opts = {
                 secretOrKeyProvider: fakeSecretOrKeyProvider,
                 jwtDriver: mock.jwtDriver,
                 jwtFromRequest: function (request) {
@@ -340,7 +340,7 @@ describe('Strategy Verify', function () {
                 }
             };
 
-            strategy = new Strategy(opts, function (jwtPayload, next) {
+            var strategy = new Strategy(opts, function (jwtPayload, next) {
                 return next(null, {
                     user_id: 'dont care'
                 }, {});
@@ -360,11 +360,11 @@ describe('Strategy Verify', function () {
         var errorMessage;
 
         before(function (done) {
-            fakeSecretOrKeyProvider = sinon.spy(function (request, token) {
+            var fakeSecretOrKeyProvider = sinon.spy(function (request, token) {
                 return Promise.resolve(null);
             });
 
-            opts = {
+            var opts = {
                 secretOrKeyProvider: fakeSecretOrKeyProvider,
                 jwtDriver: mock.jwtDriver,
                 jwtFromRequest: function (request) {
@@ -372,7 +372,7 @@ describe('Strategy Verify', function () {
                 }
             };
 
-            strategy = new Strategy(opts, function (jwtPayload, next) {
+            var strategy = new Strategy(opts, function (jwtPayload, next) {
                 return next(null, {
                     user_id: 'dont care'
                 }, {});
@@ -392,17 +392,17 @@ describe('Strategy Verify', function () {
         var errorObj;
 
         before(function (done) {
-            fakeSecretOrKeyProvider = sinon.spy(function (request, token) {
+            var fakeSecretOrKeyProvider = sinon.spy(function (request, token) {
             });
 
-            opts = {
+            var opts = {
                 secretOrKeyProvider: fakeSecretOrKeyProvider,
                 jwtDriver: mock.jwtDriver,
                 jwtFromRequest: mock.jwtExtractor,
                 secretOrKeyProviderTimeoutSeconds: 0.5
             };
 
-            strategy = new Strategy(opts, function (jwtPayload, next) {
+            var strategy = new Strategy(opts, function (jwtPayload, next) {
                 return next(null, {
                     user_id: 'dont care'
                 }, {});
