@@ -18,7 +18,7 @@ interface LegacyOptions {
     jwtDriver?: undefined;
 }
 
-type JwtAutoStrategyOptions<Request extends boolean = false> =
+type JwtAutoStrategyOptions<Request extends boolean = boolean> =
     ProviderOrValueBase<string, "jwtDriver">
     & JwtStrategyOptionsBase<Request>
     & LegacyOptions;
