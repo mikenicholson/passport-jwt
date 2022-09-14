@@ -11,7 +11,7 @@ intended to be used to secure RESTful endpoints without sessions.
 
 #### Update
 
-Now **updated** to version v5.x.x with support for `typescript` and `jose`.
+Now **updated** to version v5.x.x with support for `typescript`, `jose` and `@nestjs/jwt` intergration.
 
 ## Supported By
 
@@ -34,7 +34,7 @@ The JWT authentication strategy is constructed as follows:
 ```javascript
 new JwtStrategy(options, verify);
 ````
-You can define the types for typescript more strictly if you want, but these are all **automatically** implied from the options.
+You can define the types for `typescript` more strictly if you want, but these are all **automatically implied** from the options.
 ```typescript
 new JwtStrategy<MyPayloadType, MyKeyType, PassReqToVerify, MyVerifyType>(options, verify);
 ```
@@ -135,7 +135,7 @@ const strategy = new Strategy({
 
 passport.use(strategy);
 ```
-To More strictly define the types you could use `new Strategy<MyPayload, MyKey, MyValidator>`.
+To More strictly define the types you could use `new Strategy<MyPayload, MyKey>`.
 But this is optional because the key and validation type are already determined from the given options.
 
 # Drivers
