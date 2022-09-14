@@ -3,14 +3,14 @@ import type {VerifyOptions, jwtVerify, KeyLike} from "jose";
 import {createSecretKey} from "crypto";
 import {ErrorMessages} from "../error_messages";
 
-type JoseDriverType = { jwtVerify: typeof jwtVerify }
+type JoseDriverCore = { jwtVerify: typeof jwtVerify }
 
-export class JoseDriver extends JwtDriver<JoseDriverType, VerifyOptions, KeyLike | string> {
+export class JoseDriver extends JwtDriver<JoseDriverCore, VerifyOptions, KeyLike | string> {
 
     protected defaultOptions: VerifyOptions = {algorithms: ["HS256"]};
 
     constructor(
-        core: JoseDriverType,
+        core: JoseDriverCore,
         options?: VerifyOptions
     ) {
         if (typeof core !== "object" || !("jwtVerify" in core) || typeof core["jwtVerify"] !== "function") {

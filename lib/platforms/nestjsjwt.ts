@@ -2,13 +2,13 @@ import {DefaultPayload, JwtProvidedDriver, JwtResult, JwtResultInternal} from ".
 import type {JwtVerifyOptions, JwtService} from "@nestjs/jwt";
 import {ErrorMessages} from "../error_messages";
 
-type NestJsJwtDriverType = { verifyAsync: JwtService["verifyAsync"] };
+type NestJsJwtDriverCore = { verifyAsync: JwtService["verifyAsync"] };
 
-export class NestJsJwtDriver extends JwtProvidedDriver<NestJsJwtDriverType, JwtVerifyOptions> {
+export class NestJsJwtDriver extends JwtProvidedDriver<NestJsJwtDriverCore, JwtVerifyOptions> {
     protected defaultOptions: JwtVerifyOptions = {algorithms: ["HS256"]};
 
     constructor(
-        core: NestJsJwtDriverType,
+        core: NestJsJwtDriverCore,
         options?: JwtVerifyOptions
     ) {
         if (typeof core !== "object" || !("verifyAsync" in core) || typeof core["verifyAsync"] !== "function") {

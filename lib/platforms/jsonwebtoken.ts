@@ -2,13 +2,13 @@ import {DefaultPayload, JwtDriver, JwtResult, JwtResultInternal} from "./base";
 import type {VerifyOptions, verify, JwtPayload} from "jsonwebtoken";
 import { ErrorMessages } from "../error_messages";
 
-type JsonWebTokenDriverType = { verify: typeof verify };
+type JsonWebTokenDriverCore = { verify: typeof verify };
 
-export class JsonWebTokenDriver extends JwtDriver<JsonWebTokenDriverType, VerifyOptions, string> {
+export class JsonWebTokenDriver extends JwtDriver<JsonWebTokenDriverCore, VerifyOptions, string> {
     protected defaultOptions: VerifyOptions = {algorithms: ["HS256"]};
 
     constructor(
-        core: JsonWebTokenDriverType,
+        core: JsonWebTokenDriverCore,
         options?: VerifyOptions
     ) {
         if(typeof core !== "object" || !("verify" in core) || typeof core["verify"] !== "function") {
