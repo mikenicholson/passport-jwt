@@ -10,7 +10,7 @@ export enum ErrorMessages {
     UNKNOWN_DRIVER_ERROR = "JwtStrategy Unknown driver error occurred",
     NO_DRIVER_FAILURE_INFO = "JwtStrategy the driver did not return a failure message, this is required to be a string",
     PROVIDER_TIME_OUT = "JwtStrategy given SecretOrKey Provider did timeout, if you are sure it works you can disable the timeout check by setting checkIfProviderWorksTimeout to -1.",
-    NO_PROMISE_RETURNED = "JwtStrategy requires a promise from the SecretOrKeyProvider or the provider should use the callback, something else has been passed.",
+    NO_PROMISE_RETURNED = "JwtStrategy requires a promise from the SecretOrKeyProvider or the provider should use the callback, something else has been returned.",
     JOSE_CORE_INCOMPATIBLE = "JoseDriver has been given a core which is incompatible with 'jose' library.",
     JWT_CORE_INCOMPATIBLE = "JsonWebTokenDriver has been given a core which is incompatible with 'jsonwebtoken' library.",
     NEST_CORE_INCOMPATIBLE = "NestJsJwtDriver has been given an core which is incompatible with '@nestjs/jwt' library.",
