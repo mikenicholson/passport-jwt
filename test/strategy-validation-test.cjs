@@ -120,7 +120,7 @@ describe('Strategy Validation', function () {
 
         it('should give an error to notify the user of an unexpected result.', function () {
             expect(error).to.be.an.instanceof(TypeError);
-            expect(error.message).to.be.a.string(msg["USER_TURE_WITH_MESSAGE"]);
+            expect(error.message).to.be.a.string(msg["USER_TRUE_WITH_MESSAGE"]);
         });
     });
 

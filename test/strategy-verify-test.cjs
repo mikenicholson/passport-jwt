@@ -91,7 +91,7 @@ describe('Strategy Verify', function () {
         });
 
         it('should fail with the generic user not found message', function () {
-            expect(info).to.be.a.string(msg["USER_NOT_TRUE"]);
+            expect(info).to.be.a.string(msg["USER_NOT_TRUTHY"]);
         });
     });
     describe('handling a request with a valid jwt and an error during verification', function () {
