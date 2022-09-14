@@ -36,7 +36,7 @@ new JwtStrategy(options, verify);
 ````
 You can define the types for `typescript` more strictly if you want, but these are all **automatically implied** from the options.
 ```typescript
-new JwtStrategy<MyPayloadType, MyKeyType, PassReqToVerify, MyVerifyType>(options, verify);
+new JwtStrategy<MyPayloadType, MyKeyType, PassReqToVerify>(options, verify);
 ```
 
 `options` is an object literal containing options to control how the token is

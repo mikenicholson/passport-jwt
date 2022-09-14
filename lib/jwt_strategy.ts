@@ -11,7 +11,7 @@ export type ProviderDoneCallback<Key> = (secretOrKeyError: string | null, secret
 export type DoneCallback = (error: Error | null | string, user: object | null | boolean, infoOrMessage?: string | object | number | { message: string }) => void;
 export type VerifyCallback<Payload extends DefaultPayload> = (user: Payload, done: DoneCallback) => void;
 export type VerifyCallbackWithReq<Payload extends DefaultPayload> = (req: ExpressRequest, payload: Payload, done: DoneCallback) => void;
-export type BasicVerifyCallback<Payload extends DefaultPayload, Request extends boolean> = Request extends false ? VerifyCallback<Payload> : VerifyCallbackWithReq<Payload>;
+export type UnifiedVerifyCallback<Payload extends DefaultPayload, Request extends boolean> = Request extends false ? VerifyCallback<Payload> : VerifyCallbackWithReq<Payload>;
 
 export interface JwtStrategyOptionsBase<Request extends boolean> {
     jwtFromRequest: JwtFromRequestFunction;
@@ -71,20 +71,19 @@ type JwtStrategyOptionsInternal<Key, Request extends boolean> = ProviderAndValue
  *                 (request, jwt_payload, done_callback) if true.
  */
 export class JwtStrategy<Payload extends DefaultPayload = DefaultPayload,
-    Key = string, Request extends boolean = false,
-    Verify extends BasicVerifyCallback<Payload, Request> = BasicVerifyCallback<Payload, Request>> extends Strategy {
+    Key = string, Request extends boolean = false> extends Strategy {
 
     protected static ignoreLegacy = false;
 
     public name = "jwt";
     private secretOrKeyProvider: SecretOrKeyProvider<Key>;
-    private verify: Verify;
+    private verify: UnifiedVerifyCallback<Payload, Request>;
     private jwtFromRequest: JwtFromRequestFunction;
     private passReqToCallback: boolean;
     private driver: JwtDriver<any, any, Key>;
     private secretOrKeyProviderTimeout: number;
 
-    constructor(extOptions: JwtStrategyOptions<Key, Request>, verify: Verify) {
+    constructor(extOptions: JwtStrategyOptions<Key, Request>, verify: UnifiedVerifyCallback<Payload, Request>) {
         super();
         const options = extOptions as JwtStrategyOptionsInternal<Key, Request>;
 
@@ -181,9 +180,9 @@ export class JwtStrategy<Payload extends DefaultPayload = DefaultPayload,
             }
             try {
                 if (this.passReqToCallback) {
-                    (this.verify as BasicVerifyCallback<Payload, true>)(req, result.payload, this.callbackGenerator());
+                    (this.verify as UnifiedVerifyCallback<Payload, true>)(req, result.payload, this.callbackGenerator());
                 } else {
-                    (this.verify as BasicVerifyCallback<Payload, false>)(result.payload, this.callbackGenerator());
+                    (this.verify as UnifiedVerifyCallback<Payload, false>)(result.payload, this.callbackGenerator());
                 }
             } catch (ex) {
                 this.error(ex);

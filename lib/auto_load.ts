@@ -1,7 +1,7 @@
 import {
     JwtStrategy,
     JwtStrategyOptionsBase,
-    BasicVerifyCallback,
+    UnifiedVerifyCallback,
     JwtStrategyOptions,
     ProviderOrValueBase
 } from "./jwt_strategy";
@@ -23,8 +23,8 @@ type JwtAutoStrategyOptions<Request extends boolean = boolean> =
     & JwtStrategyOptionsBase<Request>
     & LegacyOptions;
 
-class JwtAutoStrategy<Payload extends DefaultPayload = DefaultPayload, Request extends boolean = false,
-    Verify extends BasicVerifyCallback<Payload, Request> = BasicVerifyCallback<Payload, Request>> extends JwtStrategy<Payload, string, Request, Verify> {
+class JwtAutoStrategy<Payload extends DefaultPayload = DefaultPayload,
+    Request extends boolean = false> extends JwtStrategy<Payload, string, Request> {
 
     /* to override the auto driver, mainly used for testing */
     public static OverrideAutoDriver = JsonWebTokenDriver;
@@ -32,7 +32,7 @@ class JwtAutoStrategy<Payload extends DefaultPayload = DefaultPayload, Request e
 
     constructor(
         extOptions: JwtAutoStrategyOptions,
-        verify: Verify
+        verify: UnifiedVerifyCallback<Payload, Request>
     ) {
         const driverOptions = {
             ...(extOptions.jsonWebTokenOptions ?? {}),
