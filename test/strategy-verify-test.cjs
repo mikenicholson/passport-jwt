@@ -399,7 +399,7 @@ describe('Strategy Verify', function () {
                 secretOrKeyProvider: fakeSecretOrKeyProvider,
                 jwtDriver: mock.jwtDriver,
                 jwtFromRequest: mock.jwtExtractor,
-                checkIfProviderWorksTimeout: 500
+                secretOrKeyProviderTimeoutSeconds: 0.5
             };
 
             strategy = new Strategy(opts, function (jwtPayload, next) {
