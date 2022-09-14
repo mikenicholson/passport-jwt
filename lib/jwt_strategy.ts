@@ -1,23 +1,21 @@
 import {Strategy} from "passport";
 import type {JwtExtractor} from "./extract_jwt";
-import type {Request} from "express";
+import type {Request as ExpressRequest} from "express";
 import type {JwtProvidedDriver, DefaultPayload, JwtDriver} from "./platforms/base";
 import {ErrorMessages, FailureMessages} from "./error_messages";
 
-export type SecretOrKeyProvider<Key = string> =
-    SecretOrKeyProviderCallbackStyle<Key>
-    | SecretOrKeyProviderPromiseStyle<Key>;
-export type SecretOrKeyProviderCallbackStyle<Key> = (req: Request, rawJwtToken: string, callback: ProviderDoneCallback<Key>) => void;
-export type SecretOrKeyProviderPromiseStyle<Key> = (req: Request, rawJwtToken: string) => Promise<Key | null>;
+export type SecretOrKeyProvider<Key = string> = SecretOrKeyProviderCallbackStyle<Key> | SecretOrKeyProviderPromiseStyle<Key>;
+export type SecretOrKeyProviderCallbackStyle<Key> = (req: ExpressRequest, rawJwtToken: string, callback: ProviderDoneCallback<Key>) => void;
+export type SecretOrKeyProviderPromiseStyle<Key> = (req: ExpressRequest, rawJwtToken: string) => Promise<Key | null>;
 export type ProviderDoneCallback<Key> = (secretOrKeyError: string | null, secretOrKey: Key | null) => void;
-export type DoneCallback = (error: Error | null | string, user: object | null, infoOrMessage?: string | object) => void;
+export type DoneCallback = (error: Error | null | string, user: object | null | boolean, infoOrMessage?: string | object) => void;
 export type VerifyCallback<Payload extends DefaultPayload> = (user: Payload, done: DoneCallback) => void;
-export type VerifyCallbackWithReq<Payload extends DefaultPayload> = (req: Request, payload: Payload, done: DoneCallback) => void;
-export type BasicVerifyCallback = (reqOrUser: any, payloadOrDone: any, done?: any) => void;
+export type VerifyCallbackWithReq<Payload extends DefaultPayload> = (req: ExpressRequest, payload: Payload, done: DoneCallback) => void;
+export type BasicVerifyCallback<Payload extends DefaultPayload, Request extends boolean> = Request extends false ? VerifyCallback<Payload> : VerifyCallbackWithReq<Payload>;
 
-export interface JwtStrategyOptionsBase {
+export interface JwtStrategyOptionsBase<Request extends boolean> {
     jwtFromRequest: JwtExtractor;
-    passReqToCallback?: boolean;
+    passReqToCallback?: Request;
     secretOrKeyProviderTimeoutSeconds?: number;
 }
 
@@ -47,8 +45,8 @@ type ProviderAndValue<Key> = ({
 })
 
 export type ProviderOrValue<Key> = ProviderOrValueBase<Key, "nothing"> | ProviderOrValueDriver;
-export type JwtStrategyOptions<Key = string> = ProviderOrValue<Key> & JwtStrategyOptionsBase;
-type JwtStrategyOptionsInternal<Key> = ProviderAndValue<Key> & JwtStrategyOptionsBase;
+export type JwtStrategyOptions<Key = string, Request extends boolean = boolean> = ProviderOrValue<Key> & JwtStrategyOptionsBase<Request>;
+type JwtStrategyOptionsInternal<Key, Request extends boolean> = ProviderAndValue<Key> & JwtStrategyOptionsBase<Request>;
 
 /**
  * Strategy constructor
@@ -71,7 +69,8 @@ type JwtStrategyOptionsInternal<Key> = ProviderAndValue<Key> & JwtStrategyOption
  *                 (request, jwt_payload, done_callback) if true.
  */
 export class JwtStrategy<Payload extends DefaultPayload = DefaultPayload,
-    Verify extends BasicVerifyCallback = VerifyCallback<Payload>, Key = string> extends Strategy {
+    Key = string, Request extends boolean = false,
+    Verify extends BasicVerifyCallback<Payload, Request> = BasicVerifyCallback<Payload, Request>> extends Strategy {
 
     protected static ignoreLegacy = false;
 
@@ -83,13 +82,17 @@ export class JwtStrategy<Payload extends DefaultPayload = DefaultPayload,
     private driver: JwtDriver<any, any, Key>;
     private secretOrKeyProviderTimeout: number;
 
-    constructor(extOptions: JwtStrategyOptions<Key>, verify: Verify) {
+    constructor(extOptions: JwtStrategyOptions<Key, Request>, verify: Verify) {
         super();
-        const options = extOptions as JwtStrategyOptionsInternal<Key>;
+        const options = extOptions as JwtStrategyOptionsInternal<Key, Request>;
+
         this.secretOrKeyProvider = options.secretOrKeyProvider!;
         this.secretOrKeyProviderTimeout = (options.secretOrKeyProviderTimeoutSeconds ?? 30) * 1000;
-
         this.driver = options.jwtDriver;
+        this.verify = verify;
+        this.passReqToCallback = !!options.passReqToCallback;
+        this.jwtFromRequest = options.jwtFromRequest;
+
         if (!this.driver) {
             throw new TypeError(ErrorMessages.NO_DRIVER_PROVIDED);
         }
@@ -97,7 +100,6 @@ export class JwtStrategy<Payload extends DefaultPayload = DefaultPayload,
         if (typeof this.driver !== "object" || !('validate' in this.driver) || typeof !this.driver.validate === "function") {
             throw new TypeError(ErrorMessages.INVALID_DRIVER);
         }
-
 
         if (this.driver["keyIsProvidedByMe"]) {
             if (options.secretOrKey || options.secretOrKeyProvider) {
@@ -123,20 +125,16 @@ export class JwtStrategy<Payload extends DefaultPayload = DefaultPayload,
             throw new TypeError(ErrorMessages.NO_SECRET_KEY);
         }
 
-        this.verify = verify;
         if (!this.verify) {
             throw new TypeError(ErrorMessages.NO_VERIFY_CALLBACK);
         }
 
-        this.jwtFromRequest = options.jwtFromRequest;
         if (!this.jwtFromRequest) {
             throw new TypeError(ErrorMessages.NO_EXTRACTOR_FOUND);
         }
-
-        this.passReqToCallback = !!options.passReqToCallback;
     }
 
-    protected verifiedInternal(err: Error | null | string, user: null | object, infoOrMessage?: string | object) {
+    protected verifiedInternal(err: Error | null | string, user: null | object | boolean, infoOrMessage?: string | object) {
         if (err) {
             if (typeof err === 'string') {
                 err = new Error(err);
@@ -160,7 +158,7 @@ export class JwtStrategy<Payload extends DefaultPayload = DefaultPayload,
         return this.fail(FailureMessages.USER_NOT_TRUTHY);
     };
 
-    protected processTokenInternal(secretOrKeyError: string | null, secretOrKey: Key | null, token: string, req: Request, timeout?: NodeJS.Timeout): void {
+    protected processTokenInternal(secretOrKeyError: string | null, secretOrKey: Key | null, token: string, req: ExpressRequest, timeout?: NodeJS.Timeout): void {
         if (this.secretOrKeyProviderTimeout !== -1) {
             this.secretOrKeyProviderTimeout = -1;
             clearTimeout(timeout);
@@ -179,11 +177,11 @@ export class JwtStrategy<Payload extends DefaultPayload = DefaultPayload,
             }
             try {
                 if (this.passReqToCallback) {
-                    (this.verify as VerifyCallbackWithReq<Payload>)(req, result.payload,
+                    (this.verify as BasicVerifyCallback<Payload, true>)(req, result.payload,
                         (error, user, infoOrMessage) => this.verifiedInternal(error, user, infoOrMessage)
                     );
                 } else {
-                    (this.verify as VerifyCallback<Payload>)(result.payload,
+                    (this.verify as BasicVerifyCallback<Payload, false>)(result.payload,
                         (error, user, infoOrMessage) => this.verifiedInternal(error, user, infoOrMessage)
                     );
                 }
@@ -193,7 +191,7 @@ export class JwtStrategy<Payload extends DefaultPayload = DefaultPayload,
         })
     }
 
-    public authenticate(req: Request): void {
+    public authenticate(req: ExpressRequest): void {
         let tokenOrPromise = this.jwtFromRequest(req);
         let timeout: NodeJS.Timeout | undefined = undefined;
         if (typeof tokenOrPromise === "string") {
