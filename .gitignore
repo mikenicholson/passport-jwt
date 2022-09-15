@@ -1,5 +1,6 @@
 # Dist
-dist/
+# disabled during testing
+# dist/
 
 # Logs
 logs
