@@ -1,6 +1,5 @@
 # Dist
-# disabled during testing
-# dist/
+dist/
 
 # Logs
 logs
