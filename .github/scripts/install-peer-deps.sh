@@ -7,7 +7,7 @@
 npm_version="$(npm --version)"
 npm_major_version="${npm_version%%\.*}"
 
-if [[ $npm_major_version -ge 7 ]]; then 
+if [[ $npm_major_version -ge 7 ]]; then
     echo "NPM version ${npm_version} will automatically install peer dependencies."
     exit 0
 fi
