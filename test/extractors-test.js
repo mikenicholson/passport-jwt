@@ -157,6 +157,37 @@ describe('Token extractor', function() {
 
 
     });
+
+    describe('fromCookie', function() {
+
+        var extractor = extract_jwt.fromCookie('token');
+
+        it('should return the value from cookie', function() {
+            var req = new Request()
+            req.cookies['token'] = 'abcd123';
+
+            var token = extractor(req);
+
+            expect(token).to.equal('abcd123');
+        });
+
+        it('should return null if no cookie is present', function() {
+            var req = new Request()
+
+            var token = extractor(req);
+
+            expect(token).to.equal.null;
+        });
+
+        it('should return null if specified cookie name not present but other cookies are', function() {
+            var req = new Request()
+            req.cookies['othertoken'] = 'abcd123';
+
+            var token = extractor(req);
+
+            expect(token).to.equal.null;
+        });
+    });
     
     describe('fromExtractors', function() {
 
